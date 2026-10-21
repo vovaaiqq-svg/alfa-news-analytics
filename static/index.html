@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Альфа Бизнес - Новостная аналитика</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: #ef3124;
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        header p {
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #ef3124;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        button {
+            background: #ef3124;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #d42a1f;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #ef3124;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .news-item {
+            border-left: 4px solid #ef3124;
+            padding: 16px;
+            margin-bottom: 16px;
+            background: #f9f9f9;
+            border-radius: 4px;
+        }
+
+        .news-item h3 {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .news-item .meta {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .news-item .interpretation {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #ddd;
+        }
+
+        .news-item .interpretation h4 {
+            font-size: 14px;
+            color: #ef3124;
+            margin-bottom: 8px;
+        }
+
+        .news-item .interpretation p {
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .score {
+            display: inline-block;
+            background: #ef3124;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .trace-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .trace-step {
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            overflow: hidden;
+        }
+
+        .trace-step summary {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            cursor: pointer;
+            background: #fafafa;
+            font-weight: 500;
+            list-style: none;
+        }
+
+        .trace-step summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .trace-step summary::before {
+            content: '▸';
+            color: #ef3124;
+            font-size: 12px;
+            transition: transform 0.15s;
+        }
+
+        .trace-step[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        .trace-step summary:hover {
+            background: #f5f5f5;
+        }
+
+        .step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: #ef3124;
+            color: white;
+            border-radius: 50%;
+            font-size: 11px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .step-action {
+            font-family: monospace;
+            font-size: 13px;
+        }
+
+        .trace-badge {
+            font-size: 11px;
+            font-weight: 500;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .trace-badge.success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .trace-badge.error {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .trace-body {
+            padding: 12px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .trace-block {
+            border-left: 3px solid #ef3124;
+            padding-left: 10px;
+        }
+
+        .trace-block:last-child {
+            border-left-color: #2e7d32;
+        }
+
+        .trace-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #666;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .trace-data {
+            margin: 0;
+            padding: 8px 10px;
+            background: #f8f8f8;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 11px;
+            line-height: 1.5;
+            color: #333;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .trace-error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 8px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 16px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            border-bottom-color: #ef3124;
+            color: #ef3124;
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .analytics-search {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .analytics-search input {
+            flex: 1;
+        }
+
+        .analytics-result {
+            background: #f9f9f9;
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        .analytics-result h4 {
+            margin-bottom: 8px;
+        }
+
+        .analytics-result .category {
+            display: inline-block;
+            background: #e0e0e0;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .profile-item {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 4px;
+        }
+
+        .profile-item .label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .profile-item .value {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .source-list {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid #eee;
+        }
+
+        .source-list .source-item {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .verification-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .verification-badge.verified {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .verification-badge.warning {
+            background: #fff3e0;
+            color: #ef6c00;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Альфа Бизнес</h1>
+            <p>Персонализированная новостная аналитика для вашего бизнеса</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" data-tab="analysis">Анализ новостей</div>
+            <div class="tab" data-tab="analytics">Аналитика Альфа-Банка</div>
+            <div class="tab" data-tab="trace">Трассировка</div>
+        </div>
+
+        <!-- Вкладка анализа -->
+        <div id="analysis" class="tab-content active">
+            <div class="card">
+                <h2>Выберите клиента</h2>
+                <div class="form-group">
+                    <label for="client-select">Клиент</label>
+                    <select id="client-select">
+                        <option value="">Выберите клиента...</option>
+                    </select>
+                </div>
+                <button id="analyze-btn" onclick="analyzeClient()">Получить анализ</button>
+            </div>
+
+            <div id="loading" class="loading">
+                <div class="spinner"></div>
+                <p>Анализируем новости и формируем персонализированные рекомендации...</p>
+            </div>
+
+            <div id="results"></div>
+        </div>
+
+        <!-- Вкладка аналитики -->
+        <div id="analytics" class="tab-content">
+            <div class="card">
+                <h2>Поиск по аналитике Альфа-Банка</h2>
+                <div class="analytics-search">
+                    <input type="text" id="analytics-query" placeholder="Введите запрос...">
+                    <button onclick="searchAnalytics()">Найти</button>
+                </div>
+                <div id="analytics-results"></div>
+            </div>
+        </div>
+
+        <!-- Вкладка трассировки -->
+        <div id="trace" class="tab-content">
+            <div class="card">
+                <h2>Трассировка работы агентов</h2>
+                <div id="trace-content">
+                    <p>Запустите анализ, чтобы увидеть трассировку работы агентов.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Загрузка списка клиентов
+        async function loadClients() {
+            try {
+                const response = await fetch('/api/clients');
+                const clients = await response.json();
+                
+                const select = document.getElementById('client-select');
+                clients.forEach(client => {
+                    const option = document.createElement('option');
+                    option.value = client.id;
+                    option.textContent = `${client.id} — ${client.industry || 'Без отрасли'}`;
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Ошибка загрузки клиентов:', error);
+            }
+        }
+
+        // Анализ клиента
+        async function analyzeClient() {
+            const clientId = document.getElementById('client-select').value;
+            
+            if (!clientId) {
+                alert('Выберите клиента');
+                return;
+            }
+
+            const loading = document.getElementById('loading');
+            const results = document.getElementById('results');
+            const analyzeBtn = document.getElementById('analyze-btn');
+
+            loading.classList.add('active');
+            results.innerHTML = '';
+            analyzeBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ client_id: clientId }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Ошибка сервера');
+                }
+
+                const data = await response.json();
+                displayResults(data);
+                displayTrace(data.trace);
+            } catch (error) {
+                results.innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
+            } finally {
+                loading.classList.remove('active');
+                analyzeBtn.disabled = false;
+            }
+        }
+
+        // Отображение результатов
+        function displayResults(data) {
+            const results = document.getElementById('results');
+            
+            if (!data.interpretations || data.interpretations.length === 0) {
+                results.innerHTML = '<div class="card"><p>Нет данных для отображения</p></div>';
+                return;
+            }
+
+            let html = '';
+
+            // Профиль клиента
+            if (data.client_profile) {
+                const profile = data.client_profile;
+                const raw = profile.raw_data || {};
+                html += `
+                    <div class="card">
+                        <h2>Профиль клиента: ${data.client_id}</h2>
+                        <div class="profile-grid">
+                            <div class="profile-item">
+                                <div class="label">Отрасль (ОКВЭД)</div>
+                                <div class="value">${raw.MAINOKVED_NAME || profile.industry || 'N/A'}</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="label">Регион</div>
+                                <div class="value">${raw.REGION || 'N/A'}</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="label">Город</div>
+                                <div class="value">${raw.CITY || 'N/A'}</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="label">Выручка</div>
+                                <div class="value">${raw.REVENUE_COMPANY ? formatRevenue(raw.REVENUE_COMPANY) : 'N/A'}</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="label">Сотрудники</div>
+                                <div class="value">${raw.AMOUNT_WORKERS_FNS_GRADATION || 'N/A'}</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="label">Возраст компании</div>
+                                <div class="value">${raw.COMPANY_AGE_YEARS_GRADATION || 'N/A'}</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="label">Стадия развития</div>
+                                <div class="value">${raw.ECO_MARK_LABEL || 'N/A'}</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="label">Тип клиента</div>
+                                <div class="value">${raw.CL_TYPE || 'N/A'}</div>
+                            </div>
+                        </div>
+                        <div class="profile-grid">
+                            <div class="profile-item">
+                                <div class="label">Банковские продукты</div>
+                                <div class="value">${formatProducts(raw)}</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="label">Внешнеэкономическая деятельность</div>
+                                <div class="value">${raw.FTS_FLAG === '1.0' || raw.FTS_FLAG === '1' ? 'Да' : 'Нет'}</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="label">Страна ВЭД</div>
+                                <div class="value">${raw.FTS_COUNTRY_NAME || 'N/A'}</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="label">Факторинг</div>
+                                <div class="value">${raw.FACTORING_MARK === '1.0' || raw.FACTORING_MARK === '1' ? 'Да' : 'Нет'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Новости с интерпретациями
+            html += '<div class="card"><h2>Персонализированные рекомендации</h2>';
+
+            data.interpretations.forEach(item => {
+                const interp = item.interpretation || {};
+                const verification = item.verification || {};
+                const sources = item.sources || {};
+                
+                html += `
+                    <div class="news-item">
+                        <h3>${item.news_title || 'Без названия'} <span class="score">Релевантность: ${(item.relevance_score || 0).toFixed(1)}/10</span></h3>
+                        <div class="meta">
+                            Источник: ${sources.news || 'N/A'}
+                            ${verification.status ? `<span class="verification-badge ${verification.status === 'verified' ? 'verified' : 'warning'}">${verification.status === 'verified' ? '✓ Проверено' : '⚠ Требует внимания'}</span>` : ''}
+                        </div>
+                        <div class="interpretation">
+                            <h4>Что произошло?</h4>
+                            <p>${interp.what_happened || 'Нет данных'}</p>
+                            
+                            <h4>Почему это важно для вашей компании?</h4>
+                            <p>${interp.why_important || 'Нет данных'}</p>
+                            
+                            <h4>Какие последствия возможны?</h4>
+                            <p>${interp.consequences || 'Нет данных'}</p>
+                            
+                            <h4>Какие действия могут быть релевантны?</h4>
+                            <p>${interp.actions || 'Нет данных'}</p>
+                            
+                            <h4>Как это оценивает Альфа-Банк?</h4>
+                            <p>${interp.bank_view || 'Нет данных'}</p>
+                            
+                            ${interp.sources ? `
+                                <div class="source-list">
+                                    <strong>Источники:</strong>
+                                    ${Array.isArray(interp.sources) ? interp.sources.map(s => `<div class="source-item">• ${s}</div>`).join('') : `<div class="source-item">• ${interp.sources}</div>`}
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += '</div>';
+            results.innerHTML = html;
+        }
+
+        // Форматирование выручки
+        function formatRevenue(value) {
+            const num = parseFloat(value);
+            if (isNaN(num)) return value;
+            if (num >= 1e9) return (num / 1e9).toFixed(1) + ' млрд ₽';
+            if (num >= 1e6) return (num / 1e6).toFixed(1) + ' млн ₽';
+            if (num >= 1e3) return (num / 1e3).toFixed(1) + ' тыс. ₽';
+            return num + ' ₽';
+        }
+
+        // Форматирование продуктов
+        function formatProducts(raw) {
+            const products = [];
+            if (raw.CL_PRODUCT_RKO_MARK === '1.0' || raw.CL_PRODUCT_RKO_MARK === '1') products.push('РКО');
+            if (raw.CL_PRODUCT_LOA_MARK === '1.0' || raw.CL_PRODUCT_LOA_MARK === '1') products.push('Кредиты');
+            if (raw.CL_PRODUCT_DEP_MARK === '1.0' || raw.CL_PRODUCT_DEP_MARK === '1') products.push('Депозиты');
+            if (raw.CL_PRODUCT_GAR_MARK === '1.0' || raw.CL_PRODUCT_GAR_MARK === '1') products.push('Гарантии');
+            if (raw.CL_PRODUCT_LEA_MARK === '1.0' || raw.CL_PRODUCT_LEA_MARK === '1') products.push('Лизинг');
+            if (raw.CL_PRODUCT_ZPP_MARK === '1.0' || raw.CL_PRODUCT_ZPP_MARK === '1') products.push('Зарплатный проект');
+            return products.length > 0 ? products.join(', ') : 'Нет продуктов';
+        }
+
+        // Отображение трассировки
+        function displayTrace(trace) {
+            const traceContent = document.getElementById('trace-content');
+            
+            if (!trace || trace.length === 0) {
+                traceContent.innerHTML = '<p>Нет данных трассировки</p>';
+                return;
+            }
+
+            let html = '<div class="trace-list">';
+            trace.forEach((step, idx) => {
+                const status = step.success ? 'success' : 'error';
+                const badge = step.success
+                    ? '<span class="trace-badge success">✓ Успешно</span>'
+                    : '<span class="trace-badge error">✗ Ошибка</span>';
+                
+                html += `
+                    <details class="trace-step" ${idx === 0 ? 'open' : ''}>
+                        <summary>
+                            <span class="step-num">${step.step_number}</span>
+                            <span class="step-action">${step.action || 'Шаг'}</span>
+                            ${badge}
+                        </summary>
+                        <div class="trace-body">
+                            <div class="trace-block">
+                                <div class="trace-label">Входные данные</div>
+                                <pre class="trace-data">${escapeHtml(formatData(step.input_data))}</pre>
+                            </div>
+                            <div class="trace-block">
+                                <div class="trace-label">Выходные данные</div>
+                                <pre class="trace-data">${escapeHtml(formatData(step.output_data))}</pre>
+                            </div>
+                            ${step.error_message ? `<div class="trace-error">Ошибка: ${escapeHtml(step.error_message)}</div>` : ''}
+                        </div>
+                    </details>
+                `;
+            });
+            html += '</div>';
+            
+            traceContent.innerHTML = html;
+        }
+
+        // Форматирование данных для отображения
+        function formatData(data) {
+            if (data === null || data === undefined) return '—';
+            if (typeof data === 'object') return JSON.stringify(data, null, 2);
+            return String(data);
+        }
+
+        // Экранирование HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Поиск аналитики
+        async function searchAnalytics() {
+            const query = document.getElementById('analytics-query').value;
+            
+            if (!query) {
+                alert('Введите запрос');
+                return;
+            }
+
+            const resultsDiv = document.getElementById('analytics-results');
+            resultsDiv.innerHTML = '<p>Поиск...</p>';
+
+            try {
+                const response = await fetch(`/api/analytics/search?query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                
+                let html = '';
+                data.results.forEach(item => {
+                    html += `
+                        <div class="analytics-result">
+                            <span class="category">${item.category || 'N/A'}</span>
+                            <h4>${item.title || 'Без названия'}</h4>
+                            <p>${(item.content || '').substring(0, 300)}...</p>
+                        </div>
+                    `;
+                });
+                
+                resultsDiv.innerHTML = html || '<p>Ничего не найдено</p>';
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="error">Ошибка: ${error.message}</div>`;
+            }
+        }
+
+        // Переключение вкладок
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Инициализация
+        loadClients();
+    </script>
+</body>
+</html>
