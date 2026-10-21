@@ -52,7 +52,14 @@ start_tunnel() {
 
     local url=""
     for i in $(seq 1 30); do
-        url=$(grep -oE "https://[a-z0-9-]+\.trycloudflare\.com" "$LOG" | head -1)
+        # Адрес берём из баннера "Your quick Tunnel has been created",
+        # чтобы не поймать служебный api.trycloudflare.com
+        url=$(grep -A2 "quick Tunnel has been created" "$LOG" \
+            | grep -oE "https://[a-z0-9-]+\.trycloudflare\.com" | head -1)
+        if [ -z "$url" ]; then
+            url=$(grep -oE "https://[a-z0-9-]+\.trycloudflare\.com" "$LOG" \
+                | grep -vE '^https://(api|update|region[0-9]+|cert|hundred)\.' | head -1)
+        fi
         [ -n "$url" ] && break
         sleep 1
     done
