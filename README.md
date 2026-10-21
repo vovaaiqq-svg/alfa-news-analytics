@@ -7,15 +7,13 @@
 Открой терминал и вставь команды по очереди:
 
 ```bash
-git clone https://gitverse.ru/ЛОГИН/alfa-news-analytics.git
+git clone https://gitverse.ru/MisterKindly/alfa-news-analytics.git
 cd alfa-news-analytics
 chmod +x start.sh
 ./start.sh
 ```
 
-> Замени `ЛОГИН` на свой ник на GitVerse, а `alfa-news-analytics` — на имя
-> репозитория. Репозиторий должен быть **публичным**, иначе его не склонируют
-> члены жюри.
+> Репозиторий публичный — клонируется без авторизации.
 
 Скрипт сам:
 1. создаст виртуальное окружение `.venv`;
@@ -314,14 +312,14 @@ solution/
 2. В папке проекта выполните:
 
 ```bash
-git remote add origin https://gitverse.ru/ЛОГИН/alfa-news-analytics.git
+git remote add origin https://gitverse.ru/MisterKindly/alfa-news-analytics.git
 git push -u origin main
 ```
 
 Если `origin` уже настроен на другой адрес:
 
 ```bash
-git remote set-url origin https://gitverse.ru/ЛОГИН/alfa-news-analytics.git
+git remote set-url origin https://gitverse.ru/MisterKindly/alfa-news-analytics.git
 git push -u origin main
 ```
 
@@ -341,7 +339,7 @@ git push -u origin main
 ssh-keygen -t ed25519 -C "gitverse"
 cat ~/.ssh/id_ed25519.pub
 # скопируйте вывод в GitVerse → Настройки → SSH-ключи
-git remote add origin git@gitverse.ru:ЛОГИН/alfa-news-analytics.git
+git remote add origin git@gitverse.ru:MisterKindly/alfa-news-analytics.git
 git push -u origin main
 ```
 
