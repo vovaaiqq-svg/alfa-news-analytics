@@ -1,0 +1,42 @@
+{
+  "external_sources": [
+    {
+      "name": "Коммерсантъ",
+      "type": "rss",
+      "url": "https://www.kommersant.ru/RSS/main.xml",
+      "priority": 1,
+      "max_items": 25,
+      "enabled": true
+    },
+    {
+      "name": "Ведомости",
+      "type": "rss",
+      "url": "https://www.vedomosti.ru/rss/news",
+      "priority": 2,
+      "max_items": 25,
+      "enabled": true
+    },
+    {
+      "name": "Интерфакс",
+      "type": "rss",
+      "url": "https://www.interfax.ru/rss.asp",
+      "priority": 3,
+      "max_items": 20,
+      "enabled": true
+    },
+    {
+      "name": "ТАСС",
+      "type": "rss",
+      "url": "https://tass.ru/rss/v2.xml",
+      "priority": 4,
+      "max_items": 20,
+      "enabled": true
+    }
+  ],
+  "settings": {
+    "max_days_lookback": 7,
+    "max_total_news": 25,
+    "request_timeout": 15,
+    "fallback_to_synthetic": true
+  }
+}
