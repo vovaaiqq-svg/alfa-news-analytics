@@ -22,6 +22,7 @@ models/
 # Логи и временные файлы
 *.log
 *.tmp
+PUBLIC_URL.txt
 
 # ОС
 .DS_Store
