@@ -2,17 +2,10 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Установка системных зависимостей
-RUN apt-get update && apt-get install -y \
-    gcc \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
-
-# Копирование зависимостей
-COPY requirements.txt .
-
-# Установка Python зависимостей
-RUN pip install --no-cache-dir -r requirements.txt
+# Зависимости без тяжёлых опциональных пакетов (torch/sentence-transformers).
+# RAG автоматически использует поиск по ключевым словам, если модель не установлена.
+COPY requirements-lite.txt .
+RUN pip install --no-cache-dir -r requirements-lite.txt
 
 # Копирование кода
 COPY . .

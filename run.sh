@@ -12,13 +12,13 @@ if ! command -v python3 &> /dev/null; then
 fi
 
 # Установка зависимостей если необходимо
-if [ ! -d "venv" ]; then
+if [ ! -d ".venv" ]; then
     echo "Создание виртуального окружения..."
-    python3 -m venv venv
-    source venv/bin/activate
-    pip install -r requirements.txt
+    python3 -m venv .venv
+    source .venv/bin/activate
+    pip install -r requirements-lite.txt
 else
-    source venv/bin/activate
+    source .venv/bin/activate
 fi
 
 # Запуск сервера
@@ -28,4 +28,4 @@ echo ""
 echo "Для остановки нажмите Ctrl+C"
 echo ""
 
-uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+python3 -m uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload

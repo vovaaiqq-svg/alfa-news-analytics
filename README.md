@@ -1,5 +1,73 @@
 # Альфа Хак - Новостная аналитика для крупного бизнеса
 
+## 🚀 Быстрый старт: открыть сайт за 4 команды
+
+Нужен Linux/macOS (на Windows — WSL) и Python 3.10+.
+
+Открой терминал и вставь команды по очереди:
+
+```bash
+git clone https://gitverse.ru/ЛОГИН/alfa-news-analytics.git
+cd alfa-news-analytics
+chmod +x start.sh
+./start.sh
+```
+
+> Замени `ЛОГИН` на свой ник на GitVerse, а `alfa-news-analytics` — на имя
+> репозитория. Репозиторий должен быть **публичным**, иначе его не склонируют
+> члены жюри.
+
+Скрипт сам:
+1. создаст виртуальное окружение `.venv`;
+2. установит лёгкие зависимости (без тяжёлого `torch`);
+3. запустит сервер на `http://localhost:8000`;
+4. поднимет публичный туннель и напечатает ссылку.
+
+В конце в консоли будет примерно так:
+
+```
+==============================================
+  ГОТОВО. Открой эту ссылку в браузере:
+
+      https://что-то-там.lhr.life/app
+
+  Локально:  http://localhost:8000/app
+  Остановить: ./stop.sh
+==============================================
+```
+
+Скопируй ссылку и открой её в браузере. Если появилась страница Pinggy с кнопкой **Continue** — нажми её.
+
+Остановить сервер и туннель:
+
+```bash
+./stop.sh
+```
+
+> Ссылка живёт, пока запущен процесс туннеля. Бесплатные туннели временные:
+> если ссылка перестала открываться — снова запусти `./start.sh`, адрес будет новый.
+
+### Если хочется вручную (без start.sh)
+
+Первый терминал:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements-lite.txt
+python3 -m uvicorn api.main:app --host 0.0.0.0 --port 8000
+```
+
+Второй терминал:
+
+```bash
+./share.sh
+```
+
+`requirements-lite.txt` — быстрый набор зависимостей. Полный `requirements.txt`
+дополнительно ставит `sentence-transformers` (семантический RAG, тянет ~2 ГБ
+`torch`); без него RAG автоматически работает через поиск по ключевым словам.
+
 ## Описание решения
 
 Интеллектуальный сервис для руководителей крупного бизнеса, который определяет контекст компании, отбирает значимые для неё события и объясняет их влияние с учетом внешних источников и аналитики Альфа-Банка.
@@ -51,36 +119,38 @@
 
 ## Установка и запуск
 
-### Локальный запуск
+### Локальный запуск (подробнее)
 
-1. Клонируйте репозиторий:
+Самый простой способ — `./start.sh` (см. «Быстрый старт» выше).
+
+Вручную:
+
+1. Клонируйте репозиторий и перейдите в папку:
 ```bash
 git clone <repository-url>
 cd solution
 ```
 
-2. Создайте виртуальное окружение:
+2. Создайте виртуальное окружение и установите зависимости:
 ```bash
-python -m venv venv
-source venv/bin/activate  # Linux/Mac
-# или
-venv\Scripts\activate  # Windows
+python3 -m venv .venv
+source .venv/bin/activate        # Linux/macOS
+# .venv\Scripts\activate         # Windows (лучше использовать WSL)
+pip install -r requirements-lite.txt
 ```
 
-3. Установите зависимости:
-```bash
-pip install -r requirements.txt
-```
-
-4. Создайте файл `.env`:
+3. (Опционально) создайте `.env` для LLM-режима:
 ```bash
 cp .env.example .env
 ```
 
-5. Запустите сервер:
+4. Запустите сервер:
 ```bash
-uvicorn api.main:app --reload --host 0.0.0.0 --port 8000
+python3 -m uvicorn api.main:app --host 0.0.0.0 --port 8000
 ```
+
+5. Откройте http://localhost:8000/app. Публичная ссылка — через `./share.sh`
+   в отдельном терминале.
 
 ### Запуск через Docker
 
@@ -163,8 +233,8 @@ Pinggy при первом открытии в браузере показыва
 
 Сторож каждые 30 секунд проверяет публичную ссылку и, если она не отвечает
 два раза подряд, поднимает новый туннель Cloudflare. Текущий адрес всегда
-лежит в `PUBLIC_URL.txt` (в корне проекта) и в `/tmp/opencode/cf_url.txt`.
-Лог — `/tmp/opencode/keepalive.log`.
+лежит в `PUBLIC_URL.txt` (в корне проекта) и в `.run/cf_url.txt`.
+Лог — `.run/keepalive.log`.
 
 ## Парсер новостей
 
@@ -226,12 +296,60 @@ solution/
 ├── tests/                  # Тесты
 ├── extract_pdf.py          # OCR-извлечение аналитики из PDF
 ├── demo.py                 # Демо без сервера
+├── start.sh                # Всё в одном: окружение, сервер, публичная ссылка
+├── stop.sh                 # Остановить сервер и туннель
 ├── share.sh                # Публикация через туннель
 ├── run.sh                  # Запуск сервера
 ├── Dockerfile
 ├── docker-compose.yml
-├── requirements.txt
+├── requirements-lite.txt   # Быстрые зависимости (без torch)
+├── requirements.txt        # Полные зависимости (+ sentence-transformers)
 └── README.md
+```
+
+## Публикация репозитория на GitVerse
+
+1. Зарегистрируйтесь на [gitverse.ru](https://gitverse.ru) и создайте **пустой**
+   репозиторий (без README, без `.gitignore`), например `alfa-news-analytics`.
+2. В папке проекта выполните:
+
+```bash
+git remote add origin https://gitverse.ru/ЛОГИН/alfa-news-analytics.git
+git push -u origin main
+```
+
+Если `origin` уже настроен на другой адрес:
+
+```bash
+git remote set-url origin https://gitverse.ru/ЛОГИН/alfa-news-analytics.git
+git push -u origin main
+```
+
+При запросе логина и пароля: логин — от GitVerse, пароль — обычный пароль
+или personal access token (Настройки → Безопасность → Токены).
+
+Если репозиторий создан с README и `push` ругается на расходящуюся историю:
+
+```bash
+git pull --rebase origin main
+git push -u origin main
+```
+
+Вариант по SSH:
+
+```bash
+ssh-keygen -t ed25519 -C "gitverse"
+cat ~/.ssh/id_ed25519.pub
+# скопируйте вывод в GitVerse → Настройки → SSH-ключи
+git remote add origin git@gitverse.ru:ЛОГИН/alfa-news-analytics.git
+git push -u origin main
+```
+
+Проверить, что всё залилось:
+
+```bash
+git log --oneline
+git status
 ```
 
 ## Модели LLM

@@ -7,11 +7,12 @@
 #   ./keepalive.sh stop     # остановить
 
 PORT="${PORT:-8000}"
-BIN="/tmp/opencode/bin/cloudflared"
-LOG="/tmp/opencode/cloudflared.log"
-KEEP_LOG="/tmp/opencode/keepalive.log"
-PID_FILE="/tmp/opencode/keepalive.pid"
-URL_FILE="/tmp/opencode/cf_url.txt"
+RUN_DIR=".run"
+BIN="${RUN_DIR}/bin/cloudflared"
+LOG="${RUN_DIR}/cloudflared.log"
+KEEP_LOG="${RUN_DIR}/keepalive.log"
+PID_FILE="${RUN_DIR}/keepalive.pid"
+URL_FILE="${RUN_DIR}/cf_url.txt"
 CHECK_URL="${CHECK_URL:-}"
 
 if [ "$1" = "stop" ]; then
@@ -25,6 +26,8 @@ if [ -f "$PID_FILE" ] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null; then
     echo "Watchdog уже запущен (PID $(cat "$PID_FILE"))"
     exit 0
 fi
+
+mkdir -p "$RUN_DIR" "$(dirname "$BIN")"
 
 if [ ! -x "$BIN" ]; then
     mkdir -p "$(dirname "$BIN")"

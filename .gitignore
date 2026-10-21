@@ -23,6 +23,7 @@ models/
 *.log
 *.tmp
 PUBLIC_URL.txt
+.run/
 
 # ОС
 .DS_Store

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Публикация сервиса в интернете через временный туннель.
-# Требуется, чтобы сервер уже был запущен на порту 8000.
+# Требуется, чтобы сервер уже был запущен (обычно через ./start.sh).
 #
 # Использование:
 #   ./share.sh            # авто: cloudflared, затем pinggy, затем localhost.run
@@ -12,10 +12,12 @@
 
 PORT="${1:-8000}"
 TUNNEL="${TUNNEL:-auto}"
+RUN_DIR=".run"
+mkdir -p "$RUN_DIR"
 
 if ! curl -s -m 3 "http://localhost:${PORT}/api/health" > /dev/null; then
     echo "Сервер на порту ${PORT} не отвечает. Сначала запустите:"
-    echo "  python3 -m uvicorn api.main:app --host 0.0.0.0 --port ${PORT}"
+    echo "  ./start.sh"
     exit 1
 fi
 
@@ -30,15 +32,41 @@ health_ok() {
     return 1
 }
 
-start_cloudflared() {
-    local bin="/tmp/opencode/bin/cloudflared"
-    local log="/tmp/opencode/cloudflared.log"
+# Достаёт адрес quick-туннеля из баннера cloudflared,
+# чтобы не поймать служебный api.trycloudflare.com.
+extract_cf_url() {
+    local log="$1"
+    grep -A2 "quick Tunnel has been created" "$log" 2>/dev/null \
+        | grep -oE "https://[a-z0-9-]+\.trycloudflare\.com" | head -1
+}
 
-    if [ ! -x "$bin" ]; then
-        echo "Скачиваю cloudflared..."
-        mkdir -p "$(dirname "$bin")"
-        curl -sL -o "$bin" https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
-        chmod +x "$bin"
+start_cloudflared() {
+    local log="$RUN_DIR/cloudflared.log"
+
+    if [ "$(uname -s)" != "Linux" ]; then
+        echo "cloudflared: автоскачивание поддерживается только в Linux." >&2
+        return 1
+    fi
+
+    local bin="${CLOUDFLARED_BIN:-}"
+    if [ -z "$bin" ]; then
+        bin=$(command -v cloudflared 2>/dev/null || true)
+    fi
+    if [ -z "$bin" ]; then
+        bin="$RUN_DIR/bin/cloudflared"
+        if [ ! -x "$bin" ]; then
+            echo "Скачиваю cloudflared..." >&2
+            mkdir -p "$(dirname "$bin")"
+            case "$(uname -m)" in
+                x86_64|amd64) cf_arch=amd64 ;;
+                aarch64|arm64) cf_arch=arm64 ;;
+                *) echo "Неизвестная архитектура: $(uname -m)"; return 1 ;;
+            esac
+            curl -fsSL -o "$bin" \
+                "https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-${cf_arch}" \
+                || { echo "Не удалось скачать cloudflared"; return 1; }
+            chmod +x "$bin"
+        fi
     fi
 
     nohup "$bin" tunnel --url "http://localhost:${PORT}" --no-autoupdate > "$log" 2>&1 &
@@ -46,13 +74,13 @@ start_cloudflared() {
 
     local url=""
     for i in $(seq 1 25); do
-        url=$(grep -oE "https://[a-z0-9-]+\.trycloudflare\.com" "$log" | head -1)
+        url=$(extract_cf_url "$log")
         [ -n "$url" ] && break
         sleep 1
     done
     [ -z "$url" ] && { kill "$pid" 2>/dev/null; return 1; }
 
-    echo "Проверяю туннель Cloudflare..."
+    echo "Проверяю туннель Cloudflare..." >&2
     if health_ok "$url"; then
         echo "cloudflared|$pid|$url|$log"
         return 0
@@ -62,10 +90,10 @@ start_cloudflared() {
 }
 
 start_pinggy() {
-    local log="/tmp/opencode/pinggy.log"
+    local log="$RUN_DIR/pinggy.log"
 
     if [ ! -f "$HOME/.ssh/id_ed25519" ]; then
-        echo "Генерирую SSH-ключ для pinggy..."
+        echo "Генерирую SSH-ключ для pinggy..." >&2
         ssh-keygen -t ed25519 -N "" -f "$HOME/.ssh/id_ed25519" -q
     fi
 
@@ -83,7 +111,7 @@ start_pinggy() {
     done
     [ -z "$url" ] && { kill "$pid" 2>/dev/null; return 1; }
 
-    echo "Проверяю туннель Pinggy..."
+    echo "Проверяю туннель Pinggy..." >&2
     if health_ok "$url"; then
         echo "pinggy|$pid|$url|$log"
         return 0
@@ -93,7 +121,7 @@ start_pinggy() {
 }
 
 start_localhostrun() {
-    local log="/tmp/opencode/localhostrun.log"
+    local log="$RUN_DIR/localhostrun.log"
 
     nohup ssh -T \
         -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
@@ -109,7 +137,7 @@ start_localhostrun() {
     done
     [ -z "$url" ] && { kill "$pid" 2>/dev/null; return 1; }
 
-    echo "Проверяю туннель localhost.run..."
+    echo "Проверяю туннель localhost.run..." >&2
     if health_ok "$url"; then
         echo "localhost.run|$pid|$url|$log"
         return 0
@@ -133,14 +161,21 @@ case "$TUNNEL" in
 esac
 
 if [ -z "$RESULT" ]; then
-    echo "Не удалось поднять публичный туннель. Смотрите логи в /tmp/opencode/."
+    echo "Не удалось поднять публичный туннель. Смотрите логи в ${RUN_DIR}/."
     exit 1
 fi
+
+# На случай, если в перехваченный вывод попали служебные строки,
+# оставляем только строку формата provider|pid|url|log.
+RESULT=$(echo "$RESULT" | grep -E "^(cloudflared|pinggy|localhost\.run)\|" | tail -1)
 
 PROVIDER=$(echo "$RESULT" | cut -d'|' -f1)
 PID=$(echo "$RESULT" | cut -d'|' -f2)
 URL=$(echo "$RESULT" | cut -d'|' -f3)
 LOG=$(echo "$RESULT" | cut -d'|' -f4)
+
+echo "$URL" > PUBLIC_URL.txt
+echo "$PID" > "$RUN_DIR/tunnel.pid"
 
 echo ""
 echo "=============================================="
@@ -155,5 +190,5 @@ if [ "$PROVIDER" = "pinggy" ]; then
     echo "Бесплатный туннель Pinggy живёт 60 минут, затем перезапустите ./share.sh."
 fi
 echo "Туннель работает, пока запущен процесс (PID $PID)."
-echo "Остановить:  kill $PID"
+echo "Остановить:  ./stop.sh"
 echo "Лог:         $LOG"
