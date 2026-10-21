@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_NAME=opencode/glm-5.3-flash-free
+      - API_KEY=${API_KEY}
+      - OPENCODE_API_URL=http://host.docker.internal:3000
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Опционально: добавьте дополнительные сервисы при необходимости
+  # redis:
+  #   image: redis:7-alpine
+  #   ports:
+  #     - "6379:6379"

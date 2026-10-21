@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Секреты и локальная конфигурация
+.env
+.env.local
+
+# Модели и кэш
+models/
+*.bin
+*.safetensors
+.cache/
+
+# Логи и временные файлы
+*.log
+*.tmp
+
+# ОС
+.DS_Store
+Thumbs.db
+
+# Реальные данные кейса (слишком большие для git)
+пример/
+data/raw/
