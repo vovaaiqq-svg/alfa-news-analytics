@@ -7,6 +7,8 @@ import json
 from typing import Any, Dict
 
 from agents.base_agent import AgentContext, BaseAgent
+from services.client_data import find_client_row
+from services.profile_store import get_custom_profile
 
 
 class ClientProfileAgent(BaseAgent):
@@ -69,15 +71,18 @@ class ClientProfileAgent(BaseAgent):
         }
         
         # Трассировка
+        source = client_data.get("_SOURCE") or "df_Uid_data_hack.csv (реальные данные)"
         step = self.create_step(
             step_number=1,
             action="analyze_client_profile",
             input_data={
                 "client_id": context.client_id,
-                "source": "df_Uid_data_hack.csv (реальные данные)",
+                "source": source,
+                "legal_entity": client_data.get("_LEGAL_ENTITY", ""),
                 "raw_fields_used": ["SYNTHETIC_U", "MAINOKVED_CODE", "MAINOKVED_NAME", "REVENUE_COMPANY", "AMOUNT_WORKERS_FNS_GRADATION", "CL_TYPE", "REGION", "CITY", "CL_PRODUCT_*_MARK", "FTS_FLAG", "FTS_COUNTRY_NAME", "FACTORING_MARK"],
             },
             output_data={
+                "legal_entity": client_data.get("_LEGAL_ENTITY", ""),
                 "industry": context.client_profile.get("industry", "")[:80],
                 "business_scale": context.client_profile.get("business_scale", ""),
                 "products": context.client_profile.get("products", []),
@@ -95,42 +100,22 @@ class ClientProfileAgent(BaseAgent):
 
     async def _load_client_data(self, client_id: str) -> Dict[str, Any]:
         """
-        Загрузка данных о клиенте из реального CSV-файла.
-        
-        Args:
-            client_id: Идентификатор клиента
-            
-        Returns:
-            Данные о клиенте
+        Загрузка данных о клиенте:
+        1) профиль, созданный при регистрации;
+        2) реальный CSV кейса;
+        3) синтетический профиль.
         """
-        # Путь к реальным данным: env-переменная → файл кейса → синтетика
-        import csv
-        import os
-        from pathlib import Path
-
-        env_path = os.getenv("CLIENT_DATA_CSV")
-        if env_path and Path(env_path).exists():
-            data_path = Path(env_path)
-        else:
-            data_path = Path(__file__).resolve().parent.parent.parent / "пример" / "extracted" / "df_Uid_data_hack.csv"
-
-        # Fallback на синтетические данные
-        if not data_path.exists():
-            data_path = Path(__file__).parent.parent / "data" / "client_profiles" / "clients.csv"
+        custom = get_custom_profile(client_id)
+        if custom:
+            return custom
 
         try:
-            with open(data_path, "r", encoding="utf-8") as f:
-                first_line = f.readline()
-                delimiter = ";" if first_line.count(";") >= first_line.count(",") else ","
-                f.seek(0)
-                reader = csv.DictReader(f, delimiter=delimiter)
-                for row in reader:
-                    if row.get("SYNTHETIC_U") == client_id:
-                        return row
+            row = find_client_row(client_id)
+            if row:
+                return row
         except Exception as e:
             self.logger.warning(f"Ошибка загрузки данных из CSV: {e}")
-        
-        # Возвращаем синтетический профиль для демонстрации
+
         return self._generate_synthetic_profile(client_id)
 
     def _generate_synthetic_profile(self, client_id: str) -> Dict[str, Any]:
@@ -220,11 +205,15 @@ class ClientProfileAgent(BaseAgent):
         if not region:
             region = client_data.get("REGION", "")
         
+        # Для профиля, созданного пользователем, показываем выбранную отрасль и масштаб
+        industry_label = client_data.get("_INDUSTRY_LABEL") or okved
+        scale_label = client_data.get("_SCALE_LABEL") or self._classify_scale(revenue, workers)
+
         # Формируем анализ
         analysis = {
-            "industry": okved,
+            "industry": industry_label,
             "industry_code": okved_code,
-            "business_scale": self._classify_scale(revenue, workers),
+            "business_scale": scale_label,
             "revenue": revenue,
             "workers": workers,
             "region": region or client_data.get("REGION", ""),
@@ -239,6 +228,7 @@ class ClientProfileAgent(BaseAgent):
             "group_id": group_id,
             "key_features": {
                 "okved": okved,
+                "industry": industry_label,
                 "okved_code": okved_code,
                 "revenue": revenue,
                 "workers": workers,

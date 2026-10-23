@@ -69,6 +69,86 @@ class NewsParser:
             self.logger.error(f"Ошибка парсинга RSS {url}: {e}")
             return []
 
+    async def enrich_content(
+        self,
+        news: List[Dict[str, Any]],
+        limit: int = 12,
+        max_chars: int = 900,
+    ) -> List[Dict[str, Any]]:
+        """
+        Дополняет пустые RSS-анонсы описанием со страницы статьи.
+        Если сайт недоступен или отдаёт заглушку, новость остаётся без изменений.
+        """
+        targets = [
+            item for item in news
+            if item.get("url") and len(str(item.get("content", ""))) < 80
+        ][:limit]
+        if not targets:
+            return news
+
+        semaphore = asyncio.Semaphore(5)
+        headers = {
+            "User-Agent": (
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+            ),
+            "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.7",
+        }
+
+        async with httpx.AsyncClient(
+            follow_redirects=True,
+            timeout=httpx.Timeout(6.0),
+            headers=headers,
+        ) as client:
+            async def fetch(item: Dict[str, Any]) -> None:
+                async with semaphore:
+                    try:
+                        response = await client.get(item["url"])
+                        if response.status_code != 200:
+                            return
+                        soup = BeautifulSoup(response.text, "lxml")
+
+                        candidates = []
+                        for selector in (
+                            'meta[property="og:description"]',
+                            'meta[name="description"]',
+                            'meta[property="twitter:description"]',
+                        ):
+                            for node in soup.select(selector):
+                                value = str(node.get("content", "")).strip()
+                                if value:
+                                    candidates.append(value)
+
+                        if not candidates or max(len(value) for value in candidates) < 60:
+                            paragraphs = [
+                                p.get_text(" ", strip=True)
+                                for p in soup.select(
+                                    "article p, .article__text p, .article__content p, "
+                                    ".article-body p, .news__text p"
+                                )[:5]
+                            ]
+                            body = " ".join(p for p in paragraphs if p)
+                            if body:
+                                candidates.append(body)
+
+                        description = max(
+                            candidates,
+                            key=lambda value: len(str(value)),
+                            default="",
+                        )
+                        description = BeautifulSoup(description, "lxml").get_text(" ", strip=True)
+                        title = str(item.get("title", "")).strip().lower()
+                        if len(description) >= 60 and description.lower().strip() != title:
+                            item["content"] = description[:max_chars]
+                    except Exception:
+                        return
+
+            await asyncio.gather(*(fetch(item) for item in targets))
+
+        enriched = sum(1 for item in targets if len(str(item.get("content", ""))) >= 60)
+        self.logger.info(f"Дополнено описаний новостей: {enriched} из {len(targets)}")
+        return news
+
     async def parse_api(
         self,
         url: str,

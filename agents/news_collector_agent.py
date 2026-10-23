@@ -4,6 +4,7 @@
 """
 
 import json
+import re
 from datetime import datetime, timedelta
 from typing import Any, Dict, List
 
@@ -97,6 +98,9 @@ class NewsCollectorAgent(BaseAgent):
                         if self._is_business_relevant(n)
                     ]
                     
+                    # У RSS не всегда есть анонс: подтягиваем описание со страницы.
+                    await parser.enrich_content(relevant_news, limit=15)
+
                     # Присваиваем уникальные ID
                     for i, item in enumerate(relevant_news):
                         if not item.get("id"):
@@ -445,9 +449,57 @@ class NewsCollectorAgent(BaseAgent):
             "кража", "угон", "дтп", "происшестви",
             "тройни", "двойни", "родила",
             "продажи билетов", "билетов на", "гастрол",
+            "падел", "кортов", "стрельб", "погиб", "ранен", "омбудсмен",
+            "бпла", "пво", "единая россия", "песков", "кремл", "спецпосланник",
         ]
         
         has_irrelevant = any(word in text for word in irrelevant)
+
+        # Политические сюжеты отсекаем, если в заголовке нет явного делового угла.
+        political_markers = [
+            "выборы", "избирател", "кандидат", "президент", "оппозиц",
+            "партия", "голосов", "импичмент", "скандал", "инаугурац",
+            "предвыборн", "рейтинг кандидат",
+        ]
+        title = item.get("title", "").lower()
+        title_business = bool(re.search(
+            r"(?<![а-яa-z])(эконом|бизнес|компани|кредит|инвест|рынок|"
+            r"экспорт|импорт|производств|промышленн|финанс|торгов|валют|"
+            r"ставк|инфляц|регулир|закон|налог|технолог|бюджет)",
+            title,
+        )) or "банк" in title
+        if any(marker in text for marker in political_markers) and not title_business:
+            return False
+
+        # Здоровье и общая геополитика без делового угла — не для бизнес-агента.
+        soft_irrelevant_title = [
+            "саммит", "лидеры", "посол", "дипломат", "нато", "госдеп",
+            "коронавирус", "covid", "вакцин", "заболеваем", "роспотребнадзор",
+            "минздрав", "эпидем", "грипп",
+        ]
+        if any(marker in title for marker in soft_irrelevant_title) and not title_business:
+            return False
+
+        # Политика, происшествия и светская хроника без делового угла.
+        civic_title_markers = [
+            "песков", "кремл", "омбудсмен", "единая россия", "госдум",
+            "сенатор", "депутат", "съезд", "переговор", "спецпосланник",
+            "бпла", "пво", "губернатор", "украин", "киев", "зеленск",
+            "трамп", "байден", "евросоюз", "нато", "госдеп", "посол",
+            "дипломат", "саммит", "лидеры", "стрельб", "погиб", "ранен",
+            "падел", "кортов", "путин", "нетаньяху", "израил", "палестин",
+            "газа", "иордан", "сирия", "иран", "чичваркин", "иноагент",
+            "оштрафовал", "суд ",
+        ]
+        if any(marker in title for marker in civic_title_markers) and not title_business:
+            return False
+
+        lifestyle_title_markers = [
+            "фэшн", "люкс", "hermès", "hermes", "мод", "светск",
+            "знаменитост", "сериал", "кино", "музык",
+        ]
+        if any(marker in title for marker in lifestyle_title_markers) and not title_business:
+            return False
         
         # Деловые маркеры (защищают от отсеивания)
         business_markers = [

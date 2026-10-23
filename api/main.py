@@ -3,7 +3,10 @@ FastAPI приложение для сервиса новостной анали
 """
 
 import logging
+import re
+import uuid
 from contextlib import asynccontextmanager
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 from fastapi import FastAPI, HTTPException, Query
@@ -15,6 +18,22 @@ from pydantic import BaseModel
 
 from agents.orchestrator import AgentOrchestrator
 from rag.retriever import AlfaAnalyticsRetriever
+from services.client_data import count_similar, find_client_row, iter_client_rows
+from services.industry import (
+    PRODUCT_OPTIONS,
+    infer_industry,
+    meta_payload,
+    revenue_by_key,
+)
+from services.profile_store import (
+    get_custom_profile,
+    load_custom_profiles,
+    register_account,
+    save_custom_profile,
+    save_feedback,
+    to_public_profile,
+    verify_account,
+)
 
 # Настройка логирования
 logging.basicConfig(level=logging.INFO)
@@ -50,9 +69,63 @@ class AnalyticsResponse(BaseModel):
     results: List[Dict[str, Any]]
 
 
+class RegisterRequest(BaseModel):
+    legal_entity: str
+    industry: str
+    custom_industry: str = ""
+    region: str
+    scale: str
+    city: str = ""
+    employees: str = ""
+    company_age: str = ""
+    growth_stage: str = ""
+    products: List[str] = []
+    has_fts: bool = False
+    fts_country: str = ""
+    has_factoring: bool = False
+    login: str
+    password: str
+
+
+class LoginRequest(BaseModel):
+    login: str
+    password: str
+
+
+class ProfileUpdateRequest(BaseModel):
+    legal_entity: Optional[str] = None
+    industry: Optional[str] = None
+    custom_industry: Optional[str] = None
+    region: Optional[str] = None
+    city: Optional[str] = None
+    scale: Optional[str] = None
+    employees: Optional[str] = None
+    company_age: Optional[str] = None
+    growth_stage: Optional[str] = None
+    products: Optional[List[str]] = None
+    has_fts: Optional[bool] = None
+    fts_country: Optional[str] = None
+    has_factoring: Optional[bool] = None
+
+
+class ChatRequest(BaseModel):
+    agent: str
+    client_id: str
+    question: str
+    history: List[Dict[str, str]] = []
+
+
+class FeedbackRequest(BaseModel):
+    client_id: str = ""
+    rating: Optional[int] = None
+    category: str = ""
+    text: str
+
+
 # Глобальные переменные
 orchestrator: Optional[AgentOrchestrator] = None
 retriever: Optional[AlfaAnalyticsRetriever] = None
+analysis_cache: Dict[str, Any] = {}
 
 
 def _slim_news(item: Dict[str, Any]) -> Dict[str, Any]:
@@ -64,6 +137,7 @@ def _slim_news(item: Dict[str, Any]) -> Dict[str, Any]:
         "category": item.get("category", ""),
         "date": item.get("date", ""),
         "url": item.get("url", ""),
+        "excerpt": str(item.get("content", ""))[:500],
         "is_real": item.get("is_real", False),
     }
 
@@ -113,6 +187,130 @@ def _summarize(data: Any, max_chars: int = 2000) -> Any:
             return data[:max_chars] + f"... (обрезано, всего {len(data)} символов)"
         return data
     return data
+
+
+def _get_raw_profile(client_id: str) -> Optional[Dict[str, Any]]:
+    """Кастомный профиль → CSV → None."""
+    raw = get_custom_profile(client_id)
+    if raw:
+        return raw
+    try:
+        return find_client_row(client_id)
+    except Exception:
+        return None
+
+
+def _registration_raw(
+    request: RegisterRequest,
+    client_id: str,
+) -> tuple[Dict[str, Any], Dict[str, str], Dict[str, Any]]:
+    industry = infer_industry(request.industry, request.custom_industry)
+    scale = revenue_by_key(request.scale)
+
+    raw: Dict[str, Any] = {
+        "SYNTHETIC_U": client_id,
+        "ORG_TYPE": "ООО",
+        "MAINOKVED_NAME": industry["okved"],
+        "MAINOKVED_CODE": industry["code"],
+        "REGION": request.region,
+        "CITY": request.city or "",
+        "REVENUE_COMPANY": str(scale["amount"]),
+        "AMOUNT_WORKERS_FNS_GRADATION": request.employees or "16-100",
+        "COMPANY_AGE_YEARS_GRADATION": request.company_age or "5-10",
+        "ECO_MARK_LABEL": request.growth_stage or "Растущий бизнес",
+        "CL_TYPE": "Новый клиент",
+        "FTS_FLAG": "1" if request.has_fts else "0",
+        "FTS_COUNTRY_NAME": request.fts_country if request.has_fts else "",
+        "FACTORING_MARK": "1" if request.has_factoring else "0",
+        "_LEGAL_ENTITY": request.legal_entity.strip(),
+        "_INDUSTRY_KEY": industry["key"],
+        "_INDUSTRY_LABEL": industry["label"],
+        "_CUSTOM_INDUSTRY": request.custom_industry.strip(),
+        "_SCALE_LABEL": scale["scale"],
+        "_SOURCE": "профиль пользователя (регистрация)",
+        "_CREATED_AT": datetime.now().isoformat(timespec="seconds"),
+    }
+
+    selected_products = set(request.products)
+    for option in PRODUCT_OPTIONS:
+        raw[option["field"]] = "1" if option["key"] in selected_products else "0"
+
+    return raw, industry, scale
+
+
+def _apply_profile_updates(
+    raw: Dict[str, Any],
+    request: ProfileUpdateRequest,
+) -> Dict[str, Any]:
+    updated = dict(raw)
+
+    if request.legal_entity is not None:
+        updated["_LEGAL_ENTITY"] = request.legal_entity.strip()
+
+    if request.region is not None:
+        updated["REGION"] = request.region
+    if request.city is not None:
+        updated["CITY"] = request.city
+
+    if request.industry is not None or request.custom_industry is not None:
+        industry_key = request.industry or updated.get("_INDUSTRY_KEY", "other")
+        custom_text = (
+            request.custom_industry
+            if request.custom_industry is not None
+            else updated.get("_CUSTOM_INDUSTRY", "")
+        )
+        industry = infer_industry(industry_key, custom_text or "")
+        updated["MAINOKVED_NAME"] = industry["okved"]
+        updated["MAINOKVED_CODE"] = industry["code"]
+        updated["_INDUSTRY_KEY"] = industry["key"]
+        updated["_INDUSTRY_LABEL"] = industry["label"]
+        updated["_CUSTOM_INDUSTRY"] = custom_text or ""
+
+    if request.scale:
+        scale = revenue_by_key(request.scale)
+        updated["REVENUE_COMPANY"] = str(scale["amount"])
+        updated["_SCALE_LABEL"] = scale["scale"]
+
+    if request.employees is not None:
+        updated["AMOUNT_WORKERS_FNS_GRADATION"] = request.employees
+    if request.company_age is not None:
+        updated["COMPANY_AGE_YEARS_GRADATION"] = request.company_age
+    if request.growth_stage is not None:
+        updated["ECO_MARK_LABEL"] = request.growth_stage
+
+    if request.products is not None:
+        selected_products = set(request.products)
+        for option in PRODUCT_OPTIONS:
+            updated[option["field"]] = "1" if option["key"] in selected_products else "0"
+
+    if request.has_fts is not None:
+        updated["FTS_FLAG"] = "1" if request.has_fts else "0"
+        if not request.has_fts:
+            updated["FTS_COUNTRY_NAME"] = ""
+    if request.fts_country is not None:
+        updated["FTS_COUNTRY_NAME"] = request.fts_country
+    if request.has_factoring is not None:
+        updated["FACTORING_MARK"] = "1" if request.has_factoring else "0"
+
+    updated["_SOURCE"] = "профиль пользователя (изменён)"
+    updated["_UPDATED_AT"] = datetime.now().isoformat(timespec="seconds")
+    return updated
+
+
+def _tokens(text: str) -> List[str]:
+    return re.findall(r"[a-zA-Zа-яА-ЯёЁ0-9]{4,}", (text or "").lower())
+
+
+def _text_score(question: str, text: str) -> int:
+    haystack = (text or "").lower()
+    return sum(len(token) for token in set(_tokens(question)) if token in haystack)
+
+
+def _truncate(text: str, limit: int) -> str:
+    text = (text or "").strip().replace("\n", " ")
+    if len(text) <= limit:
+        return text
+    return text[:limit].rsplit(" ", 1)[0] + "…"
 
 
 @asynccontextmanager
@@ -194,9 +392,13 @@ async def analyze_client(request: ClientRequest):
         
         # Запуск оркестратора
         context = await orchestrator.run(request.client_id)
+        analysis_cache[request.client_id] = context
         
         # Отладка
         logger.info(f"Результат: новостей={len(context.news_items)}, аналитики={len(context.alfa_analytics)}, интерпретаций={len(context.interpretations)}")
+
+        raw_profile = (context.client_profile or {}).get("raw_data", {})
+        profile_display = to_public_profile(raw_profile)
         
         # Формирование ответа
         if request.full:
@@ -211,9 +413,11 @@ async def analyze_client(request: ClientRequest):
         response = {
             "client_id": context.client_id,
             "client_profile": context.client_profile,
+            "profile_display": profile_display,
             "news_items": news_items,
             "ranked_news": ranked_news,
             "interpretations": context.interpretations,
+            "analytics_insights": context.metadata.get("analytics_insights", []),
             "alfa_analytics": alfa_analytics,
             "trace": [
                 {
@@ -239,57 +443,300 @@ async def analyze_client(request: ClientRequest):
 @app.get("/api/clients", response_model=List[Dict[str, Any]])
 async def get_clients():
     """
-    Получение списка доступных клиентов из реальных данных.
+    Список клиентов: сначала профили, созданные пользователями, затем CSV кейса.
     """
-    import csv
-    import os
-    from pathlib import Path
-    
-    clients = []
+    clients: List[Dict[str, Any]] = []
     seen_ids = set()
-    
-    # Путь к реальным данным: env-переменная → файл кейса → синтетика
-    env_path = os.getenv("CLIENT_DATA_CSV")
-    if env_path and Path(env_path).exists():
-        data_path = Path(env_path)
-    else:
-        data_path = Path(__file__).resolve().parent.parent.parent / "пример" / "extracted" / "df_Uid_data_hack.csv"
-    
-    # Fallback на синтетические данные
-    if not data_path.exists():
-        data_path = Path(__file__).resolve().parent / "data" / "client_profiles" / "clients.csv"
-    
+
     try:
-        with open(data_path, "r", encoding="utf-8") as f:
-            first_line = f.readline()
-            delimiter = ";" if first_line.count(";") >= first_line.count(",") else ","
-            f.seek(0)
-            reader = csv.DictReader(f, delimiter=delimiter)
-            for row in reader:
-                client_id = row.get("SYNTHETIC_U", "")
-                if client_id and client_id not in seen_ids:
-                    seen_ids.add(client_id)
-                    clients.append({
-                        "id": client_id,
-                        "industry": row.get("MAINOKVED_NAME", "")[:50],
-                        "region": row.get("REGION", ""),
-                        "city": row.get("CITY", ""),
-                        "revenue": row.get("REVENUE_COMPANY", ""),
-                        "products": [
-                            p for p, v in [
-                                ("RKO", row.get("CL_PRODUCT_RKO_MARK")),
-                                ("Кредиты", row.get("CL_PRODUCT_LOA_MARK")),
-                                ("Депозиты", row.get("CL_PRODUCT_DEP_MARK")),
-                                ("Гарантии", row.get("CL_PRODUCT_GAR_MARK")),
-                            ] if v and v != "0.0" and v != "0"
-                        ],
-                    })
-                    if len(clients) >= 50:  # Ограничение для списка
-                        break
+        for client_id, row in load_custom_profiles().items():
+            if client_id in seen_ids:
+                continue
+            seen_ids.add(client_id)
+            profile = to_public_profile(row)
+            clients.append({
+                "id": client_id,
+                "legal_entity": profile.get("legal_entity", ""),
+                "industry": profile.get("industry", "")[:50],
+                "region": profile.get("region", ""),
+                "city": profile.get("city", ""),
+                "revenue": profile.get("revenue", ""),
+                "revenue_label": profile.get("revenue_label", ""),
+                "scale": profile.get("scale", ""),
+                "products": profile.get("products", []),
+                "is_custom": True,
+            })
+
+        for row in iter_client_rows(limit=200):
+            client_id = row.get("SYNTHETIC_U", "")
+            if not client_id or client_id in seen_ids:
+                continue
+            seen_ids.add(client_id)
+            clients.append({
+                "id": client_id,
+                "legal_entity": f"Компания {client_id}",
+                "industry": row.get("MAINOKVED_NAME", "")[:50],
+                "region": row.get("REGION", ""),
+                "city": row.get("CITY", ""),
+                "revenue": row.get("REVENUE_COMPANY", ""),
+                "revenue_label": to_public_profile(row).get("revenue_label", ""),
+                "scale": to_public_profile(row).get("scale", ""),
+                "products": to_public_profile(row).get("products", []),
+                "is_custom": False,
+            })
+            if len(clients) >= 50:
+                break
     except Exception as e:
         logger.error(f"Ошибка загрузки клиентов: {e}")
-    
+
     return clients
+
+
+@app.get("/api/meta")
+async def get_meta():
+    """Справочники для формы регистрации и редактирования профиля."""
+    return meta_payload()
+
+
+@app.post("/api/register")
+async def register_user(request: RegisterRequest):
+    """Создание профиля компании и демо-аккаунта."""
+    legal_entity = (request.legal_entity or "").strip()
+    login = (request.login or "").strip()
+    if len(legal_entity) < 2:
+        raise HTTPException(status_code=422, detail="Укажите название юридического лица")
+    if len(login) < 3:
+        raise HTTPException(status_code=422, detail="Логин должен быть не короче 3 символов")
+    if len(request.password or "") < 4:
+        raise HTTPException(status_code=422, detail="Пароль должен быть не короче 4 символов")
+    if not request.industry:
+        raise HTTPException(status_code=422, detail="Выберите сферу деятельности")
+    if not request.region:
+        raise HTTPException(status_code=422, detail="Выберите регион")
+
+    client_id = f"U_{uuid.uuid4().hex[:8].upper()}"
+    raw, industry, scale = _registration_raw(request, client_id)
+
+    try:
+        save_custom_profile(client_id, raw)
+        register_account(login, request.password, client_id)
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    except Exception as exc:
+        logger.error(f"Ошибка регистрации: {exc}")
+        raise HTTPException(status_code=500, detail="Не удалось создать профиль")
+
+    try:
+        similar = count_similar(industry["okved"], request.region)
+    except Exception:
+        similar = 0
+
+    logger.info(f"Зарегистрирован клиент {client_id} ({legal_entity})")
+    return {
+        "client_id": client_id,
+        "profile": to_public_profile(raw),
+        "industry": industry,
+        "scale": scale,
+        "similar_clients": similar,
+        "note": (
+            f"Найдено {similar} похожих компаний в базе. "
+            "Отрасль определена по ключевым словам, профиль дополнен."
+            if similar
+            else "Профиль создан. Отрасль определена по ключевым словам, характеристики дополнены."
+        ),
+    }
+
+
+@app.post("/api/login")
+async def login_user(request: LoginRequest):
+    """Демо-вход. Логин demo / пароль demo открывает профиль U_84."""
+    login = (request.login or "").strip().lower()
+    password = request.password or ""
+
+    if login == "demo" and password == "demo":
+        raw = _get_raw_profile("U_84")
+        if raw is None:
+            raw = next(iter_client_rows(limit=1), None)
+        if raw is None:
+            raise HTTPException(status_code=404, detail="Демо-профиль не найден")
+        return {
+            "client_id": raw.get("SYNTHETIC_U", "U_84"),
+            "profile": to_public_profile(raw),
+            "demo": True,
+        }
+
+    client_id = verify_account(login, password)
+    if not client_id:
+        raise HTTPException(status_code=401, detail="Неверный логин или пароль")
+
+    raw = _get_raw_profile(client_id)
+    if not raw:
+        raise HTTPException(status_code=404, detail="Профиль не найден")
+
+    return {
+        "client_id": client_id,
+        "profile": to_public_profile(raw),
+        "demo": False,
+    }
+
+
+@app.get("/api/profile/{client_id}")
+async def get_profile(client_id: str):
+    """Профиль компании для страницы «Профиль»."""
+    raw = _get_raw_profile(client_id)
+    if not raw:
+        raise HTTPException(status_code=404, detail="Профиль не найден")
+    return {
+        "client_id": client_id,
+        "profile": to_public_profile(raw),
+    }
+
+
+@app.patch("/api/profile/{client_id}")
+async def update_profile(client_id: str, request: ProfileUpdateRequest):
+    """Редактирование профиля. Изменения сразу учитываются агентами."""
+    raw = _get_raw_profile(client_id)
+    if not raw:
+        raise HTTPException(status_code=404, detail="Профиль не найден")
+
+    updated = _apply_profile_updates(raw, request)
+    save_custom_profile(client_id, updated)
+    analysis_cache.pop(client_id, None)
+
+    return {
+        "client_id": client_id,
+        "profile": to_public_profile(updated),
+    }
+
+
+@app.post("/api/chat")
+async def chat_with_agent(request: ChatRequest):
+    """
+    Диалог с одним из двух агентов:
+    - alfa — только аналитика Альфа-Банка;
+    - news — только внешние новости.
+    """
+    question = (request.question or "").strip()
+    if len(question) < 2:
+        raise HTTPException(status_code=422, detail="Задайте вопрос")
+    if request.agent not in {"alfa", "news"}:
+        raise HTTPException(status_code=422, detail="Неизвестный агент")
+
+    context = analysis_cache.get(request.client_id)
+    if context is None:
+        if not orchestrator:
+            raise HTTPException(status_code=503, detail="Сервис не инициализирован")
+        context = await orchestrator.run(request.client_id)
+        analysis_cache[request.client_id] = context
+
+    raw = _get_raw_profile(request.client_id) or {}
+    profile = to_public_profile(raw)
+    industry = profile.get("industry", "")
+    sources: List[Dict[str, Any]] = []
+
+    if request.agent == "alfa":
+        if not retriever:
+            raise HTTPException(status_code=503, detail="База аналитики не инициализирована")
+        results = await retriever.search(
+            f"{question} {industry}".strip(),
+            top_k=3,
+        )
+        if not results:
+            results = context.alfa_analytics[:3]
+
+        blocks = []
+        for item in results[:3]:
+            title = item.get("title", "Аналитическая сводка")
+            text = (
+                item.get("text")
+                or item.get("content")
+                or item.get("summary")
+                or ""
+            )
+            blocks.append(f"• «{title}» — {_truncate(text, 320)}")
+            sources.append({
+                "type": "Альфа-Банк",
+                "title": title,
+                "url": "",
+                "date": item.get("date", ""),
+            })
+
+        answer = "По аналитике Альфа-Банка:\n\n" + "\n\n".join(blocks)
+        if industry:
+            answer += f"\n\nДля вашей отрасли «{industry}» это значит: проверьте влияние на маржу, ликвидность и условия по банковским продуктам."
+        answer += "\n\nДемо-режим: ответ собран локально по материалам Альфа-Банка, без внешней LLM."
+    else:
+        interpretations = {
+            item.get("news_id"): item for item in context.interpretations
+        }
+        scored = []
+        for item in context.news_items:
+            text = f"{item.get('title', '')} {item.get('content', '')}"
+            scored.append((_text_score(question, text), item))
+        scored.sort(key=lambda pair: pair[0], reverse=True)
+
+        # Если вопрос общий — берём самые релевантные для клиента новости
+        if not scored or scored[0][0] == 0:
+            ranked_ids = [item.get("id") for item in context.ranked_news]
+            by_id = {item.get("id"): item for item in context.news_items}
+            scored = [(1, by_id[news_id]) for news_id in ranked_ids if news_id in by_id]
+
+        blocks = []
+        for _, item in scored[:3]:
+            item_id = item.get("id")
+            interp = interpretations.get(item_id, {})
+            interpretation = interp.get("interpretation", {})
+            meaning = interpretation.get("why_important") or interp.get("relevance_reasoning") or ""
+            blocks.append(
+                "• «{title}» — {source}, {date}.\n  {summary}\n  Что это значит для вас: {meaning}".format(
+                    title=item.get("title", ""),
+                    source=item.get("source", ""),
+                    date=item.get("date", ""),
+                    summary=_truncate(item.get("content", ""), 260),
+                    meaning=_truncate(meaning, 300) or "событие связано с вашей отраслью и регионом.",
+                )
+            )
+            sources.append({
+                "type": "Новость",
+                "title": item.get("title", ""),
+                "url": item.get("url", ""),
+                "date": item.get("date", ""),
+            })
+
+        if blocks:
+            answer = "По внешним новостям:\n\n" + "\n\n".join(blocks)
+            answer += "\n\nДемо-режим: ответ собран локально по свежим RSS-новостям, без внешней LLM."
+        else:
+            answer = (
+                "Пока не удалось собрать новости по этому запросу. "
+                "Попробуйте переформулировать вопрос или обновить анализ на странице профиля."
+            )
+
+    return {
+        "agent": request.agent,
+        "answer": answer,
+        "sources": sources,
+        "mode": "demo",
+    }
+
+
+@app.post("/api/feedback")
+async def submit_feedback(request: FeedbackRequest):
+    """Обратная связь по качеству ответов."""
+    text = (request.text or "").strip()
+    if len(text) < 2:
+        raise HTTPException(status_code=422, detail="Напишите отзыв")
+    try:
+        save_feedback({
+            "client_id": request.client_id,
+            "rating": request.rating,
+            "category": request.category,
+            "text": text,
+        })
+    except Exception as exc:
+        logger.error(f"Ошибка сохранения отзыва: {exc}")
+        raise HTTPException(status_code=500, detail="Не удалось сохранить отзыв")
+    return {"status": "ok"}
 
 
 @app.get("/api/analytics/search", response_model=AnalyticsResponse)
