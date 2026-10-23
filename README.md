@@ -339,7 +339,8 @@ solution/
 ├── static/
 │   ├── index.html
 │   ├── styles.css
-│   └── app.js
+│   ├── app.js
+│   └── fonts/                # Montserrat (SIL OFL, self-hosted)
 ├── tests/
 ├── extract_pdf.py
 ├── demo.py

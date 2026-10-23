@@ -12,6 +12,13 @@
 - **Использование**: Исследовательские задачи и анализ
 - **Лицензия**: Используется в рамках хакатона "Альфа Хак" 2026
 
+## Шрифты
+
+### Montserrat (variable, 100–900)
+- **Авторы**: The Montserrat Project Authors (github.com/JulietaUla/Montserrat)
+- **Использование**: основная гарнитура интерфейса, self-hosted (`static/fonts/`)
+- **Лицензия**: SIL Open Font License 1.1, полный текст — `static/fonts/OFL.txt`
+
 ## Библиотеки Python
 
 ### FastAPI 0.104.1
