@@ -1,4 +1,17 @@
-/* Montserrat — открытый шрифт (SIL OFL 1.1), self-hosted.
+/* Styrene A LC Bold — основной шрифт интерфейса (локальная демонстрация).
+   Файл один (Bold), поэтому font-weight объявлен диапазоном 100–900:
+   все веса рендерятся начертанием Bold без синтетического утолщения.
+   Сам бинарник не входит в публичный репозиторий — см. .gitignore. */
+@font-face {
+    font-family: "Styrene A LC";
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url("/static/fonts/styrene/styrenealc-bold.woff2") format("woff2"),
+         url("/static/fonts/styrene/styrenealc-bold.ttf") format("opentype");
+}
+
+/* Montserrat — открытый шрифт (SIL OFL 1.1), self-hosted fallback.
    Вариативные файлы покрывают веса 100–900; кириллица и латиница разделены
    через unicode-range, чтобы браузер не грузил лишнее. */
 @font-face {
@@ -36,7 +49,7 @@
     --radius-lg: 28px;
     --radius-md: 18px;
     --shadow: 0 24px 60px rgba(48, 26, 20, 0.13);
-    --font: "Montserrat", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+    --font: "Styrene A LC", "Montserrat", "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
 }
 
 * {
