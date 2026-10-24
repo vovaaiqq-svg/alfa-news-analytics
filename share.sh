@@ -105,7 +105,12 @@ start_pinggy() {
 
     local url=""
     for i in $(seq 1 20); do
-        url=$(grep -oE "https://[a-z0-9-]+\.(run\.pinggy-free\.link|free\.pinggy\.net)" "$log" | tail -1)
+        # Pinggy печатает два адреса; актуальный — run.pinggy-free.link,
+        # free.pinggy.net оставлен как legacy и может не резолвиться.
+        url=$(grep -oE "https://[a-z0-9-]+\.run\.pinggy-free\.link" "$log" | head -1)
+        if [ -z "$url" ]; then
+            url=$(grep -oE "https://[a-z0-9-]+\.free\.pinggy\.net" "$log" | head -1)
+        fi
         [ -n "$url" ] && break
         sleep 1
     done
