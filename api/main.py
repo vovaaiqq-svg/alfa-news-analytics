@@ -301,9 +301,68 @@ def _tokens(text: str) -> List[str]:
     return re.findall(r"[a-zA-Zа-яА-ЯёЁ0-9]{4,}", (text or "").lower())
 
 
+# Служебные слова в вопросах: без них общий вопрос («что нового?») не должен
+# считаться нерелевантным и уходить в пустой ответ.
+_GENERIC_QUERY_TOKENS = {
+    "этот", "этого", "этому", "этим", "этом",
+    "меня", "наше", "нашего", "ваше", "вашего", "моего",
+    "моей", "моем", "моих", "мое",
+    "есть", "сейчас", "можно", "надо", "нужно", "дела", "деле",
+    "мира", "мире", "миру",
+}
+_GENERIC_QUERY_PREFIXES = (
+    "новост", "новог", "новое", "новы", "важн", "каки", "како",
+    "проис", "скажи", "расск", "подск", "подро", "кратк", "свеж",
+    "бизнес", "отрасл", "сфер", "компан", "регион", "област", "рынк",
+    "интерес", "риск", "возможност", "аналитик",
+)
+
+
+def _query_stems(question: str) -> List[str]:
+    """Основы значимых слов вопроса — для поиска по новостям.
+
+    Отбрасывает служебные слова, чтобы «что нового?» оставался общим
+    запросом, а «что нового по ставке?» искал именно ставку.
+    """
+    stems: List[str] = []
+    for token in set(_tokens(question)):
+        if token in _GENERIC_QUERY_TOKENS:
+            continue
+        if any(token.startswith(prefix) for prefix in _GENERIC_QUERY_PREFIXES):
+            continue
+        stems.append(token[:5])
+    return stems
+
+
 def _text_score(question: str, text: str) -> int:
     haystack = (text or "").lower()
-    return sum(len(token) for token in set(_tokens(question)) if token in haystack)
+    return sum(len(stem) for stem in _query_stems(question) if stem in haystack)
+
+
+# Явно посторонние запросы: код, стихи, погода и т.п.
+# Агенты отвечают только по своим источникам, а не как универсальный чат.
+_OFF_TOPIC_STRONG = (
+    "алгоритм", "сортировк", "напиши код", "написать код", "код на",
+    "python", "javascript", "typescript", "стих", "анекдот", "шутк",
+    "рецепт", "погод", "переведи", "сочинение", "эссе",
+)
+_OFF_TOPIC_SOFT = ("напиши", "написать", "реализуй", "функцию", "домашн", "контрольн")
+_SCOPE_MARKERS = (
+    "новост", "бизнес", "компани", "ставк", "инфляц", "рынок", "риск",
+    "возможност", "аналитик", "отрасл", "регион", "банк", "кредит",
+    "лизинг", "спрос", "поставк", "логист", "экспорт", "импорт",
+    "налог", "бюджет", "валют", "курс", "сотрудник", "персонал",
+)
+
+
+def _is_off_topic(question: str) -> bool:
+    """Посторонний запрос (код, стихи, погода), а не бизнес/новости."""
+    text = (question or "").lower()
+    if any(marker in text for marker in _OFF_TOPIC_STRONG):
+        return True
+    if any(marker in text for marker in _SCOPE_MARKERS):
+        return False
+    return any(marker in text for marker in _OFF_TOPIC_SOFT)
 
 
 def _truncate(text: str, limit: int) -> str:
@@ -618,9 +677,35 @@ async def chat_with_agent(request: ChatRequest):
     """
     question = (request.question or "").strip()
     if len(question) < 2:
-        raise HTTPException(status_code=422, detail="Задайте вопрос")
+        raise HTTPException(
+            status_code=422,
+            detail="Введите вопрос подробнее — хотя бы пару слов.",
+        )
     if request.agent not in {"alfa", "news"}:
         raise HTTPException(status_code=422, detail="Неизвестный агент")
+
+    # Агенты работают только по своим источникам. Посторонние задачи
+    # (код, стихи, погода) не должны превращаться в случайную новостную выдачу.
+    if _is_off_topic(question):
+        if request.agent == "news":
+            answer = (
+                "Я отвечаю только по внешним новостям и их влиянию на ваш бизнес — "
+                "код, стихи и другие посторонние задачи вне моей темы.\n\n"
+                "Спросите, например: «Что нового по ключевой ставке?», "
+                "«Какие риски в логистике?» или «Что нового в моей отрасли?»."
+            )
+        else:
+            answer = (
+                "Я — Альфа-агент: отвечаю только по аналитике и продуктам Альфа-Банка. "
+                "Код и другие посторонние задачи вне моей темы.\n\n"
+                "Спросите про кредитные продукты, лизинг, РКО или риски для вашей отрасли."
+            )
+        return {
+            "agent": request.agent,
+            "answer": answer,
+            "sources": [],
+            "mode": "demo",
+        }
 
     context = analysis_cache.get(request.client_id)
     if context is None:
@@ -669,20 +754,43 @@ async def chat_with_agent(request: ChatRequest):
         interpretations = {
             item.get("news_id"): item for item in context.interpretations
         }
+        query_stems = _query_stems(question)
         scored = []
-        for item in context.news_items:
-            text = f"{item.get('title', '')} {item.get('content', '')}"
-            scored.append((_text_score(question, text), item))
-        scored.sort(key=lambda pair: pair[0], reverse=True)
+        if query_stems:
+            for item in context.news_items:
+                title = item.get("title", "")
+                # Тема должна быть в заголовке: совпадение по случайному слову
+                # глубоко в тексте даёт нерелевантные «ставки» и «ключевые».
+                title_score = _text_score(question, title)
+                if not title_score:
+                    continue
+                full_score = _text_score(question, f"{title} {item.get('content', '')}")
+                scored.append((title_score, full_score, item))
+            scored.sort(key=lambda pair: (pair[0], pair[1]), reverse=True)
 
-        # Если вопрос общий — берём самые релевантные для клиента новости
-        if not scored or scored[0][0] == 0:
+            # Ни одного содержательного совпадения — честно говорим об этом
+            # и не подставляем случайные новости «для вида».
+            if not scored:
+                return {
+                    "agent": request.agent,
+                    "answer": (
+                        f"По запросу «{_truncate(question, 120)}» в свежих внешних "
+                        "новостях ничего значимого не нашёл. Я не подставляю случайные "
+                        "материалы: попробуйте спросить про ключевую ставку, инфляцию, "
+                        "отрасль, регион или логистику."
+                    ),
+                    "sources": [],
+                    "mode": "demo",
+                }
+
+        # Общий вопрос («что нового?») — дайджест по профилю клиента.
+        if not query_stems:
             ranked_ids = [item.get("id") for item in context.ranked_news]
             by_id = {item.get("id"): item for item in context.news_items}
-            scored = [(1, by_id[news_id]) for news_id in ranked_ids if news_id in by_id]
+            scored = [(1, 1, by_id[news_id]) for news_id in ranked_ids if news_id in by_id]
 
         blocks = []
-        for _, item in scored[:3]:
+        for _, _, item in scored[:3]:
             item_id = item.get("id")
             interp = interpretations.get(item_id, {})
             interpretation = interp.get("interpretation", {})

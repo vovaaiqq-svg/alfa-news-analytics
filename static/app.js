@@ -921,7 +921,7 @@
 
     async function askAgent(agent, question) {
         const text = String(question || "").trim();
-        if (!text || !state.profile || state.typing[agent]) return;
+        if (!text || text.length < 2 || !state.profile || state.typing[agent]) return;
 
         state.chat[agent].push({ role: "user", text, sources: [] });
         state.typing[agent] = true;
@@ -944,12 +944,15 @@
             });
         } catch (error) {
             state.typing[agent] = false;
+            const message = error.message || "Не удалось получить ответ";
             state.chat[agent].push({
                 role: "agent",
-                text: `Не удалось получить ответ: ${error.message}`,
+                text: /^(Введите|Задайте)/i.test(message)
+                    ? message
+                    : `Не удалось получить ответ: ${message}`,
                 sources: [],
             });
-            toast(error.message, "error");
+            toast(message, "error");
         }
         renderChat(agent);
     }
@@ -1392,6 +1395,10 @@
                 const data = new FormData(form);
                 const question = String(data.get("question") || "").trim();
                 if (!question) return;
+                if (question.length < 2) {
+                    toast("Введите вопрос подробнее — хотя бы пару слов.", "error");
+                    return;
+                }
                 form.reset();
                 askAgent(agent, question);
             });
