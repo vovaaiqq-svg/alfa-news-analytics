@@ -16,12 +16,12 @@
 
 ### Montserrat (variable, 100–900)
 - **Авторы**: The Montserrat Project Authors (github.com/JulietaUla/Montserrat)
-- **Использование**: основная гарнитура интерфейса, self-hosted (`static/fonts/`)
+- **Использование**: резервная гарнитура интерфейса, self-hosted (`static/fonts/`)
 - **Лицензия**: SIL Open Font License 1.1, полный текст — `static/fonts/OFL.txt`
 
 ### Styrene A LC Bold
 - **Правообладатель**: Commercial Type (дизайн — Berton Hasebe)
-- **Использование**: основной шрифт интерфейса
+- **Использование**: основной шрифт интерфейса; в вебе отдаются два woff2-сабсета (кириллица и латиница), исходный TTF также лежит в `static/fonts/styrene/`
 - **Лицензия**: коммерческая; используется в некоммерческом хакатон-проекте, файл включён в репозиторий по решению команды
 
 ## Библиотеки Python

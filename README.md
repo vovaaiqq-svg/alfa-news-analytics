@@ -340,7 +340,7 @@ solution/
 │   ├── index.html
 │   ├── styles.css
 │   ├── app.js
-│   └── fonts/                # Styrene A LC Bold (основной) + Montserrat (SIL OFL, fallback)
+│   └── fonts/                # Styrene A LC Bold (woff2-сабсеты + TTF) + Montserrat (SIL OFL, fallback)
 ├── tests/
 ├── extract_pdf.py
 ├── demo.py
