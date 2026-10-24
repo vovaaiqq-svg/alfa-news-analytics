@@ -3,7 +3,13 @@
 """
 
 from agents.news_collector_agent import NewsCollectorAgent
-from api.main import _is_off_topic, _query_stems, _text_score
+from api.main import (
+    _alfa_answer,
+    _is_off_topic,
+    _news_content_score,
+    _query_stems,
+    _text_score,
+)
 
 
 def test_programming_question_is_off_topic():
@@ -22,6 +28,46 @@ def test_generic_question_has_no_meaningful_stems():
     assert _query_stems("Какие новости бизнеса?") == []
     assert _query_stems("Что нового в моей отрасли?") == []
     assert _query_stems("Какие риски для бизнеса?") == []
+    assert _query_stems("Какие события важны для моего бизнеса?") == []
+
+
+def test_consumer_demand_is_matched_by_news_content():
+    score, topics, repeat = _news_content_score(
+        "Что происходит с потребительским спросом?",
+        "Потребительский спрос восстановился. Спрос поддерживает розничные продажи.",
+    )
+    assert score > 0
+    assert topics >= 2
+    assert repeat >= 2
+
+
+def test_alfa_rate_and_risk_answers_are_different():
+    docs = [
+        {
+            "title": "Ключевая ставка",
+            "category": "monetary_policy",
+            "date": "2026-10-20",
+            "text": "ЦБ сохранил ключевую ставку на уровне 16% годовых. "
+                    "Высокая ставка удорожает кредиты и лизинг.",
+        },
+        {
+            "title": "Риски для бизнеса",
+            "category": "risks",
+            "date": "2026-10-19",
+            "text": "Главные риски — рост издержек, кассовые разрывы и "
+                    "удорожание оборотного капитала.",
+        },
+    ]
+    profile = {
+        "industry": "Оптовая торговля",
+        "region": "Курганская область",
+        "products": ["Кредит"],
+    }
+    rate_answer = _alfa_answer("Что будет со ставкой?", docs, profile)
+    risk_answer = _alfa_answer("Какие риски вы видите?", docs, profile)
+    assert rate_answer != risk_answer
+    assert "ставк" in rate_answer.lower()
+    assert "риск" in risk_answer.lower()
 
 
 def test_query_stems_find_news_terms():
