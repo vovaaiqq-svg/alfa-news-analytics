@@ -8,7 +8,7 @@
     <title>Альфа-Бизнес — новостная аналитика</title>
     <link rel="preload" href="/static/fonts/styrene/styrenealc-bold-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/static/fonts/styrene/styrenealc-bold-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/static/styles.css?v=15">
+    <link rel="stylesheet" href="/static/styles.css?v=16">
     <link rel="stylesheet" href="/static/design.css?v=2">
 </head>
 <body>
@@ -354,8 +354,9 @@
                 <div id="risks-list" class="risks-list"></div>
                 <div class="red-view-note">
                     Белые блоки «Позиция Альфа-Банка» — это факты и экспертные материалы банка.
-                    Красные блоки «AI-разбор» — риски, возможности и следующие шаги, сформированные AI
-                    на основе профиля компании. Каждая карточка связана с первоисточником.
+                    Красные блоки «Разбор» — риски, возможности и следующие шаги. Режим указан
+                    на карточке: ответ внешней модели или локальный демо-разбор. Каждая карточка
+                    связана с первоисточником.
                 </div>
             </section>
 
@@ -380,7 +381,7 @@
                         <input name="question" autocomplete="off" placeholder="Спросите про ставку, инфляцию, лизинг…" required>
                         <button class="send-btn" type="submit" aria-label="Отправить">→</button>
                     </form>
-                    <div class="chat-disclaimer" id="chat-disclaimer-alfa">Ответы формируются по аналитике Альфа-Банка. AI-выводы помечены; источник можно открыть в трассировке.</div>
+                    <div class="chat-disclaimer" id="chat-disclaimer-alfa">Ответы формируются по аналитике Альфа-Банка. Режим ответа (AI или локальный демо) указан в сообщении; источник можно открыть в трассировке.</div>
                 </div>
             </section>
 
@@ -486,13 +487,13 @@
                         <summary>Можно ли доверять ответам агента?</summary>
                         <div class="faq-answer">
                             <p>Агент проходит самопроверку: сверяет полноту ответа, наличие источников и использование профиля компании. Результат виден в карточках и в трассировке.</p>
-                            <p>Факты и аналитика банка отделены от AI-выводов. Если ответ неточен — оставьте отзыв: он попадёт в аудит качества.</p>
+                            <p>Факты и аналитика банка отделены от разбора. Если ответ неточен — оставьте отзыв: он попадёт в аудит качества.</p>
                         </div>
                     </details>
                     <details class="faq-item">
                         <summary>Что такое аудит качества?</summary>
                         <div class="faq-answer">
-                            <p>Это журнал действий AI-компонента и обратной связи: сколько анализов и диалогов прошло, какая доля ответов подтверждена источниками, какие оценки поставили пользователи.</p>
+                            <p>Это журнал действий агентной системы и обратной связи: сколько анализов и диалогов прошло, какая доля ответов подтверждена источниками, какие оценки поставили пользователи.</p>
                             <p>Сводка доступна на странице «Трассировка» в блоке «Аудит качества». Низкие оценки и ошибки разбираются на регулярной проверке.</p>
                         </div>
                     </details>
@@ -640,6 +641,6 @@
 </dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="/static/app.js?v=11"></script>
+<script src="/static/app.js?v=13"></script>
 </body>
 </html>

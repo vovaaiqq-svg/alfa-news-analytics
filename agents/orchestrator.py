@@ -28,7 +28,7 @@ class AgentOrchestrator:
     5. Верификация результатов
     """
 
-    def __init__(self, model_name: str = "opencode/glm-5.3-flash-free"):
+    def __init__(self, model_name: str = ""):
         self.model_name = model_name
         self.agents = []
         self.logger = logging.getLogger(self.__class__.__name__)

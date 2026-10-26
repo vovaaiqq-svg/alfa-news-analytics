@@ -23,10 +23,10 @@ async def main():
     print()
     
     # Инициализация оркестратора
-    orchestrator = AgentOrchestrator(model_name="opencode/glm-5.3-flash-free")
+    orchestrator = AgentOrchestrator()
     
-    # Запуск анализа для реального клиента
-    client_id = "U_67"  # Первый клиент из реальных данных
+    # Демо-клиент из синтетической базы; в локальном кейсе может быть U_84.
+    client_id = "U_84"
     print(f"Запуск анализа для клиента: {client_id}")
     print("-" * 60)
     
@@ -44,9 +44,9 @@ async def main():
         print("1. ПРОФИЛЬ КЛИЕНТА")
         print("-" * 40)
         if context.client_profile:
-            print(f"Компания: {context.client_profile.get('industry', 'N/A')}")
+            print(f"Отрасль: {context.client_profile.get('industry', 'N/A')}")
             print(f"Продукты: {', '.join(context.client_profile.get('products', []))}")
-            print(f"Регионы: {', '.join(context.client_profile.get('regions', []))}")
+            print(f"Регион: {context.client_profile.get('region', 'N/A')}")
         
         # Собранные новости
         print()

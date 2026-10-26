@@ -2,23 +2,63 @@
 Тесты для агентной системы.
 """
 
-import asyncio
 import pytest
+from agents.news_collector_agent import NewsCollectorAgent
 from agents.orchestrator import AgentOrchestrator
 
 
+def _fixture_news():
+    return [
+        {
+            "id": "fixture_rate",
+            "title": "ЦБ сохранил ключевую ставку на уровне 14%",
+            "content": (
+                "Совет директоров Банка России сохранил ключевую ставку "
+                "на уровне 14% годовых. Риторика регулятора остаётся жёсткой."
+            ),
+            "source": "Банк России",
+            "date": "2026-09-11",
+            "category": "monetary_policy",
+            "url": "https://www.cbr.ru/press/",
+            "is_real": False,
+        }
+    ]
+
+
+def _fixture_analytics():
+    return [
+        {
+            "id": "fixture_alfa_rate",
+            "title": "Ключевая ставка ЦБ РФ",
+            "category": "monetary_policy",
+            "date": "2026-09-11",
+            "source_file": "fixture.pdf",
+            "text": (
+                "ЦБ сохранил ключевую ставку на уровне 14,0%. "
+                "Инфляция замедляется медленнее прогноза."
+            ),
+        }
+    ]
+
+
 @pytest.mark.asyncio
-async def test_full_pipeline():
+async def test_full_pipeline(monkeypatch):
     """
-    Тест полного пайплайна агентной системы.
+    Тест полного пайплайна агентной системы на синтетических данных.
     """
-    orchestrator = AgentOrchestrator(model_name="opencode/glm-5.3-flash-free")
-    
-    # Запуск анализа для реального клиента
-    context = await orchestrator.run("U_67")
-    
-    # Проверка результатов
-    assert context.client_id == "U_67"
+    async def fake_external(self):
+        return _fixture_news()
+
+    async def fake_analytics(self):
+        return _fixture_analytics()
+
+    monkeypatch.setattr(NewsCollectorAgent, "_collect_external_news", fake_external)
+    monkeypatch.setattr(NewsCollectorAgent, "_collect_alfa_analytics", fake_analytics)
+
+    orchestrator = AgentOrchestrator()
+    context = await orchestrator.run("CLIENT_001")
+
+    assert context.client_id == "CLIENT_001"
     assert context.client_profile is not None
     assert len(context.news_items) > 0
     assert len(context.ranked_news) > 0
@@ -34,7 +74,7 @@ async def test_client_profile_agent():
     from agents.client_profile_agent import ClientProfileAgent
     from agents.base_agent import AgentContext
     
-    agent = ClientProfileAgent(model_name="opencode/glm-5.3-flash-free")
+    agent = ClientProfileAgent()
     context = AgentContext(client_id="CLIENT_001")
     
     result = await agent.execute(context)
@@ -45,18 +85,26 @@ async def test_client_profile_agent():
 
 
 @pytest.mark.asyncio
-async def test_news_collector_agent():
+async def test_news_collector_agent(monkeypatch):
     """
-    Тест агента сбора новостей.
+    Тест агента сбора новостей на синтетических данных.
     """
-    from agents.news_collector_agent import NewsCollectorAgent
     from agents.base_agent import AgentContext
-    
-    agent = NewsCollectorAgent(model_name="opencode/glm-5.3-flash-free")
+
+    async def fake_external(self):
+        return _fixture_news()
+
+    async def fake_analytics(self):
+        return _fixture_analytics()
+
+    monkeypatch.setattr(NewsCollectorAgent, "_collect_external_news", fake_external)
+    monkeypatch.setattr(NewsCollectorAgent, "_collect_alfa_analytics", fake_analytics)
+
+    agent = NewsCollectorAgent()
     context = AgentContext()
-    
+
     result = await agent.execute(context)
-    
+
     assert len(result.news_items) > 0
     assert len(result.alfa_analytics) > 0
 
@@ -69,7 +117,7 @@ async def test_ranking_agent():
     from agents.ranking_agent import RankingAgent
     from agents.base_agent import AgentContext
     
-    agent = RankingAgent(model_name="opencode/glm-5.3-flash-free")
+    agent = RankingAgent()
     context = AgentContext()
     
     # Подготовка тестовых данных
@@ -103,7 +151,7 @@ async def test_interpretation_agent():
     from agents.interpretation_agent import InterpretationAgent
     from agents.base_agent import AgentContext
     
-    agent = InterpretationAgent(model_name="opencode/glm-5.3-flash-free")
+    agent = InterpretationAgent()
     context = AgentContext()
     
     # Подготовка тестовых данных
@@ -144,7 +192,7 @@ async def test_verification_agent():
     from agents.verification_agent import VerificationAgent
     from agents.base_agent import AgentContext
     
-    agent = VerificationAgent(model_name="opencode/glm-5.3-flash-free")
+    agent = VerificationAgent()
     context = AgentContext()
     
     # Подготовка тестовых данных

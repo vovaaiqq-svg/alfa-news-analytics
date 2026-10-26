@@ -3,7 +3,7 @@
 
 Проверяем два важных свойства:
 1. Аналитика банка не привязывается к любой новости только по категории.
-2. В блоке позиции банка есть реальный фрагмент аналитики, а AI-вывод
+2. В блоке позиции банка есть реальный фрагмент аналитики, а разбор
    явно отделён от него.
 """
 
@@ -11,7 +11,7 @@ from agents.interpretation_agent import InterpretationAgent
 
 
 def test_commodity_analytics_are_not_cross_linked():
-    agent = InterpretationAgent(model_name="opencode/glm-5.3-flash-free")
+    agent = InterpretationAgent()
     news = {
         "id": "news_oil",
         "title": "Нефть Brent обновила полугодовой максимум",
@@ -31,8 +31,8 @@ def test_commodity_analytics_are_not_cross_linked():
     assert agent._find_relevant_analytics(news, analytics) == []
 
 
-def test_bank_view_contains_expert_excerpt_and_ai_disclaimer():
-    agent = InterpretationAgent(model_name="opencode/glm-5.3-flash-free")
+def test_bank_view_contains_expert_excerpt_and_local_disclaimer():
+    agent = InterpretationAgent()
     news = {
         "id": "news_rate",
         "title": "ЦБ сохранил ключевую ставку",
@@ -59,4 +59,5 @@ def test_bank_view_contains_expert_excerpt_and_ai_disclaimer():
         relevant,
     )
     assert "14,0%" in interpretation["bank_view"]
-    assert "AI" in interpretation["bank_view"]
+    assert "локальными правилами" in interpretation["bank_view"]
+    assert interpretation["generation_mode"] == "local"

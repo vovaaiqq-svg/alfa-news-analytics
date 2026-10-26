@@ -4,7 +4,7 @@
 """
 
 import json
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from agents.base_agent import AgentContext, BaseAgent
 from services.client_data import find_client_row

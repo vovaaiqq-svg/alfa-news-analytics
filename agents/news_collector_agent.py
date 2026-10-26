@@ -69,7 +69,7 @@ class NewsCollectorAgent(BaseAgent):
     async def _collect_external_news(self) -> List[Dict[str, Any]]:
         """
         Сбор новостей из внешних источников (RSS).
-        При недоступности сети — fallback на локальные демо-данные.
+        При недоступности сети используются локальные демо-данные.
         """
         from pathlib import Path
         from parsers.news_parser import NewsParser
@@ -326,34 +326,20 @@ class NewsCollectorAgent(BaseAgent):
 
     async def _classify_news(self, news: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
-        Классификация новостей: локальные эвристики + LLM (если доступен).
-        
-        Args:
-            news: Список новостей
-            
-        Returns:
-            Классифицированные новости с ключевыми фактами
+        Классификация новостей локальными эвристиками.
+
+        LLM здесь не вызывается: классификация должна быть быстрой,
+        детерминированной и не зависеть от внешнего API. Генерация
+        интерпретаций вынесена в отдельный этап.
         """
         if not news:
             return []
-        
+
         classified = []
-        
+
         for item in news:
             try:
-                # Локальная классификация (всегда работает)
                 local = self._local_classify(item)
-                
-                # Пробуем LLM-классификацию как дополнение
-                try:
-                    llm_result = await self._llm_classify(item)
-                    # Объединяем: LLM может уточнить категорию
-                    if llm_result and llm_result.get("category"):
-                        local["category"] = llm_result.get("category", local.get("category"))
-                    local["llm_analysis"] = llm_result
-                except Exception:
-                    pass
-                
                 classified_item = {
                     **item,
                     "category": local.get("category", item.get("category", "general")),
@@ -361,7 +347,7 @@ class NewsCollectorAgent(BaseAgent):
                     "collected_at": datetime.now().isoformat(),
                 }
                 classified.append(classified_item)
-                
+
             except Exception as e:
                 self.logger.error(f"Ошибка классификации новости {item.get('id')}: {e}")
                 classified.append({
@@ -370,7 +356,7 @@ class NewsCollectorAgent(BaseAgent):
                     "classification": {"category": "unknown", "error": str(e)},
                     "collected_at": datetime.now().isoformat(),
                 })
-        
+
         return classified
     
     def _local_classify(self, item: Dict[str, Any]) -> Dict[str, Any]:
@@ -535,23 +521,3 @@ class NewsCollectorAgent(BaseAgent):
             return False
         
         return True
-    
-    async def _llm_classify(self, item: Dict[str, Any]) -> Dict[str, Any]:
-        """LLM-классификация новости (опционально)."""
-        system_prompt = """Ты — эксперт по классификации деловых новостей.
-Определи категорию из списка: monetary_policy, inflation, currency, commodities, agriculture,
-technology, banking, regulation, real_estate, labor_market, energy, defense, geopolitics,
-macro_outlook, trade, industry, general.
-Укажи бизнес-влияние (positive/negative/neutral) и затронутые отрасли.
-Ответь в формате JSON: {"category": "...", "business_impact": "...", "affected_industries": [...]}"""
-        
-        prompt = f"""Заголовок: {item.get('title', '')}
-Содержание: {item.get('content', '')[:500]}
-Источник: {item.get('source', '')}"""
-        
-        return await self.call_llm(
-            prompt=prompt,
-            system_prompt=system_prompt,
-            temperature=0.1,
-            response_format={"type": "json_object"},
-        )

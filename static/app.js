@@ -602,7 +602,7 @@
         }, 0);
 
         const values = [
-            (state.analysis.news_items || []).length,
+            state.analysis.news_count ?? (state.analysis.news_items || []).length,
             interpretations.length,
             risksAndOpportunities,
             (state.analysis.trace || []).length,
@@ -624,7 +624,7 @@
             return;
         }
         if (state.analysis) {
-            const newsCount = (state.analysis.news_items || []).length;
+            const newsCount = state.analysis.news_count ?? (state.analysis.news_items || []).length;
             const interpretationCount = (state.analysis.interpretations || []).length;
             element.textContent =
                 `Обновлено в ${shortTime(state.analysis.loadedAt)} · ` +
@@ -723,6 +723,7 @@
             category: item.news_category || foundNews?.category || "",
             relevance: Number(item.relevance_score || 0),
             bankView: interpretation.bank_view || "",
+            generationMode: interpretation.generation_mode || "local",
             aiSummary: interpretation.consequences || interpretation.why_important || "",
             relatedAnalytics: item.related_analytics || [],
             verification: item.verification || null,
@@ -752,6 +753,7 @@
             category: item.category || "",
             relevance: 10,
             bankView: item.bank_view || interpretation.bank_view || "",
+            generationMode: interpretation.generation_mode || "local",
             aiSummary: interpretation.consequences || interpretation.why_important || "",
             relatedAnalytics: [],
             verification: item.verification || null,
@@ -787,7 +789,7 @@
             insufficient: "Недостаточно данных",
             error: "Ошибка проверки",
         };
-        return `<span class="verification-chip ${esc(status)}">${esc(labels[status] || "Проверено AI")}</span>`;
+        return `<span class="verification-chip ${esc(status)}">${esc(labels[status] || "Проверено")}</span>`;
     }
 
     function riskCard(insight) {
@@ -808,8 +810,15 @@
         const bankText = isNews
             ? (insight.bankView || "Отдельного материала Альфа-Банка по этому событию в базе нет.")
             : (insight.summary || insight.bankView || "Аналитический материал Альфа-Банка.");
+        const aiMode = insight.generationMode === "llm" ? "llm" : "local";
+        const aiTitle = aiMode === "llm"
+            ? "AI-разбор для вашей компании"
+            : "Разбор для вашей компании";
+        const aiBadge = aiMode === "llm" ? "сформировано AI" : "локальный демо-разбор";
         const aiText = insight.aiSummary
-            || "AI оценил возможные последствия для компании на основе профиля и источника.";
+            || (aiMode === "llm"
+                ? "AI оценил возможные последствия для компании на основе профиля и источника."
+                : "Локальные правила оценили возможные последствия для компании на основе профиля и источника.");
 
         return `
             <article class="risk-card" data-kind="${isNews ? "news" : "alfa"}" data-category="${esc(insight.category || "")}" data-date="${esc(insight.date || "")}">
@@ -828,7 +837,7 @@
                     ${isNews ? analyticsLinksHtml(insight.relatedAnalytics) : ""}
                 </div>
                 <div class="risk-ai-block">
-                    <div class="risk-block-label">AI-разбор для вашей компании <span class="ai-badge">сформировано AI</span></div>
+                    <div class="risk-block-label">${aiTitle} <span class="ai-badge">${aiBadge}</span></div>
                     <p class="risk-ai-summary">${esc(truncate(aiText, 520))}</p>
                     <div class="risk-columns">
                         <div class="risk-col risk-col-risk">
@@ -970,7 +979,7 @@
         summary.innerHTML = `
             <div class="trace-stat"><strong>${trace.length}</strong>${plural(trace.length, "шаг", "шага", "шагов")}</div>
             <div class="trace-stat"><strong>${successCount}</strong>успешно</div>
-            <div class="trace-stat"><strong>${(state.analysis.news_items || []).length}</strong>${plural((state.analysis.news_items || []).length, "новость", "новости", "новостей")}</div>
+            <div class="trace-stat"><strong>${state.analysis.news_count ?? (state.analysis.news_items || []).length}</strong>${plural(state.analysis.news_count ?? (state.analysis.news_items || []).length, "новость", "новости", "новостей")}</div>
             <div class="trace-stat"><strong>${(state.analysis.interpretations || []).length}</strong>${plural((state.analysis.interpretations || []).length, "интерпретация", "интерпретации", "интерпретаций")}</div>
             <div class="trace-stat"><strong>${verified}/${checked}</strong>самопроверка</div>
         `;
@@ -1046,7 +1055,7 @@
             ? `<div class="audit-feedback-head">Последние диалоги</div>` + recentChats.map((item) => (
                 `<div class="audit-chat-item">
                     <span class="audit-chat-agent">${esc(item.agent === "alfa" ? "Альфа-агент" : "Новостной агент")}</span>
-                    <span>${esc(item.mode === "llm" ? "LLM" : "fallback")}</span>
+                    <span>${esc(item.mode === "llm" ? "LLM" : "демо")}</span>
                     <span>источников: ${esc(item.sources_count ?? 0)}</span>
                     <span>${esc(item.latency_ms ?? "—")} мс</span>
                 </div>`
@@ -1102,6 +1111,7 @@
             profile: state.profile,
             generated_at: new Date().toISOString(),
             trace: state.analysis.trace || [],
+            news_count: state.analysis.news_count ?? (state.analysis.news_items || []).length,
             news_items: state.analysis.news_items || [],
             interpretations: state.analysis.interpretations || [],
             analytics_insights: state.analysis.analytics_insights || [],
@@ -1130,7 +1140,7 @@
         {
             view: "risks",
             label: "Риски",
-            text: "Главный экран: здесь факты и позиция Альфа-Банка отделены от AI-разбора. Можно отфильтровать новости и аналитику.",
+            text: "Главный экран: здесь факты и позиция Альфа-Банка отделены от разбора. Можно отфильтровать новости и аналитику.",
             action: "Показать риски",
         },
         {
@@ -1142,7 +1152,7 @@
         {
             view: "news",
             label: "Новости",
-            text: "А здесь только внешние новости. Сравните: факт из RSS, позиция банка и AI-вывод не смешиваются.",
+            text: "А здесь только внешние новости. Сравните: факт из RSS, позиция банка и вывод модели не смешиваются.",
             action: "Открыть новости",
         },
         {
@@ -1209,8 +1219,11 @@
             if (message.welcome) {
                 return `<div class="bubble agent welcome">${esc(message.text)}</div>`;
             }
-            const mode = message.mode === "llm" ? "AI · LLM" : "AI · локальная сборка";
-            const modeClass = message.mode === "llm" ? "llm" : "fallback";
+            const mode = message.mode === "llm" ? "AI · LLM" : "Демо · локальные правила";
+            const modeClass = message.mode === "llm" ? "llm" : "demo";
+            const modeNote = message.mode === "llm"
+                ? "ответ сформирован AI"
+                : "ответ сформирован локальными правилами";
             const suggestion = message.suggestedAgent
                 ? `<button class="bubble-action" type="button" data-suggestion-agent="${esc(message.suggestedAgent)}" data-suggestion-question="${esc(message.suggestedQuestion || "")}">Перейти к Альфа-агенту →</button>`
                 : "";
@@ -1223,7 +1236,7 @@
                 )).join("")}</div>`
                 : "";
             return `<div class="bubble agent">
-                <div class="bubble-meta"><span class="mode-badge ${modeClass}">${mode}</span><span>ответ сформирован AI</span></div>
+                <div class="bubble-meta"><span class="mode-badge ${modeClass}">${mode}</span><span>${modeNote}</span></div>
                 ${esc(message.text)}
                 ${sourcesHtml(message.sources)}
                 ${check}

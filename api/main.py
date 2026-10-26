@@ -2,6 +2,7 @@
 FastAPI приложение для сервиса новостной аналитики.
 """
 
+import json
 import logging
 import re
 import uuid
@@ -25,7 +26,7 @@ from services.industry import (
     meta_payload,
     revenue_by_key,
 )
-from services.llm import OpenCodeLLM
+from services.llm import LLMClient
 from services.profile_store import (
     audit_summary,
     get_custom_profile,
@@ -128,7 +129,7 @@ class FeedbackRequest(BaseModel):
 # Глобальные переменные
 orchestrator: Optional[AgentOrchestrator] = None
 retriever: Optional[AlfaAnalyticsRetriever] = None
-llm = OpenCodeLLM()
+llm = LLMClient()
 analysis_cache: Dict[str, Any] = {}
 
 
@@ -136,12 +137,12 @@ def _slim_news(item: Dict[str, Any]) -> Dict[str, Any]:
     """Компактное представление новости (без полного текста)."""
     return {
         "id": item.get("id"),
-        "title": item.get("title", ""),
+        "title": _trim_text(item.get("title"), 160),
         "source": item.get("source", ""),
         "category": item.get("category", ""),
         "date": item.get("date", ""),
         "url": item.get("url", ""),
-        "excerpt": str(item.get("content", ""))[:500],
+        "excerpt": _trim_text(item.get("content"), 80),
         "is_real": item.get("is_real", False),
     }
 
@@ -150,11 +151,11 @@ def _slim_ranked(item: Dict[str, Any]) -> Dict[str, Any]:
     """Компактное представление ранжированной новости."""
     return {
         "id": item.get("id"),
-        "title": item.get("title", ""),
+        "title": _trim_text(item.get("title"), 160),
         "source": item.get("source", ""),
         "category": item.get("category", ""),
         "relevance_score": item.get("relevance_score", 0),
-        "relevance_reasoning": item.get("relevance_reasoning", ""),
+        "relevance_reasoning": _trim_text(item.get("relevance_reasoning"), 160),
     }
 
 
@@ -163,34 +164,205 @@ def _slim_analytics(item: Dict[str, Any]) -> Dict[str, Any]:
     text = item.get("text") or item.get("content") or ""
     return {
         "id": item.get("id"),
+        "title": _trim_text(item.get("title"), 160),
+        "category": item.get("category", ""),
+        "date": item.get("date", ""),
+        "source_file": item.get("source_file", ""),
+        "summary": _trim_text(text, 220),
+    }
+
+
+def _slim_client_profile(profile: Dict[str, Any]) -> Dict[str, Any]:
+    """Профиль для ответа: без тяжёлого raw_data и полного анализа."""
+    return {
+        "client_id": profile.get("client_id", ""),
+        "industry": profile.get("industry", ""),
+        "business_scale": profile.get("business_scale", ""),
+        "products": profile.get("products", []),
+        "region": profile.get("region", ""),
+        "has_fts": profile.get("has_fts", False),
+        "risk_factors": _trim_list(profile.get("risk_factors"), 160, 4),
+        "relevance_criteria": _trim_list(profile.get("relevance_criteria"), 160, 4),
+    }
+
+
+def _trim_text(value: Any, limit: int) -> str:
+    """Обрезает строку по границе слова, чтобы не рвать слова в UI."""
+    text = str(value or "").strip().replace("\r", " ")
+    if len(text) <= limit:
+        return text
+    return text[:limit].rsplit(" ", 1)[0] + "…"
+
+
+def _trim_list(value: Any, limit: int = 220, max_items: int = 4) -> List[str]:
+    if not isinstance(value, list):
+        return []
+    return [_trim_text(item, limit) for item in value[:max_items] if str(item).strip()]
+
+
+def _slim_interpretation(item: Dict[str, Any]) -> Dict[str, Any]:
+    """Компактная интерпретация новости для ответа /api/analyze."""
+    raw = item.get("interpretation") or {}
+    sources = item.get("sources") or {}
+    if not isinstance(sources, dict):
+        sources = {}
+
+    interpretation = {
+        "what_happened": _trim_text(raw.get("what_happened"), 200),
+        "why_important": _trim_text(raw.get("why_important"), 140),
+        "consequences": _trim_text(raw.get("consequences"), 140),
+        "actions": _trim_text(raw.get("actions"), 150),
+        "bank_view": _trim_text(raw.get("bank_view"), 220),
+        "sources": _trim_list(raw.get("sources"), 100, 2),
+        "risks": _trim_list(raw.get("risks"), 100, 2),
+        "risk_actions": _trim_list(raw.get("risk_actions"), 100, 2),
+        "opportunities": _trim_list(raw.get("opportunities"), 100, 2),
+        "opportunity_actions": _trim_list(raw.get("opportunity_actions"), 100, 2),
+    }
+    if raw.get("generation_mode"):
+        interpretation["generation_mode"] = raw["generation_mode"]
+
+    related = []
+    for entry in (item.get("related_analytics") or [])[:4]:
+        related.append({
+            "id": entry.get("id"),
+            "title": _trim_text(entry.get("title"), 180),
+            "source_file": entry.get("source_file", ""),
+            "date": entry.get("date", ""),
+        })
+
+    verification = item.get("verification") or {}
+    return {
+        "news_id": item.get("news_id"),
+        "news_title": _trim_text(item.get("news_title"), 200),
+        "news_url": item.get("news_url", ""),
+        "news_source": item.get("news_source", ""),
+        "news_date": item.get("news_date", ""),
+        "news_category": item.get("news_category", ""),
+        "relevance_score": item.get("relevance_score", 0),
+        "interpretation": interpretation,
+        "sources": {
+            "news": sources.get("news", ""),
+            "news_url": sources.get("news_url", ""),
+            "alfa_analytics": _trim_list(sources.get("alfa_analytics"), 180, 4),
+        },
+        "related_analytics": related,
+        "verification": {
+            "status": verification.get("status", ""),
+            "completeness_score": verification.get("completeness_score", 0),
+            "consistency_score": verification.get("consistency_score", 0),
+            "grounding_score": verification.get("grounding_score", 0),
+            "issues": _trim_list(verification.get("issues"), 120, 2),
+            "suggestions": _trim_list(verification.get("suggestions"), 120, 2),
+        },
+    }
+
+
+def _slim_analytics_insight(item: Dict[str, Any]) -> Dict[str, Any]:
+    """Компактная интерпретация аналитического материала Альфа-Банка."""
+    raw = item.get("interpretation") or {}
+    interpretation = {
+        "what_happened": _trim_text(raw.get("what_happened"), 130),
+        "why_important": _trim_text(raw.get("why_important"), 100),
+        "consequences": _trim_text(raw.get("consequences"), 100),
+        "actions": _trim_text(raw.get("actions"), 110),
+        "bank_view": _trim_text(raw.get("bank_view"), 150),
+        "sources": _trim_list(raw.get("sources"), 80, 2),
+        "risks": _trim_list(raw.get("risks"), 80, 2),
+        "risk_actions": _trim_list(raw.get("risk_actions"), 80, 2),
+        "opportunities": _trim_list(raw.get("opportunities"), 80, 2),
+        "opportunity_actions": _trim_list(raw.get("opportunity_actions"), 80, 2),
+    }
+    if raw.get("generation_mode"):
+        interpretation["generation_mode"] = raw["generation_mode"]
+
+    verification = item.get("verification") or {}
+    return {
+        "analytics_id": item.get("analytics_id"),
         "title": item.get("title", ""),
         "category": item.get("category", ""),
         "date": item.get("date", ""),
         "source_file": item.get("source_file", ""),
-        "summary": text[:400],
+        "summary": _trim_text(item.get("summary"), 150),
+        "interpretation": interpretation,
+        "sources": {
+            key: _trim_text(value, 120)
+            for key, value in (item.get("sources") or {}).items()
+        } if isinstance(item.get("sources"), dict) else {},
+        "bank_view": _trim_text(item.get("bank_view"), 150),
+        "verification": {
+            "status": verification.get("status", ""),
+            "completeness_score": verification.get("completeness_score", 0),
+            "consistency_score": verification.get("consistency_score", 0),
+            "grounding_score": verification.get("grounding_score", 0),
+            "issues": _trim_list(verification.get("issues"), 120, 2),
+            "suggestions": _trim_list(verification.get("suggestions"), 120, 2),
+        },
     }
 
 
-def _summarize(data: Any, max_chars: int = 2000) -> Any:
-    """
-    Сжатие данных трассировки для читаемости.
-    Длинные списки и строки обрезаются, структура сохраняется.
-    """
-    if data is None:
-        return None
-    if isinstance(data, dict):
-        return {k: _summarize(v, max_chars // 2) for k, v in data.items()}
-    if isinstance(data, list):
-        if len(data) > 8:
-            shown = [_summarize(x, max_chars // 8) for x in data[:8]]
-            shown.append(f"... ещё {len(data) - 8} элементов")
-            return shown
-        return [_summarize(x, max_chars // 8) for x in data]
-    if isinstance(data, str):
-        if len(data) > max_chars:
-            return data[:max_chars] + f"... (обрезано, всего {len(data)} символов)"
-        return data
-    return data
+def _trace_brief(data: Any, limit: int = 180) -> str:
+    """Короткая строка для трассировки в компактном ответе."""
+    try:
+        text = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
+    except (TypeError, ValueError):
+        text = str(data)
+    return _trim_text(text, limit)
+
+
+def _build_analyze_response(
+    context: Any,
+    profile_display: Dict[str, Any],
+    full: bool = False,
+) -> Dict[str, Any]:
+    """Собирает ответ /api/analyze в полном или компактном режиме."""
+    if full:
+        news_items = context.news_items
+        ranked_news = context.ranked_news
+        alfa_analytics = context.alfa_analytics
+        client_profile = context.client_profile
+    else:
+        news_items = [_slim_news(n) for n in context.news_items[:3]]
+        ranked_news = [_slim_ranked(n) for n in context.ranked_news[:1]]
+        alfa_analytics = [
+            _slim_analytics(a) for a in context.alfa_analytics[:1]
+        ]
+        client_profile = _slim_client_profile(context.client_profile or {})
+
+    analytics_insights = context.metadata.get("analytics_insights", [])
+    if not full:
+        analytics_insights = analytics_insights[:1]
+
+    return {
+        "client_id": context.client_id,
+        "client_profile": client_profile,
+        "profile_display": profile_display,
+        "news_count": len(context.news_items),
+        "news_items": news_items,
+        "ranked_news": ranked_news,
+        "interpretations": [
+            _slim_interpretation(item)
+            for item in context.interpretations[:3]
+        ],
+        "analytics_insights": [
+            _slim_analytics_insight(item)
+            for item in analytics_insights
+        ],
+        "alfa_analytics": alfa_analytics,
+        "verification_summary": context.metadata.get("verification_summary", {}),
+        "trace": [
+            {
+                "step_number": step.step_number,
+                "action": step.action,
+                "success": step.success,
+                "error_message": step.error_message,
+                "timestamp": step.timestamp.isoformat(),
+                "input_data": _trace_brief(step.input_data, limit=110),
+                "output_data": _trace_brief(step.output_data, limit=170),
+            }
+            for step in context.trace
+        ],
+    }
 
 
 def _get_raw_profile(client_id: str) -> Optional[Dict[str, Any]]:
@@ -302,7 +474,19 @@ def _apply_profile_updates(
 
 
 def _tokens(text: str) -> List[str]:
-    return re.findall(r"[a-zA-Zа-яА-ЯёЁ0-9]{4,}", (text or "").lower())
+    return re.findall(
+        r"[a-zA-Zа-яА-ЯёЁ0-9]{4,}",
+        (text or "").lower().replace("ё", "е"),
+    )
+
+
+def _stem_count(text: str, stem: str) -> int:
+    """Считает слова, начинающиеся с основы, а не подстроки внутри слов.
+
+    Это важно для русской морфологии: «ставк» должно совпадать со
+    «ставка/ставки/ставке», но не с «доставка» или «составит».
+    """
+    return sum(1 for token in _tokens(text) if token.startswith(stem))
 
 
 # Служебные слова в вопросах: без них общий вопрос («что нового?») не должен
@@ -322,6 +506,32 @@ _GENERIC_QUERY_PREFIXES = (
 )
 
 
+_RU_SUFFIXES = (
+    "иями", "ями", "ами", "ого", "ему", "ому", "ыми", "ими",
+    "ая", "яя", "ое", "ее", "ые", "ие", "ой", "ый", "ий",
+    "ов", "ев", "ам", "ям", "ах", "ях", "ом", "ем", "ую", "юю",
+    "а", "я", "ы", "и", "у", "ю", "е", "о", "ь",
+)
+
+
+def _query_stem(token: str) -> str:
+    """Устойчивая основа слова для поиска без внешнего стеммера.
+
+    Пятибуквенный префикс слишком груб: «контрафакт» и «контроль»
+    совпадали по «контр». Поэтому сначала отбрасываем типовое окончание,
+    затем берём до шести букв. Для коротких слов («риск», «ставк»)
+    основа остаётся короткой и не теряет смысл.
+    """
+    token = (token or "").lower().replace("ё", "е")
+    if len(token) <= 4:
+        return token
+    for suffix in _RU_SUFFIXES:
+        if token.endswith(suffix) and len(token) - len(suffix) >= 4:
+            token = token[: -len(suffix)]
+            break
+    return token[:6] if len(token) > 6 else token
+
+
 def _query_stems(question: str) -> List[str]:
     """Основы значимых слов вопроса — для поиска по новостям.
 
@@ -334,13 +544,16 @@ def _query_stems(question: str) -> List[str]:
             continue
         if any(token.startswith(prefix) for prefix in _GENERIC_QUERY_PREFIXES):
             continue
-        stems.append(token[:5])
+        stem = _query_stem(token)
+        if stem and stem not in stems:
+            stems.append(stem)
     return stems
 
 
 def _text_score(question: str, text: str) -> int:
-    haystack = (text or "").lower()
-    return sum(len(stem) for stem in _query_stems(question) if stem in haystack)
+    return sum(
+        len(stem) for stem in _query_stems(question) if _stem_count(text, stem)
+    )
 
 
 # --- Альфа-агент: тематический поиск и сборка ответа -----------------------
@@ -412,8 +625,22 @@ def _clean_analytics_text(text: str) -> str:
     return clean.strip()
 
 
+def _readable_sentence(text: str) -> bool:
+    """Отсекает OCR-таблицы, даты и строки, где почти нет связного текста."""
+    value = text or ""
+    letters = len(re.findall(r"[A-Za-zА-Яа-яЁё]", value))
+    digits = len(re.findall(r"\d", value))
+    if letters < 20:
+        return False
+    if letters / max(len(value), 1) < 0.5:
+        return False
+    if digits > letters * 0.3:
+        return False
+    return True
+
+
 def _best_fragment(text: str, keywords: set, limit: int = 420) -> str:
-    """Самое релевантное предложение документа, а не первые 320 символов шапки."""
+    """Самое релевантное читаемое предложение документа, а не шапка."""
     clean = _clean_analytics_text(text)
     if not clean:
         return ""
@@ -421,8 +648,10 @@ def _best_fragment(text: str, keywords: set, limit: int = 420) -> str:
     sentences = [
         part.strip()
         for part in re.split(r"(?<=[.!?])\s+", clean)
-        if len(part.strip()) >= 20
+        if len(part.strip()) >= 20 and _readable_sentence(part)
     ]
+    if not sentences:
+        return ""
     scored = []
     for index, sentence in enumerate(sentences):
         low = sentence.lower().replace("ё", "е")
@@ -543,7 +772,7 @@ def _alfa_answer(question: str, results: List[Dict[str, Any]], profile: Dict[str
         blocks.append("Ещё по теме:\n" + others)
 
     blocks.append(
-        "Источник: аналитика Альфа-Банка. Ответ собран локальным fallback-агентом "
+        "Источник: аналитика Альфа-Банка. Ответ собран локальным демо-агентом "
         "(внешняя LLM сейчас недоступна)."
     )
     return "\n\n".join(blocks)
@@ -602,39 +831,55 @@ def _alfa_prompt(question: str, results: List[Dict[str, Any]], profile: Dict[str
 
 
 def _news_title_score(question: str, title: str) -> int:
-    haystack = (title or "").lower().replace("ё", "е")
-    return sum(len(stem) for stem in _query_stems(question) if stem[:4] in haystack)
+    return sum(
+        len(stem) for stem in _query_stems(question) if _stem_count(title, stem)
+    )
 
 
 def _news_content_score(question: str, content: str) -> tuple[int, int, int]:
     """Возвращает (очки, число разных тем, максимум повторов) по тексту новости."""
-    haystack = (content or "").lower().replace("ё", "е")
-    counts = [haystack.count(stem[:4]) for stem in _query_stems(question)]
+    counts = [_stem_count(content, stem) for stem in _query_stems(question)]
     counts = [count for count in counts if count > 0]
     return sum(min(count, 3) for count in counts), len(counts), max(counts, default=0)
 
 
 def _news_impact(item: Dict[str, Any], interpretation: Dict[str, Any], profile: Dict[str, Any]) -> str:
-    """Короткий вывод по конкретной новости, а не одна и та же фраза про отрасль."""
+    """Короткий вывод по конкретной новости с привязкой к профилю клиента."""
     consequences = str(interpretation.get("consequences") or "").strip()
+    impact = ""
     if consequences:
         for sentence in re.split(r"(?<=[.!?])\s+", consequences):
             if sentence and not sentence.lower().startswith("рекомендуется"):
-                return _truncate(sentence, 260)
+                impact = _truncate(sentence, 240)
+                break
 
-    text = f"{item.get('title', '')} {item.get('content', '')}".lower().replace("ё", "е")
-    if any(word in text for word in ("ставк", "цб", "инфляц", "кредит")):
-        return "Ставка и инфляция влияют на стоимость кредитов, лизинга и оборотного капитала."
-    if any(word in text for word in ("нефт", "топлив", "бензин", "газ", "энерг")):
-        return "Топливо и энергия влияют на логистику, себестоимость закупок и отпускные цены."
-    if any(word in text for word in ("логист", "аэропорт", "рейс", "доставк", "транспорт", "перевоз")):
-        return "Логистика и работа транспорта влияют на сроки поставок и оборачиваемость запасов."
-    if any(word in text for word in ("потреб", "розниц", "спрос", "продаж")):
-        return "Потребительский спрос влияет на выручку, скидки и планы закупок."
-    if any(word in text for word in ("экспорт", "импорт", "пошлин", "санкц", "валют")):
-        return "Внешнеторговые условия влияют на стоимость импорта, экспортную выручку и курс."
-    industry = profile.get("industry") or "вашей отрасли"
-    return f"Событие может повлиять на условия работы в отрасли «{industry}»."
+    if not impact:
+        text = f"{item.get('title', '')} {item.get('content', '')}".lower().replace("ё", "е")
+        if any(word in text for word in ("ставк", "цб", "инфляц", "кредит")):
+            impact = "Ставка и инфляция влияют на стоимость кредитов, лизинга и оборотного капитала."
+        elif any(word in text for word in ("нефт", "топлив", "бензин", "газ", "энерг")):
+            impact = "Топливо и энергия влияют на логистику, себестоимость закупок и отпускные цены."
+        elif any(word in text for word in ("логист", "аэропорт", "рейс", "доставк", "транспорт", "перевоз")):
+            impact = "Логистика и работа транспорта влияют на сроки поставок и оборачиваемость запасов."
+        elif any(word in text for word in ("потреб", "розниц", "спрос", "продаж")):
+            impact = "Потребительский спрос влияет на выручку, скидки и планы закупок."
+        elif any(word in text for word in ("экспорт", "импорт", "пошлин", "санкц", "валют")):
+            impact = "Внешнеторговые условия влияют на стоимость импорта, экспортную выручку и курс."
+
+    industry = str(profile.get("industry") or "").strip()
+    region = str(profile.get("region") or "").strip()
+    context = []
+    if industry:
+        context.append(f"отрасль «{industry}»")
+    if region:
+        context.append(f"регион «{region}»")
+    if context:
+        suffix = "Контекст компании: " + ", ".join(context) + "."
+        if suffix.lower() not in impact.lower():
+            impact = f"{impact} {suffix}".strip()
+    if not impact:
+        impact = "Событие может повлиять на условия работы компании."
+    return _truncate(impact, 380)
 
 
 def _news_prompt(
@@ -677,7 +922,7 @@ def _news_prompt(
 
 {task}
 Сформируй ответ на 3–5 предложений: сначала главное, затем 1–2 практических вывода.
-Отделяй факт из новости от AI-вывода: не выдавай свою интерпретацию за позицию
+Отделяй факт из новости от вывода модели: не выдавай свою интерпретацию за позицию
 Альфа-Банка. В этом канале нет аналитики банка — только внешние новости.
 Не упоминай внутренние режимы."""
 
@@ -715,6 +960,29 @@ def _truncate(text: str, limit: int) -> str:
     return text[:limit].rsplit(" ", 1)[0] + "…"
 
 
+def _answer_uses_profile(
+    answer: str,
+    profile: Optional[Dict[str, Any]],
+) -> bool:
+    """Проверяет, что в ответе действительно упомянут профиль клиента."""
+    if not answer or not profile:
+        return False
+
+    answer_tokens = set(_tokens(answer))
+    values = [
+        profile.get("industry"),
+        profile.get("region"),
+        profile.get("city"),
+        *(profile.get("products") or []),
+    ]
+    for value in values:
+        for token in _tokens(str(value or "")):
+            stem = token[:5]
+            if stem and any(item.startswith(stem) for item in answer_tokens):
+                return True
+    return False
+
+
 def _chat_meta(
     agent: str,
     question: str,
@@ -723,14 +991,18 @@ def _chat_meta(
     started_at: datetime,
     client_id: str = "",
     suggested_agent: str = "",
+    answer: str = "",
+    profile: Optional[Dict[str, Any]] = None,
+    source_relevant: Optional[bool] = None,
 ) -> Dict[str, Any]:
     """Метаданные ответа: трассировка, самопроверка и журнал аудита."""
     latency_ms = int((datetime.now() - started_at).total_seconds() * 1000)
+    source_ok = bool(sources) if source_relevant is None else bool(source_relevant)
     checks = [
-        {"name": "Источник найден", "ok": bool(sources)},
-        {"name": "Ответ не пустой", "ok": True},
+        {"name": "Источники релевантны запросу", "ok": source_ok},
+        {"name": "Ответ не пустой", "ok": bool((answer or "").strip())},
         {"name": "Режим модели определён", "ok": mode in {"llm", "demo"}},
-        {"name": "Профиль клиента учтён", "ok": True},
+        {"name": "Профиль клиента учтён", "ok": _answer_uses_profile(answer, profile)},
     ]
     trace = [
         {
@@ -742,8 +1014,11 @@ def _chat_meta(
         {
             "step": 2,
             "action": "source_retrieval",
-            "detail": f"Найдено источников: {len(sources)}",
-            "ok": bool(sources),
+            "detail": (
+                f"Найдено источников: {len(sources)}; "
+                f"релевантность: {'да' if source_ok else 'нет'}"
+            ),
+            "ok": source_ok,
         },
         {
             "step": 3,
@@ -788,7 +1063,7 @@ async def lifespan(app: FastAPI):
     logger.info("Инициализация сервиса...")
     
     # Инициализация оркестратора
-    orchestrator = AgentOrchestrator(model_name="opencode/glm-5.3-flash-free")
+    orchestrator = AgentOrchestrator()
     
     # Инициализация ретривера
     retriever = AlfaAnalyticsRetriever()
@@ -882,45 +1157,20 @@ async def analyze_client(request: ClientRequest):
         raw_profile = (context.client_profile or {}).get("raw_data", {})
         profile_display = to_public_profile(raw_profile)
         
-        # Формирование ответа
-        if request.full:
-            news_items = context.news_items
-            ranked_news = context.ranked_news
-            alfa_analytics = context.alfa_analytics
-        else:
-            news_items = [_slim_news(n) for n in context.news_items]
-            ranked_news = [_slim_ranked(n) for n in context.ranked_news]
-            alfa_analytics = [_slim_analytics(a) for a in context.alfa_analytics]
+        # Формирование ответа. Полный режим нужен только для отладки;
+        # мобильный UI и публичный туннель получают компактную версию.
+        return _build_analyze_response(
+            context,
+            profile_display,
+            full=request.full,
+        )
 
-        response = {
-            "client_id": context.client_id,
-            "client_profile": context.client_profile,
-            "profile_display": profile_display,
-            "news_items": news_items,
-            "ranked_news": ranked_news,
-            "interpretations": context.interpretations,
-            "analytics_insights": context.metadata.get("analytics_insights", []),
-            "alfa_analytics": alfa_analytics,
-            "verification_summary": context.metadata.get("verification_summary", {}),
-            "trace": [
-                {
-                    "step_number": step.step_number,
-                    "action": step.action,
-                    "success": step.success,
-                    "error_message": step.error_message,
-                    "timestamp": step.timestamp.isoformat(),
-                    "input_data": _summarize(step.input_data, max_chars=2000),
-                    "output_data": _summarize(step.output_data, max_chars=3000),
-                }
-                for step in context.trace
-            ],
-        }
-        
-        return response
-        
     except Exception as e:
-        logger.error(f"Ошибка анализа: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("Ошибка анализа: %s", e)
+        raise HTTPException(
+            status_code=500,
+            detail="Не удалось выполнить анализ. Попробуйте обновить позже.",
+        )
 
 
 @app.get("/api/clients", response_model=List[Dict[str, Any]])
@@ -1137,6 +1387,8 @@ async def chat_with_agent(request: ChatRequest):
                 "demo",
                 started_at,
                 client_id=request.client_id,
+                answer=answer,
+                source_relevant=False,
             ),
         }
 
@@ -1181,14 +1433,15 @@ async def chat_with_agent(request: ChatRequest):
             )[:4]
 
         if not results:
+            answer = (
+                f"В аналитике Альфа-Банка по запросу «{_truncate(question, 120)}» "
+                "нет подходящего материала. Я не подставляю случайные сводки. "
+                "Спросите про ключевую ставку, инфляцию, риски, рынок труда "
+                "или облигации."
+            )
             return {
                 "agent": request.agent,
-                "answer": (
-                    f"В аналитике Альфа-Банка по запросу «{_truncate(question, 120)}» "
-                    "нет подходящего материала. Я не подставляю случайные сводки. "
-                    "Спросите про ключевую ставку, инфляцию, риски, рынок труда "
-                    "или облигации."
-                ),
+                "answer": answer,
                 "sources": [],
                 "mode": "demo",
                 **_chat_meta(
@@ -1198,6 +1451,9 @@ async def chat_with_agent(request: ChatRequest):
                     "demo",
                     started_at,
                     client_id=request.client_id,
+                    answer=answer,
+                    profile=profile,
+                    source_relevant=False,
                 ),
             }
 
@@ -1298,18 +1554,22 @@ async def chat_with_agent(request: ChatRequest):
                         started_at,
                         client_id=request.client_id,
                         suggested_agent="alfa",
+                        answer=answer,
+                        profile=profile,
+                        source_relevant=False,
                     ),
                 }
 
         selected = selected[:(3 if generic else 2)]
         if not selected:
+            answer = (
+                "Пока не удалось собрать новости по этому запросу. "
+                "Попробуйте переформулировать вопрос или обновить анализ "
+                "на странице профиля."
+            )
             return {
                 "agent": request.agent,
-                "answer": (
-                    "Пока не удалось собрать новости по этому запросу. "
-                    "Попробуйте переформулировать вопрос или обновить анализ "
-                    "на странице профиля."
-                ),
+                "answer": answer,
                 "sources": [],
                 "mode": "demo",
                 **_chat_meta(
@@ -1319,6 +1579,9 @@ async def chat_with_agent(request: ChatRequest):
                     "demo",
                     started_at,
                     client_id=request.client_id,
+                    answer=answer,
+                    profile=profile,
+                    source_relevant=False,
                 ),
             }
 
@@ -1353,7 +1616,7 @@ async def chat_with_agent(request: ChatRequest):
             answer = "По внешним новостям:\n\n" + "\n\n".join(blocks)
             answer += (
                 "\n\nИсточник: внешние RSS-новости. Ответ собран локальным "
-                "fallback-агентом (внешняя LLM сейчас недоступна)."
+                "демо-агентом (внешняя LLM сейчас недоступна)."
             )
             mode = "demo"
 
@@ -1369,6 +1632,9 @@ async def chat_with_agent(request: ChatRequest):
             mode,
             started_at,
             client_id=request.client_id,
+            answer=answer,
+            profile=profile,
+            source_relevant=bool(sources),
         ),
     }
 
@@ -1414,8 +1680,11 @@ async def search_analytics(
         results = await retriever.search(query, top_k=top_k, category=category)
         return AnalyticsResponse(query=query, results=results)
     except Exception as e:
-        logger.error(f"Ошибка поиска: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.exception("Ошибка поиска: %s", e)
+        raise HTTPException(
+            status_code=500,
+            detail="Не удалось выполнить поиск. Попробуйте позже.",
+        )
 
 
 @app.get("/api/health")
@@ -1428,10 +1697,13 @@ async def health_check():
         "orchestrator_ready": orchestrator is not None,
         "retriever_ready": retriever is not None,
         "llm": llm.provider or "demo",
-        "llm_model": (
-            llm.api_model if llm.provider == "api" else llm.model
-            if llm.provider == "opencode" else ""
+        "llm_model": llm.api_model if llm.enabled else "",
+        "llm_status": (
+            "error" if llm.enabled and llm.last_error
+            else "configured" if llm.enabled
+            else "demo"
         ),
+        "llm_last_error": (llm.last_error or "")[:180],
     }
 
 

@@ -5,8 +5,11 @@
 from agents.news_collector_agent import NewsCollectorAgent
 from api.main import (
     _alfa_answer,
+    _best_fragment,
     _is_off_topic,
     _news_content_score,
+    _news_impact,
+    _news_title_score,
     _query_stems,
     _text_score,
 )
@@ -72,8 +75,13 @@ def test_alfa_rate_and_risk_answers_are_different():
 
 def test_query_stems_find_news_terms():
     stems = set(_query_stems("Что нового по ключевой ставке?"))
-    assert "ключе" in stems
+    assert "ключев" in stems
     assert "ставк" in stems
+
+
+def test_query_stems_do_not_confuse_contraband_with_control():
+    assert "контр" not in _query_stems("Что нового по контрафакту?")
+    assert "контра" in _query_stems("Что нового по контрафакту?")
 
 
 def test_text_score_matches_relevant_news_only():
@@ -91,8 +99,24 @@ def test_text_score_matches_relevant_news_only():
     ) == 0
 
 
+def test_rate_query_does_not_match_substrings_in_unrelated_news():
+    question = "Что нового по ключевой ставке?"
+
+    assert _news_title_score(
+        question,
+        "В «Самокате» появилась доставка из ресторанов",
+    ) == 0
+    score, topics, repeat = _news_content_score(
+        question,
+        "РСТ: стоимость визы в Черногорию составит 35 евро",
+    )
+    assert score == 0
+    assert topics == 0
+    assert repeat == 0
+
+
 def test_news_filter_rejects_religion_and_crime():
-    agent = NewsCollectorAgent(model_name="opencode/glm-5.3-flash-free")
+    agent = NewsCollectorAgent()
 
     assert not agent._is_business_relevant({
         "title": "В РПЦ пояснили причину запрета священникам выступать публично // религия",
@@ -121,7 +145,7 @@ def test_news_filter_rejects_religion_and_crime():
 
 
 def test_news_filter_keeps_business_angle():
-    agent = NewsCollectorAgent(model_name="opencode/glm-5.3-flash-free")
+    agent = NewsCollectorAgent()
 
     assert agent._is_business_relevant({
         "title": "ЦБ не спешит // Пауза в снижении ключевой ставки может затянуться",
@@ -131,3 +155,25 @@ def test_news_filter_keeps_business_angle():
         "title": "Банк отозвал лицензию из-за отмывания денег",
         "content": "Регулятор применил меры к кредитной организации.",
     })
+
+
+def test_best_fragment_skips_ocr_table():
+    text = (
+        "Заголовок аналитики. "
+        "IMOEX 003 26254 (14 net) —__ Ключевая ставка so eet reer et "
+        "3500 003 26232 01.2025 18.02.2025 17.04.2025 12.2025 2.07.2025. "
+        "ЦБ сохранил ключевую ставку на уровне 14,0%, риторика стала жёстче."
+    )
+    fragment = _best_fragment(text, {"ставк"}, 300)
+    assert "IMOEX" not in fragment
+    assert "14,0%" in fragment
+
+
+def test_news_impact_mentions_client_profile():
+    impact = _news_impact(
+        {"title": "Продажи выросли", "content": "Потребительский спрос восстановился."},
+        {"consequences": ""},
+        {"industry": "Оптовая торговля", "region": "Курганская область"},
+    )
+    assert "Оптовая торговля" in impact
+    assert "Курганская область" in impact

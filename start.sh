@@ -19,7 +19,12 @@ echo "=============================================="
 # ---------- 1. Python ----------
 if ! command -v python3 >/dev/null 2>&1; then
     echo "ОШИБКА: Python 3 не найден."
-    echo "Установите Python 3.10+ (Linux: sudo apt install python3 python3-venv python3-pip)."
+    echo "Установите Python 3.11+ (Linux: sudo apt install python3 python3-venv python3-pip)."
+    exit 1
+fi
+if ! python3 -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 11) else 1)'; then
+    echo "ОШИБКА: нужен Python 3.11+ (сейчас $(python3 --version 2>&1))."
+    echo "Обновите Python или используйте Docker."
     exit 1
 fi
 echo "[1/4] Python: $(python3 --version)"
