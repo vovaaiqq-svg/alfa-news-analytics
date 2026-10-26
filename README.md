@@ -22,7 +22,7 @@ FAQ и обратная связь.
 Нужен Linux/macOS (на Windows — WSL) и Python 3.11+.
 
 ```bash
-git clone https://gitverse.ru/MisterKindly/alfa-news-analytics.git
+git clone https://github.com/vovaaiqq-svg/alfa-news-analytics.git
 cd alfa-news-analytics
 chmod +x start.sh
 ./start.sh
@@ -591,13 +591,14 @@ solution/
 
 ## 📄 Репозиторий
 
-- GitVerse: <https://gitverse.ru/MisterKindly/alfa-news-analytics>
+- GitHub: <https://github.com/vovaaiqq-svg/alfa-news-analytics>
+- GitVerse (зеркало): <https://gitverse.ru/MisterKindly/alfa-news-analytics>
 - Ветка: `main`
-- Версия: `1.1.2`, тег `v1.1.2`; commit hash указан в описании релиза/тега.
+- Версия: `1.1.3`, тег `v1.1.3`; commit hash указан в описании релиза/тега.
 - Клонирование:
 
 ```bash
-git clone https://gitverse.ru/MisterKindly/alfa-news-analytics.git
+git clone https://github.com/vovaaiqq-svg/alfa-news-analytics.git
 ```
 
 Решение создано в рамках хакатона «Альфа Хак» 2026.
