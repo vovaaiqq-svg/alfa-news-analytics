@@ -4,9 +4,31 @@
 """
 
 import json
-from typing import Any, Dict, List
+import re
+from typing import Any, Dict, List, Optional
 
 from agents.base_agent import AgentContext, BaseAgent
+
+
+_TOPIC_STOPWORDS = {
+    "этого", "этом", "также", "после", "перед", "через", "более", "менее",
+    "может", "будут", "будет", "своих", "своей", "россии", "россия", "года",
+    "году", "рынок", "рынка", "цены", "цена", "рост", "снижение", "данные",
+    "который", "которая", "которые", "около", "почти", "среди", "время",
+    "квартал", "обзор", "взгляд", "макро", "август", "сентябрь", "октябрь",
+    "ноябрь", "декабрь", "январь", "февраль", "март", "апрель", "май", "июнь",
+    "июль", "выводы", "основные", "материал", "материалы", "центр",
+}
+
+
+def _topic_keys(text: str) -> set:
+    """Грубые основы слов для проверки тематического пересечения."""
+    tokens = re.findall(r"[а-яёa-z0-9]{4,}", (text or "").lower())
+    return {
+        token[:5]
+        for token in tokens
+        if not token.isdigit() and token not in _TOPIC_STOPWORDS
+    }
 
 
 class InterpretationAgent(BaseAgent):
@@ -39,8 +61,18 @@ class InterpretationAgent(BaseAgent):
             return context
         
         interpretations = []
-        
-        for news_item in context.ranked_news[:5]:  # Топ-5 новостей
+
+        # Не превращаем случайный информационный шум в «риски и возможности».
+        # Сначала берём события с заметной связью с профилем, затем — один
+        # ближайший fallback, чтобы экран не остался пустым.
+        relevant_news = [
+            item for item in context.ranked_news
+            if float(item.get("relevance_score", 0) or 0) >= 2.0
+        ]
+        if not relevant_news and context.ranked_news:
+            relevant_news = context.ranked_news[:1]
+
+        for news_item in relevant_news[:5]:
             try:
                 interpretation = await self._generate_interpretation(
                     news_item,
@@ -58,6 +90,7 @@ class InterpretationAgent(BaseAgent):
             context.alfa_analytics,
             context.client_profile or {},
             limit=2,
+            news_items=context.ranked_news,
         )
         
         # Трассировка
@@ -139,6 +172,15 @@ class InterpretationAgent(BaseAgent):
                 "news_url": news_item.get("url", ""),
                 "alfa_analytics": [a.get("title", "") for a in relevant_analytics],
             },
+            "related_analytics": [
+                {
+                    "id": a.get("id", ""),
+                    "title": a.get("title", ""),
+                    "source_file": a.get("source_file", ""),
+                    "date": a.get("date", ""),
+                }
+                for a in relevant_analytics[:2]
+            ],
         }
     
     def _generate_local_interpretation(
@@ -275,9 +317,9 @@ class InterpretationAgent(BaseAgent):
         actions_parts = []
         
         if advice_category == "monetary_policy":
-            actions_parts.append("Пересмотреть кредитный портфель")
-            actions_parts.append("Рассмотреть альтернативные источники финансирования")
-            actions_parts.append("Обратиться к персональному менеджеру для оптимизации условий")
+            actions_parts.append("Пересчитать график платежей и проверить ковенанты")
+            actions_parts.append("Сравнить рефинансирование с действующими условиями")
+            actions_parts.append("Зафиксировать ставку или выбрать кредит с досрочным погашением")
         
         elif advice_category == "inflation":
             actions_parts.append("Пересмотреть ценообразование")
@@ -314,19 +356,45 @@ class InterpretationAgent(BaseAgent):
             actions_parts.append("Обучать сотрудников новым технологиям")
             actions_parts.append("Следить за конкурентами и их технологическими решениями")
         
-        actions = "Рекомендуется: " + ", ".join(actions_parts) + "." if actions_parts else "Рекомендуется проконсультироваться с персональным менеджером."
+        actions = "Рекомендуется: " + ", ".join(actions_parts) + "." if actions_parts else (
+            "Проверьте бюджет, договоры и кассовый план по этому сценарию; "
+            "зафиксируйте пороговые значения, при которых меняете решения."
+        )
         
-        # Позиция банка
-        bank_view_parts = []
-        
+        # Позиция банка отделена от AI-вывода: здесь только то, что есть
+        # в аналитических материалах, без домысливания модели.
         if relevant_analytics:
-            bank_view_parts.append("Согласно аналитике Альфа-Банка:")
-            for analytics in relevant_analytics[:2]:
-                bank_view_parts.append(f"- {analytics.get('title', '')}")
-        
-        bank_view_parts.append("Альфа-Банк рекомендует клиентам активно управлять рисками и использовать возможности, которые создают макроэкономические изменения.")
-        
-        bank_view = " ".join(bank_view_parts)
+            excerpts = []
+            for item in relevant_analytics[:2]:
+                raw = (
+                    item.get("text")
+                    or item.get("content")
+                    or item.get("summary")
+                    or ""
+                )
+                excerpt = " ".join(str(raw).split())[:260].strip()
+                if excerpt:
+                    excerpts.append(f"«{item.get('title', '')}»: {excerpt}")
+            if excerpts:
+                bank_view = (
+                    "Аналитика Альфа-Банка: "
+                    + " ".join(excerpts)
+                    + " Это экспертный контекст банка; риски, возможности и "
+                    "рекомендации ниже сформированы AI на основе профиля компании."
+                )
+            else:
+                bank_view = (
+                    "В аналитике Альфа-Банка по теме есть материалы: "
+                    + "; ".join(f"«{a.get('title', '')}»" for a in relevant_analytics[:2])
+                    + ". Это экспертный контекст банка; риски, возможности и "
+                    "рекомендации ниже сформированы AI на основе профиля компании."
+                )
+        else:
+            bank_view = (
+                "Отдельного материала Альфа-Банка по этому событию в базе нет. "
+                "Ниже — AI-интерпретация на основе профиля компании и внешней новости; "
+                "она не является официальной позицией банка."
+            )
         
         # Источники
         sources = [source]
@@ -645,8 +713,8 @@ class InterpretationAgent(BaseAgent):
             ],
             "risk_actions": [
                 "Пересмотреть бюджет и чувствительность к ключевым факторам.",
-                "Проверить договоры с контрагентами.",
-                "Обсудить с менеджером Альфа-Банка меры поддержки.",
+                "Проверить договоры с контрагентами и условия пересмотра цен.",
+                "Сформировать резерв ликвидности на 1–2 месяца.",
             ],
             "opportunities": [
                 "Изменения открывают новые ниши и партнёрства.",
@@ -654,9 +722,9 @@ class InterpretationAgent(BaseAgent):
                 "Появляется повод пересобрать отношения с клиентами.",
             ],
             "opportunity_actions": [
-                "Провести сценарный анализ.",
-                "Обсудить с менеджером Альфа-Банка меры поддержки.",
-                "Запустить пилот на одном сегменте.",
+                "Провести сценарный анализ по трём уровням спроса.",
+                "Запустить пилот на одном сегменте и замерить экономику.",
+                "Подготовить коммерческое предложение для смежной ниши.",
             ],
         })
 
@@ -701,13 +769,23 @@ class InterpretationAgent(BaseAgent):
         alfa_analytics: List[Dict[str, Any]],
         client_profile: Dict[str, Any],
         limit: int = 2,
+        news_items: Optional[List[Dict[str, Any]]] = None,
     ) -> List[Dict[str, Any]]:
         """
         Превращает аналитические сводки Альфа-Банка в такие же карточки
         «риски / возможности», как и новости.
+
+        Материалы выбираются по связи с отобранными новостями и профилем,
+        а не просто как первые две записи из JSON.
         """
+        selected = self._pick_analytics(
+            alfa_analytics,
+            client_profile,
+            news_items or [],
+            limit=limit,
+        )
         insights = []
-        for item in alfa_analytics[:limit]:
+        for item in selected:
             title = item.get("title", "")
             text = item.get("text") or item.get("content") or item.get("summary") or ""
             category = item.get("category", "macro_outlook")
@@ -746,8 +824,46 @@ class InterpretationAgent(BaseAgent):
                     "analytics": title,
                     "source_file": item.get("source_file", ""),
                 },
+                "bank_view": interpretation.get("bank_view", ""),
             })
         return insights
+
+    def _pick_analytics(
+        self,
+        alfa_analytics: List[Dict[str, Any]],
+        client_profile: Dict[str, Any],
+        news_items: List[Dict[str, Any]],
+        limit: int = 2,
+    ) -> List[Dict[str, Any]]:
+        """Выбирает аналитику, которая объясняет именно отобранные события."""
+        news_categories = set()
+        for news in news_items[:5]:
+            category = (news.get("classification") or {}).get("category") or news.get("category")
+            if category:
+                news_categories.add(category)
+                if category in {"banking", "trade", "industry"}:
+                    news_categories.add("macro_outlook")
+
+        industry = (client_profile.get("industry") or "").lower()
+        industry_words = [
+            word for word in ("торгов", "строит", "производ", "логист", "сельск", "it", "энерг")
+            if word in industry
+        ]
+
+        def score(item: Dict[str, Any]) -> tuple[float, str]:
+            category = item.get("category", "")
+            text = f"{item.get('title', '')} {item.get('text', '')} {item.get('content', '')}".lower()
+            value = 0.0
+            if category in news_categories:
+                value += 4.0
+            if any(word in text for word in industry_words):
+                value += 2.0
+            if category in {"monetary_policy", "inflation", "macro_outlook"}:
+                value += 1.0
+            return value, str(item.get("date", ""))
+
+        ordered = sorted(alfa_analytics, key=score, reverse=True)
+        return ordered[:limit]
 
     def _find_relevant_analytics(
         self,
@@ -764,19 +880,55 @@ class InterpretationAgent(BaseAgent):
         Returns:
             Релевантные аналитические материалы
         """
-        news_category = news_item.get("classification", {}).get("category", "")
-        
-        # Простой поиск по категории
-        relevant = [
-            a for a in alfa_analytics
-            if a.get("category") == news_category
-        ]
-        
-        # Если не нашли, берем общие макро-обзоры
-        if not relevant:
-            relevant = [
-                a for a in alfa_analytics
-                if a.get("category") in ["macro_outlook", "monetary_policy"]
-            ]
-        
-        return relevant[:2]  # Максимум 2 материала
+        news_category = (
+            news_item.get("classification", {}).get("category")
+            or news_item.get("category")
+            or ""
+        )
+        news_title = news_item.get("title", "").lower()
+        news_keys = _topic_keys(
+            f"{news_item.get('title', '')} {news_item.get('content', '')}"
+        )
+        commodity_terms = (
+            "нефт", "brent", "баррел", "золот", "серебр", "газ", "уголь", "металл",
+        )
+        news_commodities = {
+            term for term in commodity_terms if term in news_title
+        }
+
+        # Не привязываем обзор золота к новости о нефти только потому,
+        # что у обеих категория «commodities». Нужно совпадение темы.
+        candidates = []
+        for item in alfa_analytics:
+            analytics_category = item.get("category", "")
+            analytics_title = item.get("title", "").lower()
+            analytics_text = (
+                f"{analytics_title} {item.get('text', '')} {item.get('content', '')}"
+            )
+            analytics_keys = _topic_keys(analytics_text)
+            overlap = news_keys & analytics_keys
+            if not overlap:
+                continue
+
+            category_match = analytics_category == news_category
+            rate_context = (
+                analytics_category == "monetary_policy"
+                and any(term in news_title for term in ("ставк", "ключев", "цб"))
+            )
+            if not (category_match or rate_context):
+                continue
+
+            if category_match and news_commodities:
+                if not any(term in analytics_title for term in news_commodities):
+                    continue
+
+            score = len(overlap) + (3 if category_match else 0)
+            candidates.append((score, item))
+
+        if not candidates:
+            return []
+        candidates.sort(
+            key=lambda pair: (pair[0], str(pair[1].get("date", ""))),
+            reverse=True,
+        )
+        return [item for _, item in candidates[:2]]

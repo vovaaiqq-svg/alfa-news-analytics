@@ -70,6 +70,12 @@
         activeView: "profile",
         feedbackRating: 5,
         feedbackCategory: "Полезно",
+        riskFilter: "all",
+        riskCategory: "",
+        riskSort: "relevance",
+        audit: null,
+        guideStep: 0,
+        guideOpen: true,
         chat: {
             alfa: [],
             news: [],
@@ -224,8 +230,16 @@
 
     function resetChat() {
         state.chat = {
-            alfa: [],
-            news: [],
+            alfa: [{
+                role: "agent",
+                welcome: true,
+                text: "Здравствуйте! Я Альфа-агент. Отвечаю только по аналитике и продуктам Альфа-Банка. Спросите про ставку, инфляцию, лизинг или риски — и я покажу, на чём основан вывод.",
+            }],
+            news: [{
+                role: "agent",
+                welcome: true,
+                text: "Здравствуйте! Я новостной агент. Отвечаю только по внешним новостям и их влиянию на ваш бизнес. Если по теме нет свежей новости, честно скажу об этом и предложу перейти к Альфа-агенту.",
+            }],
         };
         state.typing = { alfa: false, news: false };
     }
@@ -234,6 +248,48 @@
     // Роутинг
     // -----------------------------------------------------------------
 
+    function guideStepForView(view) {
+        const index = GUIDE_STEPS.findIndex((step) => step.view === view);
+        return index >= 0 ? index : state.guideStep;
+    }
+
+    function renderGuide() {
+        const card = $("#guide-card");
+        const pill = $("#guide-toggle");
+        const text = $("#guide-text");
+        const steps = $("#guide-steps");
+        const next = $("#guide-next");
+        if (!card || !pill || !text || !steps) return;
+
+        const step = GUIDE_STEPS[state.guideStep] || GUIDE_STEPS[0];
+        const visible = Boolean(state.profile) && state.guideOpen;
+        card.classList.toggle("hidden", !visible);
+        pill.classList.toggle("hidden", visible || !state.profile);
+
+        text.textContent = step.text;
+        steps.innerHTML = GUIDE_STEPS.map((item, index) => (
+            `<button class="guide-step ${index === state.guideStep ? "active" : ""} ${index < state.guideStep ? "done" : ""}" type="button" data-guide-step="${index}">${index + 1}. ${esc(item.label)}</button>`
+        )).join("");
+        if (next) {
+            next.textContent = state.guideStep >= GUIDE_STEPS.length - 1
+                ? "Начать сначала"
+                : `${step.action} →`;
+        }
+    }
+
+    function openGuide(stepIndex = null) {
+        if (stepIndex !== null) state.guideStep = Math.max(0, Math.min(GUIDE_STEPS.length - 1, stepIndex));
+        state.guideOpen = true;
+        renderGuide();
+    }
+
+    function nextGuideStep() {
+        state.guideStep = state.guideStep >= GUIDE_STEPS.length - 1 ? 0 : state.guideStep + 1;
+        state.guideOpen = true;
+        showApp(GUIDE_STEPS[state.guideStep].view);
+        renderGuide();
+    }
+
     function showAuth(route) {
         if (route === "register-2" && !state.draft) route = "register";
         if (!["landing", "login", "register", "register-2"].includes(route)) route = "landing";
@@ -241,6 +297,8 @@
         $$(".screen").forEach((screen) => screen.classList.remove("active"));
         const screen = document.getElementById(`screen-${route}`);
         if (screen) screen.classList.add("active");
+        const appScreen = document.getElementById("screen-app");
+        if (appScreen) appScreen.dataset.appView = "";
         state.activeView = null;
         history.replaceState(null, "", `#/${route}`);
         window.scrollTo(0, 0);
@@ -256,7 +314,9 @@
         }
 
         $$(".screen").forEach((screen) => screen.classList.remove("active"));
-        $("#screen-app").classList.add("active");
+        const appScreen = $("#screen-app");
+        appScreen.classList.add("active");
+        appScreen.dataset.appView = view;
 
         $$(".view").forEach((element) => element.classList.remove("active"));
         const viewElement = document.getElementById(`view-${view}`);
@@ -267,12 +327,18 @@
         });
 
         state.activeView = view;
+        const stepIndex = GUIDE_STEPS.findIndex((step) => step.view === view);
+        if (stepIndex >= 0) state.guideStep = stepIndex;
+        renderGuide();
         history.replaceState(null, "", `#/${view}`);
         window.scrollTo(0, 0);
 
         if (view === "profile") renderProfile();
         if (view === "risks") renderRisks();
-        if (view === "trace") renderTrace();
+        if (view === "trace") {
+            renderTrace();
+            loadAudit(true);
+        }
         if (view === "alfa" || view === "news") renderChat(view);
     }
 
@@ -654,6 +720,12 @@
             source: item.news_source || foundNews?.source || "",
             date: item.news_date || foundNews?.date || "",
             url: item.news_url || foundNews?.url || "",
+            category: item.news_category || foundNews?.category || "",
+            relevance: Number(item.relevance_score || 0),
+            bankView: interpretation.bank_view || "",
+            aiSummary: interpretation.consequences || interpretation.why_important || "",
+            relatedAnalytics: item.related_analytics || [],
+            verification: item.verification || null,
             risks: nonEmpty(interpretation.risks, [interpretation.why_important, interpretation.consequences].filter(Boolean)),
             riskActions: nonEmpty(interpretation.risk_actions, interpretation.actions ? [interpretation.actions] : []),
             opportunities: nonEmpty(interpretation.opportunities, [
@@ -662,7 +734,7 @@
             ]),
             opportunityActions: nonEmpty(interpretation.opportunity_actions, [
                 "Провести сценарный анализ для ключевых клиентов.",
-                "Обсудить с менеджером Альфа-Банка меры поддержки.",
+                "Зафиксировать ценовые и закупочные триггеры в договорах.",
             ]),
         };
     }
@@ -677,6 +749,12 @@
             source: item.source_file ? `Альфа-Банк · ${item.source_file}` : "Материалы Альфа-Банка",
             date: item.date || "",
             url: "",
+            category: item.category || "",
+            relevance: 10,
+            bankView: item.bank_view || interpretation.bank_view || "",
+            aiSummary: interpretation.consequences || interpretation.why_important || "",
+            relatedAnalytics: [],
+            verification: item.verification || null,
             risks: nonEmpty(interpretation.risks, [interpretation.why_important, interpretation.consequences].filter(Boolean)),
             riskActions: nonEmpty(interpretation.risk_actions, interpretation.actions ? [interpretation.actions] : []),
             opportunities: nonEmpty(interpretation.opportunities, [
@@ -685,45 +763,93 @@
             ]),
             opportunityActions: nonEmpty(interpretation.opportunity_actions, [
                 "Провести сценарный анализ.",
-                "Обсудить с менеджером Альфа-Банка меры поддержки.",
+                "Зафиксировать условия финансирования на горизонте квартала.",
             ]),
         };
     }
 
+    function analyticsLinksHtml(items) {
+        if (!Array.isArray(items) || !items.length) return "";
+        const links = items.slice(0, 3).map((item) => {
+            const title = item.title || "Аналитический материал";
+            const file = item.source_file ? ` · ${item.source_file}` : "";
+            return `<span class="risk-analytics-link">«${esc(title)}»${esc(file)}</span>`;
+        }).join("");
+        return `<div class="risk-analytics-links"><span>Связанная аналитика банка</span>${links}</div>`;
+    }
+
+    function verificationHtml(verification) {
+        if (!verification) return "";
+        const status = verification.status || "needs_review";
+        const labels = {
+            verified: "Самопроверка пройдена",
+            needs_improvement: "Нужна доработка",
+            insufficient: "Недостаточно данных",
+            error: "Ошибка проверки",
+        };
+        return `<span class="verification-chip ${esc(status)}">${esc(labels[status] || "Проверено AI")}</span>`;
+    }
+
     function riskCard(insight) {
         const isNews = insight.kind === "news";
-        const typeLabel = isNews ? "Новость" : "Аналитика Альфа-Банка";
+        const typeLabel = isNews ? "Новость · внешний источник" : "Аналитика Альфа-Банка";
         const sourceLabel = [insight.source, shortDate(insight.date)].filter(Boolean).join(" · ");
         const url = safeUrl(insight.url);
         const sourceFooter = url
-            ? `<a href="${url}" target="_blank" rel="noopener noreferrer">Первоисточник →</a>`
+            ? `<a href="${url}" target="_blank" rel="noopener noreferrer">Перейти к первоисточнику →</a>`
             : `<span class="risk-source">${esc(insight.source || "Материалы Альфа-Банка")}</span>`;
         const question = `Что это значит для моего бизнеса: «${insight.title}»?`;
+        const factBlock = isNews
+            ? `<div class="risk-fact">
+                    <div class="risk-block-label">Что произошло <span class="source-badge">факт из новости</span></div>
+                    <p>${esc(truncate(insight.summary, 620))}</p>
+               </div>`
+            : "";
+        const bankText = isNews
+            ? (insight.bankView || "Отдельного материала Альфа-Банка по этому событию в базе нет.")
+            : (insight.summary || insight.bankView || "Аналитический материал Альфа-Банка.");
+        const aiText = insight.aiSummary
+            || "AI оценил возможные последствия для компании на основе профиля и источника.";
 
         return `
-            <article class="risk-card">
+            <article class="risk-card" data-kind="${isNews ? "news" : "alfa"}" data-category="${esc(insight.category || "")}" data-date="${esc(insight.date || "")}">
                 <div class="risk-card-head">
-                    <span class="risk-type ${isNews ? "news" : "alfa"}">${typeLabel}</span>
+                    <div class="risk-head-left">
+                        <span class="risk-type ${isNews ? "news" : "alfa"}">${typeLabel}</span>
+                        <span class="risk-category">${esc(categoryLabel(insight.category))}</span>
+                    </div>
                     <span class="risk-source">${esc(sourceLabel || "Источник")}</span>
                 </div>
                 <h2>${esc(insight.title)}</h2>
-                <p class="risk-summary">${esc(truncate(insight.summary, 620))}</p>
-                <div class="risk-columns">
-                    <div class="risk-col risk-col-risk">
-                        <div class="col-head"><span class="col-dot risk"></span>Риски</div>
-                        ${listHtml(insight.risks)}
-                        <div class="col-subhead">Что можно сделать</div>
-                        ${listHtml(insight.riskActions, "actions")}
-                    </div>
-                    <div class="risk-col risk-col-op">
-                        <div class="col-head"><span class="col-dot op"></span>Возможности</div>
-                        ${listHtml(insight.opportunities)}
-                        <div class="col-subhead">Как адаптировать</div>
-                        ${listHtml(insight.opportunityActions, "actions")}
+                ${factBlock}
+                <div class="risk-bank-view">
+                    <div class="risk-block-label">Позиция Альфа-Банка <span class="source-badge">экспертный материал</span></div>
+                    <p>${esc(truncate(bankText, 640))}</p>
+                    ${isNews ? analyticsLinksHtml(insight.relatedAnalytics) : ""}
+                </div>
+                <div class="risk-ai-block">
+                    <div class="risk-block-label">AI-разбор для вашей компании <span class="ai-badge">сформировано AI</span></div>
+                    <p class="risk-ai-summary">${esc(truncate(aiText, 520))}</p>
+                    <div class="risk-columns">
+                        <div class="risk-col risk-col-risk">
+                            <div class="col-head"><span class="col-dot risk"></span>Риски</div>
+                            ${listHtml(insight.risks)}
+                            <div class="col-subhead">Что можно сделать</div>
+                            ${listHtml(insight.riskActions, "actions")}
+                        </div>
+                        <div class="risk-col risk-col-op">
+                            <div class="col-head"><span class="col-dot op"></span>Возможности</div>
+                            ${listHtml(insight.opportunities)}
+                            <div class="col-subhead">Как адаптировать</div>
+                            ${listHtml(insight.opportunityActions, "actions")}
+                        </div>
                     </div>
                 </div>
                 <div class="risk-card-foot">
-                    ${sourceFooter}
+                    <div class="risk-foot-left">
+                        ${sourceFooter}
+                        ${verificationHtml(insight.verification)}
+                    </div>
                     <div>
                         <button class="btn btn-ghost small" type="button" data-ask-alfa="${esc(question)}">Спросить Альфа-агента</button>
                         <button class="btn btn-ghost small" type="button" data-ask-news="${esc(question)}">Спросить новостного агента</button>
@@ -731,6 +857,13 @@
                 </div>
             </article>
         `;
+    }
+
+    function allRiskInsights() {
+        if (!state.analysis) return [];
+        const news = (state.analysis.interpretations || []).map(newsInsight);
+        const analytics = (state.analysis.analytics_insights || []).map(analyticsInsight);
+        return [...news, ...analytics];
     }
 
     function renderRisks() {
@@ -745,19 +878,56 @@
             return;
         }
 
-        const newsCards = (state.analysis.interpretations || []).map((item) => riskCard(newsInsight(item)));
-        const analyticsCards = (state.analysis.analytics_insights || []).map((item) => riskCard(analyticsInsight(item)));
+        const all = allRiskInsights();
+        const categories = Array.from(new Set(all.map((item) => item.category).filter(Boolean))).sort();
+        const categorySelect = $("#risk-category-filter");
+        if (categorySelect) {
+            const current = state.riskCategory;
+            categorySelect.innerHTML = `<option value="">Все темы</option>` + categories.map((category) => (
+                `<option value="${esc(category)}">${esc(categoryLabel(category))}</option>`
+            )).join("");
+            categorySelect.value = categories.includes(current) ? current : "";
+            state.riskCategory = categorySelect.value;
+        }
 
-        const ordered = [];
-        if (newsCards[0]) ordered.push(newsCards[0]);
-        if (analyticsCards[0]) ordered.push(analyticsCards[0]);
-        ordered.push(...newsCards.slice(1), ...analyticsCards.slice(1));
+        let filtered = all.filter((item) => {
+            if (state.riskFilter !== "all" && item.kind !== state.riskFilter) return false;
+            if (state.riskCategory && item.category !== state.riskCategory) return false;
+            return true;
+        });
 
-        if (!ordered.length) {
-            container.innerHTML = `<div class="empty-state"><strong>Пока нет подходящих событий</strong><p>Попробуйте обновить анализ или изменить профиль компании.</p></div>`;
+        filtered.sort((left, right) => {
+            if (state.riskSort === "date") {
+                const leftDate = Date.parse(left.date) || 0;
+                const rightDate = Date.parse(right.date) || 0;
+                return rightDate - leftDate;
+            }
+            return (right.relevance || 0) - (left.relevance || 0);
+        });
+
+        const count = $("#risk-count");
+        if (count) {
+            count.textContent = `${filtered.length} из ${all.length} ${plural(all.length, "события", "событий", "событий")}`;
+        }
+
+        const verification = $("#risk-verification");
+        if (verification) {
+            const checked = all.filter((item) => item.verification).length;
+            const passed = all.filter((item) => item.verification?.status === "verified").length;
+            const summary = state.analysis.verification_summary || {};
+            const checkedCount = summary.checked || checked;
+            const passedCount = summary.verified ?? passed;
+            verification.innerHTML = checkedCount
+                ? `<span class="self-check-badge">Самопроверка: ${passedCount}/${checkedCount} карточек прошли проверку</span>
+                   <span class="self-check-note">Проверяются полнота, источники и использование профиля компании.</span>`
+                : `<span class="self-check-note">Самопроверка появится после генерации карточек.</span>`;
+        }
+
+        if (!filtered.length) {
+            container.innerHTML = `<div class="empty-state"><strong>В этом разрезе пока нет событий</strong><p>Сбросьте фильтр или обновите анализ.</p></div>`;
             return;
         }
-        container.innerHTML = ordered.join("");
+        container.innerHTML = filtered.map(riskCard).join("");
     }
 
     // -----------------------------------------------------------------
@@ -794,11 +964,15 @@
         const trace = state.analysis.trace || [];
         const successCount = trace.filter((step) => step.success).length;
 
+        const verification = state.analysis.verification_summary || {};
+        const verified = verification.verified ?? 0;
+        const checked = verification.checked ?? 0;
         summary.innerHTML = `
             <div class="trace-stat"><strong>${trace.length}</strong>${plural(trace.length, "шаг", "шага", "шагов")}</div>
             <div class="trace-stat"><strong>${successCount}</strong>успешно</div>
             <div class="trace-stat"><strong>${(state.analysis.news_items || []).length}</strong>${plural((state.analysis.news_items || []).length, "новость", "новости", "новостей")}</div>
             <div class="trace-stat"><strong>${(state.analysis.interpretations || []).length}</strong>${plural((state.analysis.interpretations || []).length, "интерпретация", "интерпретации", "интерпретаций")}</div>
+            <div class="trace-stat"><strong>${verified}/${checked}</strong>самопроверка</div>
         `;
 
         if (!trace.length) {
@@ -837,6 +1011,87 @@
         }).join("");
     }
 
+    function renderAudit() {
+        const metrics = $("#audit-metrics");
+        const feedback = $("#audit-feedback");
+        const chats = $("#audit-chats");
+        if (!metrics || !feedback || !chats) return;
+
+        if (!state.audit) {
+            metrics.innerHTML = `<div class="audit-loading">Загружаем метрики…</div>`;
+            chats.innerHTML = "";
+            feedback.innerHTML = "";
+            return;
+        }
+
+        const data = state.audit;
+        const rating = data.average_rating == null ? "—" : `${data.average_rating} / 5`;
+        const verification = data.verification_pass_rate == null
+            ? "—"
+            : `${Math.round(data.verification_pass_rate * 100)}%`;
+        const llmShare = data.llm_share == null ? "—" : `${Math.round(data.llm_share * 100)}%`;
+        metrics.innerHTML = [
+            ["Анализов", data.analyses ?? 0],
+            ["Диалогов", data.chats ?? 0],
+            ["Средняя оценка", rating],
+            ["Самопроверка", verification],
+            ["Ответы LLM", llmShare],
+            ["Низких оценок", data.low_rating_count ?? 0],
+        ].map(([label, value]) => (
+            `<div class="audit-metric"><strong>${esc(value)}</strong><span>${esc(label)}</span></div>`
+        )).join("");
+
+        const recentChats = (data.recent_chats || []).filter((item) => item.agent);
+        chats.innerHTML = recentChats.length
+            ? `<div class="audit-feedback-head">Последние диалоги</div>` + recentChats.map((item) => (
+                `<div class="audit-chat-item">
+                    <span class="audit-chat-agent">${esc(item.agent === "alfa" ? "Альфа-агент" : "Новостной агент")}</span>
+                    <span>${esc(item.mode === "llm" ? "LLM" : "fallback")}</span>
+                    <span>источников: ${esc(item.sources_count ?? 0)}</span>
+                    <span>${esc(item.latency_ms ?? "—")} мс</span>
+                </div>`
+            )).join("")
+            : "";
+
+        const recent = (data.recent_low_feedback?.length
+            ? data.recent_low_feedback
+            : (data.recent_feedback || []).slice(0, 3)
+        ).filter((item) => String(item.category || "").toLowerCase() !== "test");
+        feedback.innerHTML = recent.length
+            ? `<div class="audit-feedback-head">Последние отзывы</div>` + recent.map((item) => (
+                `<div class="audit-feedback-item">
+                    <span class="audit-feedback-rating">${esc(item.rating ?? "—")} / 5</span>
+                    <span class="audit-feedback-category">${esc(item.category || "Без категории")}</span>
+                    <p>${esc(truncate(item.text || "", 220))}</p>
+                </div>`
+            )).join("")
+            : `<div class="audit-feedback-empty">Отзывов пока нет. Оставьте первый — он появится здесь и в журнале аудита.</div>`;
+    }
+
+    async function loadAudit(force = false) {
+        if (state.audit && !force) {
+            renderAudit();
+            return;
+        }
+        try {
+            state.audit = await api("/api/audit/summary");
+        } catch (error) {
+            state.audit = {
+                analyses: 0,
+                chats: 0,
+                feedback_count: 0,
+                average_rating: null,
+                low_rating_count: 0,
+                verification_pass_rate: null,
+                llm_share: null,
+                recent_feedback: [],
+                recent_low_feedback: [],
+                recent_chats: [],
+            };
+        }
+        renderAudit();
+    }
+
     function downloadTrace() {
         if (!state.analysis) {
             toast("Сначала запустите анализ", "error");
@@ -864,6 +1119,45 @@
     // -----------------------------------------------------------------
     // Чаты
     // -----------------------------------------------------------------
+
+    const GUIDE_STEPS = [
+        {
+            view: "profile",
+            label: "Профиль",
+            text: "Сначала проверьте профиль: от отрасли, региона и продуктов зависит, какие события попадут в фокус.",
+            action: "Проверить профиль",
+        },
+        {
+            view: "risks",
+            label: "Риски",
+            text: "Главный экран: здесь факты и позиция Альфа-Банка отделены от AI-разбора. Можно отфильтровать новости и аналитику.",
+            action: "Показать риски",
+        },
+        {
+            view: "alfa",
+            label: "Альфа-агент",
+            text: "Я привёл вас к Альфа-агенту. Спросите про ставку, инфляцию или лизинг — он отвечает только по аналитике банка.",
+            action: "Спросить агента",
+        },
+        {
+            view: "news",
+            label: "Новости",
+            text: "А здесь только внешние новости. Сравните: факт из RSS, позиция банка и AI-вывод не смешиваются.",
+            action: "Открыть новости",
+        },
+        {
+            view: "trace",
+            label: "Трассировка",
+            text: "Если нужна проверка — откройте трассировку и аудит: источники, шаги агентов и обратная связь.",
+            action: "Проверить источники",
+        },
+        {
+            view: "feedback",
+            label: "Отзыв",
+            text: "Последний шаг — оценка. Низкие оценки попадают в аудит качества, чтобы мы улучшали ответы.",
+            action: "Оценить сервис",
+        },
+    ];
 
     const SUGGESTIONS = {
         alfa: [
@@ -905,11 +1199,37 @@
         if (!container) return;
 
         const messages = state.chat[agent] || [];
-        container.innerHTML = messages.map((message) => {
+        const followUps = agent === "alfa"
+            ? ["А что это значит для меня?", "Какие риски вы видите?", "Покажи источник"]
+            : ["Что нового в моей отрасли?", "Какие события важны для меня?", "Есть ли новости про мой регион?"];
+        container.innerHTML = messages.map((message, index) => {
             if (message.role === "user") {
                 return `<div class="bubble user">${esc(message.text)}</div>`;
             }
-            return `<div class="bubble agent">${esc(message.text)}${sourcesHtml(message.sources)}</div>`;
+            if (message.welcome) {
+                return `<div class="bubble agent welcome">${esc(message.text)}</div>`;
+            }
+            const mode = message.mode === "llm" ? "AI · LLM" : "AI · локальная сборка";
+            const modeClass = message.mode === "llm" ? "llm" : "fallback";
+            const suggestion = message.suggestedAgent
+                ? `<button class="bubble-action" type="button" data-suggestion-agent="${esc(message.suggestedAgent)}" data-suggestion-question="${esc(message.suggestedQuestion || "")}">Перейти к Альфа-агенту →</button>`
+                : "";
+            const check = message.selfCheck
+                ? `<div class="bubble-check">Самопроверка: ${message.selfCheck.passed}/${message.selfCheck.total} проверок пройдено</div>`
+                : "";
+            const follow = index === messages.length - 1
+                ? `<div class="bubble-followups">${followUps.map((question) => (
+                    `<button type="button" data-suggestion="${esc(question)}" data-agent="${esc(agent)}">${esc(question)}</button>`
+                )).join("")}</div>`
+                : "";
+            return `<div class="bubble agent">
+                <div class="bubble-meta"><span class="mode-badge ${modeClass}">${mode}</span><span>ответ сформирован AI</span></div>
+                ${esc(message.text)}
+                ${sourcesHtml(message.sources)}
+                ${check}
+                ${suggestion}
+                ${follow}
+            </div>`;
         }).join("");
 
         if (state.typing[agent]) {
@@ -941,6 +1261,10 @@
                 role: "agent",
                 text: data.answer || "Не удалось сформировать ответ.",
                 sources: data.sources || [],
+                mode: data.mode || "demo",
+                suggestedAgent: data.suggested_agent || "",
+                suggestedQuestion: data.suggested_question || "",
+                selfCheck: data.self_check || null,
             });
         } catch (error) {
             state.typing[agent] = false;
@@ -1145,6 +1469,7 @@
                 },
             });
             textarea.value = "";
+            state.audit = null;
             toast("Спасибо! Отзыв отправлен.", "success");
         } catch (error) {
             toast(error.message, "error");
@@ -1170,6 +1495,44 @@
             if (suggestion) {
                 event.preventDefault();
                 askAgent(suggestion.dataset.agent, suggestion.dataset.suggestion);
+                return;
+            }
+
+            const switchAgent = event.target.closest("[data-suggestion-agent]");
+            if (switchAgent) {
+                event.preventDefault();
+                prefillChat(
+                    switchAgent.dataset.suggestionAgent,
+                    switchAgent.dataset.suggestionQuestion || "",
+                );
+                return;
+            }
+
+            const guideStep = event.target.closest("[data-guide-step]");
+            if (guideStep) {
+                event.preventDefault();
+                const index = Number(guideStep.dataset.guideStep);
+                state.guideStep = index;
+                state.guideOpen = true;
+                showApp(GUIDE_STEPS[index].view);
+                return;
+            }
+
+            const riskFilter = event.target.closest("[data-risk-filter]");
+            if (riskFilter) {
+                event.preventDefault();
+                state.riskFilter = riskFilter.dataset.riskFilter;
+                $$("#risk-filters .risk-filter").forEach((item) => item.classList.toggle("active", item === riskFilter));
+                renderRisks();
+                return;
+            }
+
+            const riskSort = event.target.closest("[data-risk-sort]");
+            if (riskSort) {
+                event.preventDefault();
+                state.riskSort = riskSort.dataset.riskSort;
+                $$("#risk-sort .risk-filter").forEach((item) => item.classList.toggle("active", item === riskSort));
+                renderRisks();
                 return;
             }
 
@@ -1219,6 +1582,21 @@
         $("#refresh-analysis")?.addEventListener("click", () => loadAnalysis(true));
         $("#risks-refresh")?.addEventListener("click", () => loadAnalysis(true));
         $("#download-trace")?.addEventListener("click", downloadTrace);
+        $("#audit-refresh")?.addEventListener("click", () => loadAudit(true));
+        $("#risk-category-filter")?.addEventListener("change", (event) => {
+            state.riskCategory = event.target.value;
+            renderRisks();
+        });
+        $("#guide-toggle")?.addEventListener("click", () => openGuide());
+        $("#guide-close")?.addEventListener("click", () => {
+            state.guideOpen = false;
+            renderGuide();
+        });
+        $("#guide-hide")?.addEventListener("click", () => {
+            state.guideOpen = false;
+            renderGuide();
+        });
+        $("#guide-next")?.addEventListener("click", nextGuideStep);
         $("#edit-profile-btn")?.addEventListener("click", openEdit);
         $("#edit-close")?.addEventListener("click", closeEdit);
         $("#edit-cancel")?.addEventListener("click", closeEdit);
@@ -1247,7 +1625,7 @@
                 state.analysis = null;
                 state.analysisError = null;
                 resetChat();
-                showApp("profile");
+                showApp("risks");
                 toast(`Здравствуйте, ${response.profile.legal_entity || "снова"}`, "success");
                 await loadAnalysis(false);
             } catch (error) {
@@ -1266,8 +1644,8 @@
                 state.analysis = null;
                 state.analysisError = null;
                 resetChat();
-                showApp("profile");
-                toast("Демо-профиль открыт", "success");
+                showApp("risks");
+                toast("Профиль U_84 открыт — сразу к рискам", "success");
                 await loadAnalysis(false);
             } catch (error) {
                 toast(error.message, "error");
@@ -1360,7 +1738,7 @@
                 state.analysis = null;
                 state.analysisError = null;
                 resetChat();
-                showApp("profile");
+                showApp("risks");
                 toast(response.note || "Профиль создан", "success");
                 await loadAnalysis(false);
             } catch (error) {
@@ -1429,7 +1807,8 @@
         const saved = loadSavedProfile();
         if (saved) {
             state.profile = saved;
-            showApp("profile");
+            resetChat();
+            showApp("risks");
         } else {
             showAuth("landing");
         }

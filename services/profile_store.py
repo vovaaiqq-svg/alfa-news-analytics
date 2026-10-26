@@ -17,6 +17,7 @@ RUN_DIR = Path(__file__).resolve().parent.parent / ".run"
 PROFILES_FILE = RUN_DIR / "custom_clients.json"
 ACCOUNTS_FILE = RUN_DIR / "accounts.json"
 FEEDBACK_FILE = RUN_DIR / "feedback.jsonl"
+AUDIT_FILE = RUN_DIR / "audit.jsonl"
 
 _LOCK = threading.Lock()
 
@@ -134,6 +135,78 @@ def save_feedback(entry: Dict[str, Any]) -> None:
     with _LOCK:
         with open(FEEDBACK_FILE, "a", encoding="utf-8") as f:
             f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
+
+def _read_jsonl(path: Path, limit: int = 500) -> List[Dict[str, Any]]:
+    """Читает последние записи JSONL, не падая на повреждённой строке."""
+    _ensure_dir()
+    if not path.exists():
+        return []
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()[-limit:]
+    except OSError:
+        return []
+    items: List[Dict[str, Any]] = []
+    for line in lines:
+        try:
+            item = json.loads(line)
+        except (json.JSONDecodeError, TypeError):
+            continue
+        if isinstance(item, dict):
+            items.append(item)
+    return items
+
+
+def save_audit_event(entry: Dict[str, Any]) -> None:
+    """Журнал действий AI-компонента. Не содержит текста вопросов и секретов."""
+    _ensure_dir()
+    payload = dict(entry)
+    payload["created_at"] = datetime.now().isoformat(timespec="seconds")
+    with _LOCK:
+        with open(AUDIT_FILE, "a", encoding="utf-8") as f:
+            f.write(json.dumps(payload, ensure_ascii=False) + "\n")
+
+
+def audit_summary() -> Dict[str, Any]:
+    """Сводка для экрана «Аудит качества» и регулярного мониторинга."""
+    events = _read_jsonl(AUDIT_FILE)
+    feedback = _read_jsonl(FEEDBACK_FILE)
+    analyses = [item for item in events if item.get("type") == "analysis"]
+    chats = [item for item in events if item.get("type") == "chat"]
+    ratings = [
+        int(item["rating"])
+        for item in feedback
+        if isinstance(item.get("rating"), (int, float))
+    ]
+
+    verification_values = [
+        float(item["verification_pass_rate"])
+        for item in analyses
+        if isinstance(item.get("verification_pass_rate"), (int, float))
+    ]
+    llm_events = analyses + chats
+    llm_count = sum(1 for item in llm_events if item.get("mode") == "llm")
+    low_feedback = [
+        item for item in feedback
+        if isinstance(item.get("rating"), (int, float)) and int(item["rating"]) <= 3
+    ]
+
+    return {
+        "analyses": len(analyses),
+        "chats": len(chats),
+        "feedback_count": len(feedback),
+        "average_rating": round(sum(ratings) / len(ratings), 2) if ratings else None,
+        "low_rating_count": len(low_feedback),
+        "verification_pass_rate": (
+            round(sum(verification_values) / len(verification_values), 3)
+            if verification_values
+            else None
+        ),
+        "llm_share": round(llm_count / len(llm_events), 3) if llm_events else None,
+        "recent_feedback": list(reversed(feedback[-5:])),
+        "recent_low_feedback": list(reversed(low_feedback[-3:])),
+        "recent_chats": list(reversed(chats[-5:])),
+    }
 
 
 # ---------------------------------------------------------------------------

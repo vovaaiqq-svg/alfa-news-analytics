@@ -1,0 +1,12 @@
+<svg viewBox="0 0 139.317 139.317" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="139.317383" height="139.317383" fill="none" customFrame="#000000" mask="url(#mask_9)">
+	<defs>
+		<filter id="pixso_custom_mask_type_alpha">
+			<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0 " />
+		</filter>
+	</defs>
+	<mask id="mask_9" width="139.317078" height="139.317078" x="0.000000" y="0.000000" maskUnits="userSpaceOnUse">
+		<g filter="url(#pixso_custom_mask_type_alpha)">
+			<circle id="Ellipse 76" cx="69.6585388" cy="69.6585388" r="69.6585388" fill="rgb(217,217,217)" />
+		</g>
+	</mask>
+</svg>

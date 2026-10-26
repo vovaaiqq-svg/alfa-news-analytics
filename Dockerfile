@@ -4,8 +4,8 @@ WORKDIR /app
 
 # Зависимости без тяжёлых опциональных пакетов (torch/sentence-transformers).
 # RAG автоматически использует поиск по ключевым словам, если модель не установлена.
-COPY requirements-lite.txt .
-RUN pip install --no-cache-dir -r requirements-lite.txt
+COPY requirements-lock.txt .
+RUN pip install --no-cache-dir -r requirements-lock.txt
 
 # Копирование кода
 COPY . .

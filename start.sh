@@ -43,15 +43,15 @@ if [ -x ".venv/bin/python" ]; then
 fi
 
 # ---------- 3. Зависимости ----------
-echo "[3/4] Проверяю зависимости (requirements-lite.txt)..."
+echo "[3/4] Проверяю зависимости (requirements-lock.txt)..."
 if "$PYTHON" -c "import fastapi, uvicorn, feedparser, bs4, lxml, numpy" 2>/dev/null; then
     echo "      Всё уже установлено."
 else
     echo "      Устанавливаю (один раз, ~1 минута)..."
-    if ! "$PYTHON" -m pip install -q -r requirements-lite.txt; then
+    if ! "$PYTHON" -m pip install -q -r requirements-lock.txt; then
         echo "ОШИБКА: не удалось установить зависимости."
         echo "Проверьте интернет и выполните вручную:"
-        echo "  $PYTHON -m pip install -r requirements-lite.txt"
+        echo "  $PYTHON -m pip install -r requirements-lock.txt"
         exit 1
     fi
 fi

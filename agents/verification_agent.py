@@ -59,7 +59,31 @@ class VerificationAgent(BaseAgent):
         for i, result in enumerate(verification_results):
             if i < len(context.interpretations):
                 context.interpretations[i]["verification"] = result
-        
+
+        analytics_results = []
+        for insight in context.metadata.get("analytics_insights", []):
+            try:
+                result = await self._verify_interpretation(
+                    {
+                        "news_id": insight.get("analytics_id"),
+                        "interpretation": insight.get("interpretation", {}),
+                    },
+                    context.client_profile,
+                    context.alfa_analytics,
+                )
+                insight["verification"] = result
+                analytics_results.append(result)
+            except Exception as exc:
+                self.logger.error(f"Ошибка верификации аналитики: {exc}")
+
+        all_results = verification_results + analytics_results
+        passed = sum(1 for item in all_results if item.get("status") == "verified")
+        context.metadata["verification_summary"] = {
+            "checked": len(all_results),
+            "verified": passed,
+            "pass_rate": round(passed / len(all_results), 3) if all_results else 0,
+        }
+
         # Трассировка
         step = self.create_step(
             step_number=5,
@@ -85,8 +109,9 @@ class VerificationAgent(BaseAgent):
                         "issues": r.get("issues", []),
                         "suggestions": r.get("suggestions", []),
                     }
-                    for r in verification_results
+                    for r in all_results
                 ],
+                "verification_summary": context.metadata.get("verification_summary"),
             },
         )
         context.add_step(step)
@@ -114,12 +139,22 @@ class VerificationAgent(BaseAgent):
         interp = interpretation.get("interpretation", {})
         
         # Проверка полноты
-        required_fields = ["what_happened", "why_important", "consequences", "actions", "bank_view"]
+        required_fields = [
+            "what_happened", "why_important", "consequences", "actions",
+            "bank_view", "risks", "opportunities",
+        ]
         missing_fields = [f for f in required_fields if not interp.get(f)]
         completeness_score = (len(required_fields) - len(missing_fields)) / len(required_fields) * 10
         
-        # Проверка обоснованности (наличие источников)
-        sources = interp.get("sources", [])
+        # Проверка обоснованности (наличие источников). В интерпретации
+        # источники могут быть списком или словарём по типам.
+        raw_sources = interp.get("sources", [])
+        if isinstance(raw_sources, dict):
+            sources = [value for value in raw_sources.values() if value]
+        elif isinstance(raw_sources, list):
+            sources = [value for value in raw_sources if value]
+        else:
+            sources = []
         grounding_score = 10 if len(sources) >= 2 else (5 if len(sources) >= 1 else 0)
         
         # Проверка использования данных клиента

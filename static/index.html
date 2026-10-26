@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#ef3124">
+    <meta name="theme-color" content="#f90404">
     <meta name="description" content="Альфа-Бизнес — персональная новостная аналитика: риски и возможности для вашего бизнеса.">
     <title>Альфа-Бизнес — новостная аналитика</title>
     <link rel="preload" href="/static/fonts/styrene/styrenealc-bold-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="preload" href="/static/fonts/styrene/styrenealc-bold-latin.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" href="/static/styles.css?v=12">
+    <link rel="stylesheet" href="/static/styles.css?v=15">
+    <link rel="stylesheet" href="/static/design.css?v=2">
 </head>
 <body>
 <div id="app">
@@ -16,81 +17,75 @@
     <!-- Лендинг                                                      -->
     <!-- ============================================================ -->
     <section class="screen landing-screen" id="screen-landing">
-        <div class="landing-copy">
-            <div class="brand-lockup">
-                <span class="brand-mark">А</span>
-                <span>Альфа-Бизнес</span>
-            </div>
-            <h1>В фокусе<br>ваш бизнес</h1>
-            <p class="landing-lead">
-                Персональная аналитика, которая объясняет, как изменения рынка
-                влияют именно на вашу компанию — и что с этим делать.
-            </p>
-            <div class="landing-actions">
-                <button class="btn btn-white" type="button" data-route="login">Войти</button>
-                <button class="btn btn-outline-white" type="button" data-route="register">Регистрация</button>
-            </div>
-            <div class="landing-note">Демо-режим · свежие новости · аналитика Альфа-Банка</div>
+        <div class="landing-brand">
+            <span class="brand-mark">А</span>
+            <span>Альфа-Бизнес</span>
         </div>
-        <div class="landing-art" aria-hidden="true">
-            <div class="art-orbit orbit-one"></div>
-            <div class="art-orbit orbit-two"></div>
-            <div class="art-card art-card-main">
-                <span class="art-chip">Главное для бизнеса</span>
-                <strong>Ставка, спрос, риски</strong>
-                <span>Агент соберёт новости, сверит их с профилем компании и покажет, что делать дальше.</span>
+        <div class="landing-stage">
+            <div class="landing-cat-wrap" aria-hidden="true">
+                <img class="landing-cat" src="/static/img/alfa-cat-hero.webp" alt="">
             </div>
-            <div class="art-card art-card-small">
-                <span>Риски</span><strong>3</strong>
-                <span>Возможности</span><strong>4</strong>
+            <div class="landing-copy">
+                <h1>Альфа-Бизнес</h1>
+                <h2>В фокусе: <span>ваш бизнес</span></h2>
+                <p class="landing-lead">
+                    Персональная аналитика, помогающая понять,
+                    как изменения рынка влияют на вашу компанию
+                </p>
+                <button class="btn landing-login-btn" type="button" data-route="login">Войти</button>
+                <p class="landing-register">
+                    Еще не с нами? <a href="#/register" data-route="register">Зарегистрируйтесь</a>,
+                    чтобы вывести свой бизнес на новый уровень
+                </p>
             </div>
         </div>
+        <div class="landing-note">Точка входа в Альфа-Бизнес · прототип · свежие новости · аналитика Альфа-Банка</div>
     </section>
 
     <!-- ============================================================ -->
     <!-- Вход                                                         -->
     <!-- ============================================================ -->
-    <section class="screen auth-screen" id="screen-login">
-        <div class="auth-shell">
-            <div class="auth-card">
-                <button class="icon-btn back-btn" type="button" data-route="landing" aria-label="Назад">←</button>
-                <div class="auth-brand">Альфа-Бизнес</div>
-                <h2>Войти</h2>
-                <p class="muted">Введите логин и пароль, чтобы открыть профиль компании.</p>
-                <form id="login-form" class="form-stack">
-                    <label>Логин
-                        <input name="login" autocomplete="username" placeholder="Например, demo" required>
-                    </label>
-                    <label>Пароль
-                        <input name="password" type="password" autocomplete="current-password" placeholder="••••••" required>
-                    </label>
-                    <button class="btn btn-primary btn-wide" type="submit">Войти</button>
-                </form>
-                <button class="btn btn-ghost btn-wide" id="demo-login" type="button">Войти в демо-режиме</button>
-                <div class="auth-hint">Демо-доступ: логин <b>demo</b>, пароль <b>demo</b>. Или создайте свой профиль за 2 шага.</div>
-                <p class="auth-switch">Нет аккаунта? <a href="#/register" data-route="register">Зарегистрироваться</a></p>
-            </div>
-            <div class="auth-side">
-                <span class="auth-side-label">Альфа-Бизнес</span>
-                <p>Один профиль — два агента: аналитика банка и внешние новости.</p>
-            </div>
+    <section class="screen auth-screen auth-screen--cat" id="screen-login">
+        <div class="auth-brand">Альфа-Бизнес</div>
+        <div class="auth-cat-wrap" aria-hidden="true">
+            <img class="auth-cat" src="/static/img/alfa-cat-auth.webp" alt="">
+        </div>
+        <div class="auth-card auth-card--preview">
+            <button class="icon-btn back-btn" type="button" data-route="landing" aria-label="Назад">←</button>
+            <h2>Войти</h2>
+            <p class="auth-subtitle">Введите логин и пароль, чтобы открыть профиль компании.</p>
+            <form id="login-form" class="form-stack">
+                <label>логин
+                    <input name="login" autocomplete="username" placeholder="Например, demo" required>
+                </label>
+                <label>пароль
+                    <input name="password" type="password" autocomplete="current-password" placeholder="••••••" required>
+                </label>
+                <button class="btn btn-primary btn-wide auth-submit" type="submit">Войти</button>
+            </form>
+            <button class="btn btn-ghost btn-wide demo-login-btn" id="demo-login" type="button">Открыть демо-профиль</button>
+            <div class="auth-hint">Демо-доступ: логин <b>demo</b>, пароль <b>demo</b>.</div>
+            <p class="auth-switch">Нет аккаунта? <a href="#/register" data-route="register">Зарегистрироваться</a></p>
         </div>
     </section>
 
     <!-- ============================================================ -->
     <!-- Регистрация: шаг 1                                           -->
     <!-- ============================================================ -->
-    <section class="screen auth-screen" id="screen-register">
-        <div class="auth-shell wide">
-            <div class="auth-card">
-                <button class="icon-btn back-btn" type="button" data-route="landing" aria-label="Назад">←</button>
-                <div class="steps">
-                    <span class="step-dot active">1</span>
-                    <span class="step-line"></span>
-                    <span class="step-dot">2</span>
-                    <span class="step-caption">Шаг 1 из 2</span>
-                </div>
-                <h2>Регистрация</h2>
+    <section class="screen auth-screen auth-screen--cat auth-screen--register" id="screen-register">
+        <div class="auth-brand">Альфа-Бизнес</div>
+        <div class="auth-cat-wrap" aria-hidden="true">
+            <img class="auth-cat" src="/static/img/alfa-cat-auth.webp" alt="">
+        </div>
+        <div class="auth-card auth-card--preview auth-card--register">
+            <button class="icon-btn back-btn" type="button" data-route="landing" aria-label="Назад">←</button>
+            <div class="steps">
+                <span class="step-dot active">1</span>
+                <span class="step-line"></span>
+                <span class="step-dot">2</span>
+                <span class="step-caption">Шаг 1 из 2</span>
+            </div>
+            <h2>Регистрация</h2>
                 <p class="muted">
                     Расскажите о бизнесе. Агент сверит данные с внутренней базой, определит отрасль
                     по ключевым словам и дополнит профиль характеристиками.
@@ -144,27 +139,29 @@
                             Используем факторинг
                         </label>
                     </details>
-                    <button class="btn btn-primary btn-wide" type="submit">Далее</button>
+                    <button class="btn btn-primary btn-wide auth-submit" type="submit">Далее</button>
                 </form>
                 <p class="auth-switch">Уже есть аккаунт? <a href="#/login" data-route="login">Войти</a></p>
-            </div>
         </div>
     </section>
 
     <!-- ============================================================ -->
     <!-- Регистрация: шаг 2                                           -->
     <!-- ============================================================ -->
-    <section class="screen auth-screen" id="screen-register-2">
-        <div class="auth-shell">
-            <div class="auth-card">
-                <button class="icon-btn back-btn" type="button" data-route="register" aria-label="Назад">←</button>
-                <div class="steps">
-                    <span class="step-dot done">1</span>
-                    <span class="step-line done"></span>
-                    <span class="step-dot active">2</span>
-                    <span class="step-caption">Шаг 2 из 2</span>
-                </div>
-                <h2>Создайте аккаунт</h2>
+    <section class="screen auth-screen auth-screen--cat auth-screen--register" id="screen-register-2">
+        <div class="auth-brand">Альфа-Бизнес</div>
+        <div class="auth-cat-wrap" aria-hidden="true">
+            <img class="auth-cat" src="/static/img/alfa-cat-auth.webp" alt="">
+        </div>
+        <div class="auth-card auth-card--preview auth-card--register auth-card--compact">
+            <button class="icon-btn back-btn" type="button" data-route="register" aria-label="Назад">←</button>
+            <div class="steps">
+                <span class="step-dot done">1</span>
+                <span class="step-line done"></span>
+                <span class="step-dot active">2</span>
+                <span class="step-caption">Шаг 2 из 2</span>
+            </div>
+            <h2>Создайте аккаунт</h2>
                 <p class="muted">Осталось придумать логин и пароль. Профиль компании уже готов.</p>
                 <form id="register-2-form" class="form-stack">
                     <label>Логин
@@ -176,10 +173,9 @@
                     <label>Повторите пароль
                         <input name="password2" type="password" autocomplete="new-password" required>
                     </label>
-                    <button class="btn btn-primary btn-wide" type="submit">Создать аккаунт</button>
+                    <button class="btn btn-primary btn-wide auth-submit" type="submit">Создать аккаунт</button>
                 </form>
                 <p class="auth-switch">Уже есть аккаунт? <a href="#/login" data-route="login">Войти</a></p>
-            </div>
         </div>
     </section>
 
@@ -187,54 +183,60 @@
     <!-- Приложение                                                   -->
     <!-- ============================================================ -->
     <section class="screen app-screen" id="screen-app">
-        <aside class="sidebar">
-            <div class="sidebar-top">
-                <div class="sidebar-brand">
-                    <span class="brand-mark small">А</span>
-                    <span>Альфа-Бизнес</span>
-                </div>
-                <nav class="side-nav" id="side-nav">
-                    <button class="nav-item active" type="button" data-view="profile">
-                        <span class="nav-icon">○</span>Профиль
-                    </button>
-                    <button class="nav-item" type="button" data-view="alfa">
-                        <span class="nav-icon">✦</span>Альфа-агент
-                    </button>
-                    <button class="nav-item" type="button" data-view="news">
-                        <span class="nav-icon">✦</span>Новостной агент
-                    </button>
-                    <button class="nav-item" type="button" data-view="trace">
-                        <span class="nav-icon">▲</span>Трассировка
-                    </button>
-                    <button class="nav-item" type="button" data-view="risks">
-                        <span class="nav-icon">!</span>Риски и возможности
-                    </button>
-                    <button class="nav-item" type="button" data-view="faq">
-                        <span class="nav-icon">?</span>Задать вопрос
-                    </button>
-                    <button class="nav-item" type="button" data-view="feedback">
-                        <span class="nav-icon">#</span>Оставить отзыв
-                    </button>
-                </nav>
+        <header class="app-topbar">
+            <div class="app-brand">
+                <span class="brand-mark small">А</span>
+                <span>Альфа-Бизнес</span>
             </div>
-            <div class="sidebar-bottom">
+            <nav class="top-nav" id="side-nav" aria-label="Разделы сервиса">
+                <button class="nav-item active" type="button" data-view="profile">Профиль</button>
+                <button class="nav-item" type="button" data-view="risks">Риски</button>
+                <button class="nav-item" type="button" data-view="alfa">Альфа-агент</button>
+                <button class="nav-item" type="button" data-view="news">Новости</button>
+                <button class="nav-item" type="button" data-view="trace">Трассировка</button>
+                <button class="nav-item" type="button" data-view="faq">Вопрос</button>
+                <button class="nav-item" type="button" data-view="feedback">Отзыв</button>
+            </nav>
+            <div class="app-top-actions">
                 <div class="sidebar-user" id="sidebar-user">
                     <strong>Профиль</strong>
                     <span>Загрузка…</span>
                 </div>
-                <button class="nav-item logout" type="button" id="logout-btn">
-                    <span class="nav-icon">↩</span>Выйти
-                </button>
+                <button class="top-link add-company" type="button" data-route="register">+ Компания</button>
+                <button class="top-link logout" type="button" id="logout-btn">Выйти</button>
             </div>
-        </aside>
+        </header>
 
         <main class="main-area">
             <!-- Профиль -->
             <section class="view active" id="view-profile">
+                <div class="profile-dashboard">
+                    <aside class="profile-red-card">
+                        <div class="profile-cat-wrap">
+                            <img class="profile-cat" src="/static/img/alfa-cat-profile.webp" alt="">
+                        </div>
+                        <div class="profile-red-name">
+                            <span class="profile-red-label">Профиль компании</span>
+                            <h2 id="profile-company">—</h2>
+                            <div class="profile-meta" id="profile-meta">—</div>
+                        </div>
+                        <nav class="profile-quick-nav" aria-label="Быстрый переход">
+                            <button type="button" data-view="alfa"><span>✦</span>Альфа-агент</button>
+                            <button type="button" data-view="news"><span>✦</span>Новостной агент</button>
+                            <button type="button" data-view="trace"><span>▲</span>Трассировка</button>
+                            <button type="button" data-view="risks"><span>!</span>Риски</button>
+                            <button type="button" data-view="risks"><span>◎</span>Возможности</button>
+                        </nav>
+                        <div class="profile-red-links">
+                            <button type="button" data-view="faq"><span>?</span>Задать вопрос</button>
+                            <button type="button" data-view="feedback"><span>#</span>Оставить отзыв</button>
+                        </div>
+                    </aside>
+                    <div class="profile-main">
                 <div class="view-head">
                     <div>
                         <div class="eyebrow">Профиль компании</div>
-                        <h1>Мы составили характеристику вашего бизнеса</h1>
+                        <h1>Ваш бизнес</h1>
                         <p class="muted">Внесите изменения, если нужно, и переходите к агентам.</p>
                     </div>
                     <div class="head-actions">
@@ -247,9 +249,8 @@
                     <article class="card profile-card">
                         <div class="profile-card-head">
                             <div>
-                                <div class="eyebrow">Юридическое лицо</div>
-                                <h2 id="profile-company">—</h2>
-                                <div class="profile-meta" id="profile-meta">—</div>
+                                <div class="eyebrow">Карточка компании</div>
+                                <h2>Данные профиля</h2>
                             </div>
                             <span class="status-chip" id="profile-source">Внутренняя база</span>
                         </div>
@@ -318,6 +319,8 @@
                         <span class="arrow">→</span>
                     </button>
                 </div>
+                    </div>
+                </div>
             </section>
 
             <!-- Риски и возможности -->
@@ -332,9 +335,27 @@
                         <button class="btn btn-white" type="button" id="risks-refresh">Обновить анализ</button>
                     </div>
                 </div>
+                <div class="risk-toolbar" id="risk-toolbar">
+                    <div class="risk-filter-group" id="risk-filters">
+                        <button class="risk-filter active" type="button" data-risk-filter="all">Все</button>
+                        <button class="risk-filter" type="button" data-risk-filter="news">Новости</button>
+                        <button class="risk-filter" type="button" data-risk-filter="alfa">Аналитика банка</button>
+                    </div>
+                    <div class="risk-filter-group" id="risk-sort">
+                        <button class="risk-filter active" type="button" data-risk-sort="relevance">По значимости</button>
+                        <button class="risk-filter" type="button" data-risk-sort="date">По дате</button>
+                    </div>
+                    <select id="risk-category-filter" class="risk-select" aria-label="Фильтр по теме">
+                        <option value="">Все темы</option>
+                    </select>
+                    <span class="risk-count" id="risk-count"></span>
+                </div>
+                <div id="risk-verification" class="risk-verification"></div>
                 <div id="risks-list" class="risks-list"></div>
                 <div class="red-view-note">
-                    Каждая карточка опирается на первоисточник и профиль компании. Ниже — что это значит для вас и что можно сделать.
+                    Белые блоки «Позиция Альфа-Банка» — это факты и экспертные материалы банка.
+                    Красные блоки «AI-разбор» — риски, возможности и следующие шаги, сформированные AI
+                    на основе профиля компании. Каждая карточка связана с первоисточником.
                 </div>
             </section>
 
@@ -359,7 +380,7 @@
                         <input name="question" autocomplete="off" placeholder="Спросите про ставку, инфляцию, лизинг…" required>
                         <button class="send-btn" type="submit" aria-label="Отправить">→</button>
                     </form>
-                    <div class="chat-disclaimer">Демо-режим: ответы собираются локально по материалам Альфа-Банка.</div>
+                    <div class="chat-disclaimer" id="chat-disclaimer-alfa">Ответы формируются по аналитике Альфа-Банка. AI-выводы помечены; источник можно открыть в трассировке.</div>
                 </div>
             </section>
 
@@ -384,7 +405,7 @@
                         <input name="question" autocomplete="off" placeholder="Что нового в моей отрасли?" required>
                         <button class="send-btn" type="submit" aria-label="Отправить">→</button>
                     </form>
-                    <div class="chat-disclaimer">Демо-режим: ответы собираются локально по свежим RSS-новостям.</div>
+                    <div class="chat-disclaimer" id="chat-disclaimer-news">Ответы формируются только по внешним RSS-новостям. Аналитика банка в этом канале не используется.</div>
                 </div>
             </section>
 
@@ -402,6 +423,18 @@
                 </div>
                 <div class="trace-summary" id="trace-summary"></div>
                 <div class="trace-list" id="trace-list"></div>
+                <div class="audit-panel" id="audit-panel">
+                    <div class="audit-head">
+                        <div>
+                            <div class="eyebrow light">Аудит качества</div>
+                            <h2>Что происходит с ответами агентов</h2>
+                        </div>
+                        <button class="btn btn-outline-white small" type="button" id="audit-refresh">Обновить</button>
+                    </div>
+                    <div class="audit-metrics" id="audit-metrics"></div>
+                    <div class="audit-chats" id="audit-chats"></div>
+                    <div class="audit-feedback" id="audit-feedback"></div>
+                </div>
             </section>
 
             <!-- FAQ / Задать вопрос -->
@@ -452,8 +485,22 @@
                     <details class="faq-item">
                         <summary>Можно ли доверять ответам агента?</summary>
                         <div class="faq-answer">
-                            <p>Агент проходит самопроверку: сверяет выводы с профилем, источниками и аналитикой. В трассировке видны все шаги и использованные данные.</p>
-                            <p>Это демо-версия, поэтому решения стоит проверять с менеджером банка. Если ответ неточен — оставьте отзыв.</p>
+                            <p>Агент проходит самопроверку: сверяет полноту ответа, наличие источников и использование профиля компании. Результат виден в карточках и в трассировке.</p>
+                            <p>Факты и аналитика банка отделены от AI-выводов. Если ответ неточен — оставьте отзыв: он попадёт в аудит качества.</p>
+                        </div>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Что такое аудит качества?</summary>
+                        <div class="faq-answer">
+                            <p>Это журнал действий AI-компонента и обратной связи: сколько анализов и диалогов прошло, какая доля ответов подтверждена источниками, какие оценки поставили пользователи.</p>
+                            <p>Сводка доступна на странице «Трассировка» в блоке «Аудит качества». Низкие оценки и ошибки разбираются на регулярной проверке.</p>
+                        </div>
+                    </details>
+                    <details class="faq-item">
+                        <summary>Что значит «данные в другом разрезе»?</summary>
+                        <div class="faq-answer">
+                            <p>Это смена фокуса: только новости или только аналитика банка, фильтр по теме, сортировка по значимости или дате. Так можно посмотреть на событие глазами рынка и глазами банка отдельно.</p>
+                            <p>Фильтры находятся на странице «Риски и возможности».</p>
                         </div>
                     </details>
                 </div>
@@ -506,6 +553,32 @@
                 </div>
             </section>
         </main>
+
+        <!-- Альфа-гид: персонаж, который проводит по карте сервиса -->
+        <div class="guide" id="guide">
+            <div class="guide-card" id="guide-card">
+                <div class="guide-head">
+                    <div class="guide-avatar">А</div>
+                    <div>
+                        <strong>Альфа-гид</strong>
+                        <span>ваш проводник по событиям</span>
+                    </div>
+                    <button class="guide-close" type="button" id="guide-close" aria-label="Свернуть">×</button>
+                </div>
+                <p class="guide-text" id="guide-text">
+                    Здравствуйте! Я проведу вас по карте: профиль → риски → агенты → трассировка.
+                </p>
+                <div class="guide-steps" id="guide-steps"></div>
+                <div class="guide-actions">
+                    <button class="btn btn-primary small" type="button" id="guide-next">Дальше →</button>
+                    <button class="btn btn-ghost small" type="button" id="guide-hide">Скрыть</button>
+                </div>
+            </div>
+            <button class="guide-pill" type="button" id="guide-toggle" aria-label="Открыть Альфа-гида">
+                <span class="guide-avatar small">А</span>
+                <span>Альфа-гид</span>
+            </button>
+        </div>
     </section>
 </div>
 
@@ -567,6 +640,6 @@
 </dialog>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<script src="/static/app.js?v=8"></script>
+<script src="/static/app.js?v=11"></script>
 </body>
 </html>

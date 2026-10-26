@@ -136,7 +136,8 @@ start_localhostrun() {
 
     local url=""
     for i in $(seq 1 20); do
-        url=$(grep -oE "https://[a-z0-9]+\.lhr\.life" "$log" | head -1)
+        # localhost.run может переиздать домен при переподключении — берём последний.
+        url=$(grep -oE "https://[a-z0-9]+\.lhr\.life" "$log" | tail -1)
         [ -n "$url" ] && break
         sleep 1
     done

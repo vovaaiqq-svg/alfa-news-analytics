@@ -1,0 +1,12 @@
+# Зафиксированные версии для воспроизводимого запуска (Python 3.11+).
+# Обновляйте осознанно и прогоняйте тесты после изменения.
+fastapi==0.149.0
+uvicorn[standard]==0.54.0
+httpx==0.28.1
+pydantic==2.14.1
+python-multipart==0.0.20
+feedparser==6.0.14
+beautifulsoup4==4.14.3
+lxml==6.0.2
+numpy==2.5.4
+aiofiles==25.1.0

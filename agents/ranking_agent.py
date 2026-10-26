@@ -141,9 +141,9 @@ class RankingAgent(BaseAgent):
                         reasoning_parts.append("Новость относится к IT-отрасли")
                 
                 elif "торгов" in industry_lower:
-                    if any(word in content or word in title for word in ["торгов", "розниц", "опт", "магазин"]):
+                    if any(word in content or word in title for word in ["торгов", "розниц", "опт", "магазин", "поставк", "логист", "нефт", "топлив", "бензин"]):
                         score += 2.0
-                        reasoning_parts.append("Новость относится к торговой отрасли")
+                        reasoning_parts.append("Новость относится к торговой отрасли или её цепочке поставок")
                 
                 elif "производ" in industry_lower or "обработк" in industry_lower:
                     if any(word in content or word in title for word in ["производ", "завод", "фабрик", "промышленн"]):
@@ -199,10 +199,23 @@ class RankingAgent(BaseAgent):
                     score += 2.0
                     reasoning_parts.append("Новость относится к внешнеэкономической деятельности")
             
-            # Оценка по макроэкономике (всегда актуально)
+            # Оценка по региону: локальные события важнее для компании,
+            # которая работает именно там.
             content = news_item.get("content", "").lower()
             title = news_item.get("title", "").lower()
-            
+            if region:
+                region_key = (
+                    region.lower()
+                    .replace("область", "")
+                    .replace("край", "")
+                    .replace("республика", "")
+                    .strip()
+                )
+                if region_key and region_key in f"{title} {content}":
+                    score += 2.0
+                    reasoning_parts.append(f"Событие происходит в регионе клиента: {region}")
+
+            # Оценка по макроэкономике (всегда актуально)
             if any(word in content or word in title for word in ["цб", "ключевая ставк", "инфляц", "ввп", "макроэконом"]):
                 score += 1.5
                 reasoning_parts.append("Новость относится к макроэкономике")
@@ -210,9 +223,9 @@ class RankingAgent(BaseAgent):
             # Нормализация оценки (максимум 10)
             score = min(score, 10.0)
             
-            # Если нет совпадений, ставим минимальную оценку
+            # Нет совпадений — это не «событие в фокусе». Оставляем 0,
+            # чтобы интерпретатор не выдавал случайные карточки.
             if score == 0:
-                score = 1.0
                 reasoning_parts.append("Нет прямых совпадений с критериями клиента")
             
             ranked_items.append({

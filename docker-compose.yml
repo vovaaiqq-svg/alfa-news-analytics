@@ -1,22 +1,20 @@
-version: '3.8'
-
 services:
   api:
     build: .
     ports:
       - "8000:8000"
     environment:
-      - MODEL_NAME=opencode/glm-5.3-flash-free
-      - API_KEY=${API_KEY}
-      - OPENCODE_API_URL=http://host.docker.internal:3000
+      - LLM_BASE_URL=${LLM_BASE_URL:-https://challenge.up.railway.app/v1}
+      - LLM_MODEL=${LLM_MODEL:-deepseek/deepseek-v4.1-flash}
+      - LLM_API_KEY=${LLM_API_KEY:-}
+      - PYTHONUNBUFFERED=1
     volumes:
       - ./data:/app/data
+      - ./.run:/app/.run
     restart: unless-stopped
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-
-  # Опционально: добавьте дополнительные сервисы при необходимости
-  # redis:
-  #   image: redis:7-alpine
-  #   ports:
-  #     - "6379:6379"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s

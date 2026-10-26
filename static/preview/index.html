@@ -1,0 +1,3645 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="theme-color" content="#ef3124">
+  <meta name="description" content="Интерактивный preview нового визуала Альфа-Бизнес: 17 экранов, формы, сценарии и навигация по макету.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Альфа-Бизнес — preview визуала</title>
+  <link rel="stylesheet" href="css/font.css">
+  <style>
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+ol,ul,menu {
+  padding-inline-start: 0;
+  list-style: none;
+}
+
+ol li::marker, ul li::before {
+  letter-spacing: 0;
+}
+
+.scroll-container > div {
+  width: 100%;
+}
+
+.container > div {
+  width: 100%;
+}
+
+.Pixso-canvas-0_1 > div {
+  width: 100%;
+}
+
+html {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background-color: white;
+}
+
+span {
+  word-break: break-word;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+.scroll-container {
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+}
+
+.Pixso-canvas-0_1,.Pixso-frame-2001_3 {
+  width: 100%;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-canvas-0_1 {
+  height: 100%;
+}
+
+.Pixso-frame-2001_3,.Pixso-frame-2001_16,.Pixso-frame-2001_29,.Pixso-frame-2001_52,.Pixso-frame-2001_77,.Pixso-frame-2001_93,.Pixso-frame-2001_109,.Pixso-frame-2001_126,.Pixso-frame-2001_242,.Pixso-frame-2001_269,.Pixso-frame-2001_303,.Pixso-frame-2001_322,.Pixso-frame-2001_334,.Pixso-frame-2001_356,.Pixso-frame-2001_378,.Pixso-frame-2001_389,.Pixso-frame-2001_416 {
+  height: 1080px;
+  min-width: 1920px;
+  overflow: hidden;
+}
+
+.Pixso-frame-2001_3 {
+  background-color: rgba(248.85582, 4.411807, 4.411807, 1);
+}
+
+.Pixso-rectangle-2001_4,.Pixso-rectangle-2001_5,.Pixso-rectangle-2001_6 {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-rectangle-2001_4 {
+  width: 428px;
+  height: 159px;
+  left: -125px;
+  top: 287px;
+}
+
+.Pixso-rectangle-2001_5 {
+  width: 428px;
+  height: 89px;
+  left: 303px;
+  top: 160px;
+}
+
+.Pixso-rectangle-2001_6 {
+  width: 458px;
+  height: 209px;
+  left: 215px;
+  top: 631px;
+}
+
+.Pixso-paragraph-2001_7,.Pixso-text-2001_9,.Pixso-text-2001_10,.Pixso-text-2001_11,.Pixso-paragraph-2001_14,.Pixso-paragraph-2001_20,.Pixso-paragraph-2001_21,.Pixso-paragraph-2001_22,.Pixso-paragraph-2001_23,.Pixso-paragraph-2001_41,.Pixso-paragraph-2001_64,.Pixso-paragraph-2001_85,.Pixso-paragraph-2001_101,.Pixso-paragraph-2001_24,.Pixso-paragraph-2001_31,.Pixso-paragraph-2001_54,.Pixso-paragraph-2001_86,.Pixso-paragraph-2001_102,.Pixso-paragraph-2001_32,.Pixso-paragraph-2001_55,.Pixso-paragraph-2001_33,.Pixso-paragraph-2001_56,.Pixso-paragraph-2001_34,.Pixso-paragraph-2001_57,.Pixso-paragraph-2001_35,.Pixso-paragraph-2001_58,.Pixso-paragraph-2001_40,.Pixso-paragraph-2001_63,.Pixso-paragraph-2001_50,.Pixso-paragraph-2001_71,.Pixso-paragraph-2001_72,.Pixso-paragraph-2001_79,.Pixso-paragraph-2001_95,.Pixso-paragraph-2001_80,.Pixso-paragraph-2001_96,.Pixso-paragraph-2001_81,.Pixso-paragraph-2001_97,.Pixso-paragraph-2001_91,.Pixso-paragraph-2001_107,.Pixso-paragraph-2001_111,.Pixso-text-2001_112,.Pixso-text-2001_113,.Pixso-paragraph-2001_114,.Pixso-paragraph-2001_115,.Pixso-paragraph-2001_120,.Pixso-paragraph-2001_136,.Pixso-paragraph-2001_145,.Pixso-paragraph-2001_153,.Pixso-paragraph-2001_165,.Pixso-paragraph-2001_174,.Pixso-paragraph-2001_156,.Pixso-paragraph-2001_183,.Pixso-paragraph-2001_190,.Pixso-paragraph-2001_191,.Pixso-paragraph-2001_193,.Pixso-paragraph-2001_196,.Pixso-text-2001_197,.Pixso-paragraph-2001_199,.Pixso-paragraph-2001_204,.Pixso-paragraph-2001_207,.Pixso-paragraph-2001_200,.Pixso-paragraph-2001_203,.Pixso-paragraph-2001_206,.Pixso-paragraph-2001_201,.Pixso-paragraph-2001_208,.Pixso-paragraph-2001_209,.Pixso-paragraph-2001_264,.Pixso-paragraph-2001_275,.Pixso-paragraph-2001_317,.Pixso-paragraph-2001_329,.Pixso-paragraph-2001_351,.Pixso-paragraph-2001_373,.Pixso-paragraph-2001_384,.Pixso-paragraph-2001_210,.Pixso-paragraph-2001_265,.Pixso-paragraph-2001_276,.Pixso-paragraph-2001_318,.Pixso-paragraph-2001_330,.Pixso-paragraph-2001_352,.Pixso-paragraph-2001_385,.Pixso-paragraph-2001_211,.Pixso-paragraph-2001_266,.Pixso-paragraph-2001_277,.Pixso-paragraph-2001_319,.Pixso-paragraph-2001_331,.Pixso-paragraph-2001_375,.Pixso-paragraph-2001_386,.Pixso-paragraph-2001_212,.Pixso-paragraph-2001_320,.Pixso-paragraph-2001_332,.Pixso-paragraph-2001_354,.Pixso-paragraph-2001_376,.Pixso-paragraph-2001_387,.Pixso-paragraph-2001_213,.Pixso-paragraph-2001_216,.Pixso-paragraph-2001_220,.Pixso-paragraph-2001_217,.Pixso-paragraph-2001_221,.Pixso-paragraph-2001_228,.Pixso-paragraph-2001_234,.Pixso-paragraph-2001_235,.Pixso-paragraph-2001_237,.Pixso-paragraph-2001_240,.Pixso-paragraph-2001_243,.Pixso-paragraph-2001_270,.Pixso-paragraph-2001_304,.Pixso-paragraph-2001_323,.Pixso-paragraph-2001_338,.Pixso-paragraph-2001_360,.Pixso-paragraph-2001_383,.Pixso-paragraph-2001_390,.Pixso-paragraph-2001_247,.Pixso-paragraph-2001_248,.Pixso-paragraph-2001_272,.Pixso-paragraph-2001_255,.Pixso-paragraph-2001_258,.Pixso-paragraph-2001_262,.Pixso-paragraph-2001_267,.Pixso-paragraph-2001_278,.Pixso-paragraph-2001_268,.Pixso-paragraph-2001_279,.Pixso-paragraph-2001_321,.Pixso-paragraph-2001_333,.Pixso-paragraph-2001_355,.Pixso-paragraph-2001_377,.Pixso-paragraph-2001_388,.Pixso-paragraph-2001_274,.Pixso-paragraph-2001_289,.Pixso-paragraph-2001_290,.Pixso-paragraph-2001_291,.Pixso-paragraph-2001_293,.Pixso-paragraph-2001_295,.Pixso-paragraph-2001_296,.Pixso-paragraph-2001_299,.Pixso-paragraph-2001_301,.Pixso-paragraph-2001_305,.Pixso-paragraph-2001_309,.Pixso-paragraph-2001_310,.Pixso-paragraph-2001_311,.Pixso-paragraph-2001_312,.Pixso-paragraph-2001_324,.Pixso-paragraph-2001_326,.Pixso-paragraph-2001_327,.Pixso-paragraph-2001_336,.Pixso-paragraph-2001_358,.Pixso-paragraph-2001_337,.Pixso-paragraph-2001_359,.Pixso-paragraph-2001_342,.Pixso-paragraph-2001_343,.Pixso-paragraph-2001_344,.Pixso-paragraph-2001_345,.Pixso-paragraph-2001_346,.Pixso-paragraph-2001_347,.Pixso-paragraph-2001_348,.Pixso-paragraph-2001_349,.Pixso-paragraph-2001_353,.Pixso-paragraph-2001_364,.Pixso-paragraph-2001_365,.Pixso-paragraph-2001_366,.Pixso-paragraph-2001_367,.Pixso-paragraph-2001_368,.Pixso-paragraph-2001_369,.Pixso-paragraph-2001_370,.Pixso-paragraph-2001_371,.Pixso-paragraph-2001_374,.Pixso-paragraph-2001_381,.Pixso-paragraph-2001_382,.Pixso-text-2001_394,.Pixso-paragraph-2001_395,.Pixso-paragraph-2001_398,.Pixso-text-2001_402,.Pixso-paragraph-2001_410,.Pixso-paragraph-2001_411,.Pixso-paragraph-2001_429,.Pixso-paragraph-2001_412,.Pixso-paragraph-2001_430,.Pixso-paragraph-2001_413,.Pixso-paragraph-2001_431,.Pixso-paragraph-2001_414,.Pixso-paragraph-2001_415,.Pixso-paragraph-2001_433,.Pixso-paragraph-2001_418,.Pixso-paragraph-2001_419,.Pixso-paragraph-2001_420,.Pixso-paragraph-2001_423,.Pixso-paragraph-2001_424,.Pixso-paragraph-2001_428,.Pixso-paragraph-2001_427,.Pixso-paragraph-2001_432,.Pixso-paragraph-2001_434 {
+  font-weight: 700;
+  letter-spacing: 0em;
+  height: auto;
+}
+
+.Pixso-paragraph-2001_7,.Pixso-text-2001_9,.Pixso-text-2001_10,.Pixso-paragraph-2001_14,.Pixso-paragraph-2001_20,.Pixso-paragraph-2001_21,.Pixso-paragraph-2001_22,.Pixso-paragraph-2001_23,.Pixso-paragraph-2001_41,.Pixso-paragraph-2001_64,.Pixso-paragraph-2001_85,.Pixso-paragraph-2001_101,.Pixso-paragraph-2001_24,.Pixso-paragraph-2001_31,.Pixso-paragraph-2001_54,.Pixso-paragraph-2001_86,.Pixso-paragraph-2001_102,.Pixso-paragraph-2001_32,.Pixso-paragraph-2001_55,.Pixso-paragraph-2001_33,.Pixso-paragraph-2001_56,.Pixso-paragraph-2001_34,.Pixso-paragraph-2001_57,.Pixso-paragraph-2001_35,.Pixso-paragraph-2001_58,.Pixso-paragraph-2001_40,.Pixso-paragraph-2001_63,.Pixso-paragraph-2001_50,.Pixso-paragraph-2001_71,.Pixso-paragraph-2001_72,.Pixso-paragraph-2001_79,.Pixso-paragraph-2001_95,.Pixso-paragraph-2001_80,.Pixso-paragraph-2001_96,.Pixso-paragraph-2001_81,.Pixso-paragraph-2001_97,.Pixso-paragraph-2001_91,.Pixso-paragraph-2001_107,.Pixso-paragraph-2001_111,.Pixso-paragraph-2001_114,.Pixso-paragraph-2001_115,.Pixso-paragraph-2001_120,.Pixso-paragraph-2001_136,.Pixso-paragraph-2001_145,.Pixso-paragraph-2001_153,.Pixso-paragraph-2001_165,.Pixso-paragraph-2001_174,.Pixso-paragraph-2001_156,.Pixso-paragraph-2001_183,.Pixso-paragraph-2001_190,.Pixso-paragraph-2001_191,.Pixso-paragraph-2001_193,.Pixso-paragraph-2001_196,.Pixso-text-2001_197,.Pixso-paragraph-2001_199,.Pixso-paragraph-2001_204,.Pixso-paragraph-2001_207,.Pixso-paragraph-2001_200,.Pixso-paragraph-2001_203,.Pixso-paragraph-2001_206,.Pixso-paragraph-2001_201,.Pixso-paragraph-2001_208,.Pixso-paragraph-2001_209,.Pixso-paragraph-2001_264,.Pixso-paragraph-2001_275,.Pixso-paragraph-2001_317,.Pixso-paragraph-2001_329,.Pixso-paragraph-2001_351,.Pixso-paragraph-2001_373,.Pixso-paragraph-2001_384,.Pixso-paragraph-2001_210,.Pixso-paragraph-2001_265,.Pixso-paragraph-2001_276,.Pixso-paragraph-2001_318,.Pixso-paragraph-2001_330,.Pixso-paragraph-2001_352,.Pixso-paragraph-2001_385,.Pixso-paragraph-2001_211,.Pixso-paragraph-2001_266,.Pixso-paragraph-2001_277,.Pixso-paragraph-2001_319,.Pixso-paragraph-2001_331,.Pixso-paragraph-2001_375,.Pixso-paragraph-2001_386,.Pixso-paragraph-2001_212,.Pixso-paragraph-2001_320,.Pixso-paragraph-2001_332,.Pixso-paragraph-2001_354,.Pixso-paragraph-2001_376,.Pixso-paragraph-2001_387,.Pixso-paragraph-2001_213,.Pixso-paragraph-2001_216,.Pixso-paragraph-2001_220,.Pixso-paragraph-2001_217,.Pixso-paragraph-2001_221,.Pixso-paragraph-2001_228,.Pixso-paragraph-2001_234,.Pixso-paragraph-2001_235,.Pixso-paragraph-2001_237,.Pixso-paragraph-2001_240,.Pixso-paragraph-2001_243,.Pixso-paragraph-2001_270,.Pixso-paragraph-2001_304,.Pixso-paragraph-2001_323,.Pixso-paragraph-2001_338,.Pixso-paragraph-2001_360,.Pixso-paragraph-2001_383,.Pixso-paragraph-2001_390,.Pixso-paragraph-2001_255,.Pixso-paragraph-2001_267,.Pixso-paragraph-2001_278,.Pixso-paragraph-2001_268,.Pixso-paragraph-2001_279,.Pixso-paragraph-2001_321,.Pixso-paragraph-2001_333,.Pixso-paragraph-2001_355,.Pixso-paragraph-2001_377,.Pixso-paragraph-2001_388,.Pixso-paragraph-2001_274,.Pixso-paragraph-2001_289,.Pixso-paragraph-2001_291,.Pixso-paragraph-2001_293,.Pixso-paragraph-2001_295,.Pixso-paragraph-2001_299,.Pixso-paragraph-2001_301,.Pixso-paragraph-2001_305,.Pixso-paragraph-2001_312,.Pixso-paragraph-2001_324,.Pixso-paragraph-2001_326,.Pixso-paragraph-2001_327,.Pixso-paragraph-2001_336,.Pixso-paragraph-2001_358,.Pixso-paragraph-2001_337,.Pixso-paragraph-2001_359,.Pixso-paragraph-2001_342,.Pixso-paragraph-2001_343,.Pixso-paragraph-2001_344,.Pixso-paragraph-2001_345,.Pixso-paragraph-2001_346,.Pixso-paragraph-2001_347,.Pixso-paragraph-2001_348,.Pixso-paragraph-2001_349,.Pixso-paragraph-2001_353,.Pixso-paragraph-2001_364,.Pixso-paragraph-2001_365,.Pixso-paragraph-2001_366,.Pixso-paragraph-2001_367,.Pixso-paragraph-2001_368,.Pixso-paragraph-2001_369,.Pixso-paragraph-2001_370,.Pixso-paragraph-2001_371,.Pixso-paragraph-2001_374,.Pixso-paragraph-2001_381,.Pixso-paragraph-2001_382,.Pixso-paragraph-2001_410,.Pixso-paragraph-2001_411,.Pixso-paragraph-2001_429,.Pixso-paragraph-2001_412,.Pixso-paragraph-2001_430,.Pixso-paragraph-2001_413,.Pixso-paragraph-2001_431,.Pixso-paragraph-2001_414,.Pixso-paragraph-2001_415,.Pixso-paragraph-2001_433,.Pixso-paragraph-2001_418,.Pixso-paragraph-2001_419,.Pixso-paragraph-2001_420,.Pixso-paragraph-2001_423,.Pixso-paragraph-2001_432,.Pixso-paragraph-2001_434 {
+  width: auto;
+  flex-grow: 0;
+}
+
+.Pixso-paragraph-2001_7 {
+  font-size: 122.685921px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 50%;
+  top: 209px;
+  transform: translateX(calc(-50% + 365.254395px));
+  white-space: pre;
+}
+
+.Pixso-rectangle-2001_8 {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 15px 15px 15px 15px;
+  z-index: 0;
+}
+
+.stroke-wrapper-2001_8 {
+  position: absolute;
+  isolation: isolate;
+  left: 1290px;
+  top: 380px;
+  width: 415px;
+  height: 71px;
+}
+
+.stroke-2001_8,.stroke-2001_215,.stroke-2001_219,.stroke-2001_282,.stroke-2001_283,.stroke-2001_284,.stroke-2001_285 {
+  pointer-events: none;
+  z-index: 1;
+  border-style: solid;
+  box-sizing: border-box;
+}
+
+.stroke-2001_8 {
+  position: absolute;
+  inset: 0px;
+  border-radius: 15px 15px 15px 15px;
+  border-width: 2px 2px 2px 2px;
+  border-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-text-2001_9 {
+  font-size: 61.34296px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 50%;
+  top: 370.023438px;
+  transform: translateX(calc(-50% + 365.06689500000005px));
+  white-space: nowrap;
+}
+
+.Pixso-paragraph-2001_9_0 {
+  line-height: 81px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-span-2001_9_0_1,.Pixso-span-2001_9_0_2 {
+  text-decoration: none;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-text-2001_10 {
+  font-size: 38.339352px;
+  font-family: "Styrene A LC-Bold";
+  text-align: center;
+  line-height: 112%;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 801px;
+  top: 476.417969px;
+  white-space: nowrap;
+}
+
+.Pixso-paragraph-2001_10_0,.Pixso-span-2001_10_0_1,.Pixso-paragraph-2001_10_1,.Pixso-span-2001_10_1_1 {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-paragraph-2001_10_0,.Pixso-paragraph-2001_10_1 {
+  line-height: 50.377907px;
+}
+
+.Pixso-span-2001_10_0_1,.Pixso-span-2001_10_1_1 {
+  text-decoration: none;
+}
+
+.Pixso-text-2001_11,.Pixso-symbol-2001_12,.Pixso-rectangle-2001_18,.Pixso-rectangle-2001_19,.Pixso-rectangle-2001_30,.Pixso-rectangle-2001_53,.Pixso-rectangle-2001_78,.Pixso-rectangle-2001_94,.Pixso-rectangle-2001_110,.Pixso-rectangle-2001_36,.Pixso-rectangle-2001_59,.Pixso-rectangle-2001_37,.Pixso-rectangle-2001_60,.Pixso-rectangle-2001_38,.Pixso-rectangle-2001_61,.Pixso-rectangle-2001_39,.Pixso-rectangle-2001_62,.Pixso-rectangle-2001_82,.Pixso-rectangle-2001_98,.Pixso-rectangle-2001_83,.Pixso-rectangle-2001_99,.Pixso-rectangle-2001_84,.Pixso-rectangle-2001_100,.Pixso-text-2001_112,.Pixso-text-2001_113,.Pixso-group-2001_222,.Pixso-rectangle-2001_244,.Pixso-rectangle-2001_271,.Pixso-rectangle-2001_391,.Pixso-group-2001_250,.Pixso-group-2001_280,.Pixso-rectangle-2001_325 {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.Pixso-text-2001_11 {
+  font-size: 38.339352px;
+  font-family: "Styrene A LC-Bold";
+  text-align: center;
+  line-height: 112%;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  width: 983.404358px;
+  position: absolute;
+  left: 364.702179px;
+  right: -364.702179px;
+  top: 800.046875px;
+}
+
+.Pixso-paragraph-2001_11_0,.Pixso-span-2001_11_0_1,.Pixso-span-2001_11_0_2,.Pixso-span-2001_11_0_3,.Pixso-paragraph-2001_11_1,.Pixso-span-2001_11_1_1 {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-paragraph-2001_11_0 {
+  line-height: 50.377907px;
+}
+
+.Pixso-span-2001_11_0_1 {
+  line-height: 112%;
+  text-decoration: none;
+}
+
+.Pixso-span-2001_11_0_2 {
+  line-height: 112%;
+  text-decoration: underline;
+}
+
+.Pixso-span-2001_11_0_3 {
+  line-height: 112%;
+  text-decoration: none;
+}
+
+.Pixso-paragraph-2001_11_1 {
+  line-height: 50.377907px;
+}
+
+.Pixso-span-2001_11_1_1 {
+  line-height: 112%;
+  text-decoration: none;
+}
+
+.Pixso-symbol-2001_12 {
+  width: 495.7005px;
+  height: 110.401001px;
+  position: absolute;
+  left: 364.55239800000004px;
+  right: -364.55239800000004px;
+  top: 669px;
+}
+
+.Pixso-rectangle-2001_13 {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0%;
+  right: 0%;
+  top: 0%;
+  bottom: 0%;
+  border-radius: 17.277447px 17.277447px 17.277447px 17.277447px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_14 {
+  font-size: 44.160404px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(254.573792, 10.612644, 1.381682, 1);
+  position: absolute;
+  left: 35.41%;
+  right: 33.92%;
+  top: 25%;
+  bottom: 22.47%;
+  white-space: pre;
+}
+
+.Pixso-rectangle-2001_15,.Pixso-rectangle-2001_28,.Pixso-rectangle-2001_49,.Pixso-rectangle-2001_76,.Pixso-rectangle-2001_90,.Pixso-rectangle-2001_106,.Pixso-rectangle-2001_119,.Pixso-rectangle-2001_182,.Pixso-rectangle-2001_227,.Pixso-rectangle-2001_233,.Pixso-rectangle-2001_254,.Pixso-rectangle-2001_259,.Pixso-rectangle-2001_263,.Pixso-rectangle-2001_288,.Pixso-rectangle-2001_292,.Pixso-rectangle-2001_335,.Pixso-rectangle-2001_357,.Pixso-rectangle-2001_399,.Pixso-rectangle-2001_403,.Pixso-rectangle-2001_409 {
+  background-size: cover;
+  background-position: center;
+}
+
+.Pixso-rectangle-2001_15 {
+  width: 814px;
+  height: 1221px;
+  position: absolute;
+  left: -79px;
+  top: 0px;
+  background-image: url(./image/547a87cfcf41e420e8cb52fe004b5bf46f02c8da.webp);
+  background-repeat: no-repeat;
+}
+
+.Pixso-frame-2001_16 {
+  width: 100%;
+  position: relative;
+  flex-shrink: 0;
+  background-color: rgba(248.85582, 4.411807, 4.411807, 1);
+}
+
+.Pixso-rectangle-2001_17,.Pixso-rectangle-2001_30,.Pixso-rectangle-2001_53,.Pixso-rectangle-2001_78,.Pixso-rectangle-2001_94,.Pixso-rectangle-2001_110 {
+  width: 819px;
+  height: 819px;
+  border-radius: 25px 25px 25px 25px;
+}
+
+.Pixso-rectangle-2001_17 {
+  position: absolute;
+  left: 551px;
+  top: 130px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-rectangle-2001_18,.Pixso-rectangle-2001_19,.Pixso-rectangle-2001_30,.Pixso-rectangle-2001_53,.Pixso-rectangle-2001_78,.Pixso-rectangle-2001_94,.Pixso-rectangle-2001_110,.Pixso-rectangle-2001_36,.Pixso-rectangle-2001_59,.Pixso-rectangle-2001_38,.Pixso-rectangle-2001_61,.Pixso-rectangle-2001_39,.Pixso-rectangle-2001_62,.Pixso-rectangle-2001_82,.Pixso-rectangle-2001_98,.Pixso-rectangle-2001_83,.Pixso-rectangle-2001_99,.Pixso-rectangle-2001_84,.Pixso-rectangle-2001_100,.Pixso-text-2001_113,.Pixso-rectangle-2001_244,.Pixso-rectangle-2001_271,.Pixso-rectangle-2001_391,.Pixso-rectangle-2001_325 {
+  left: -0.5px;
+  right: 0.5px;
+}
+
+.Pixso-rectangle-2001_18,.Pixso-rectangle-2001_19,.Pixso-rectangle-2001_82,.Pixso-rectangle-2001_98,.Pixso-rectangle-2001_83,.Pixso-rectangle-2001_99,.Pixso-rectangle-2001_84,.Pixso-rectangle-2001_100 {
+  width: 653px;
+  height: 100px;
+  position: absolute;
+  border-radius: 15px 15px 15px 15px;
+  background-color: rgba(217, 217, 217, 1);
+}
+
+.Pixso-rectangle-2001_18 {
+  top: 613px;
+}
+
+.Pixso-rectangle-2001_19 {
+  top: 416px;
+}
+
+.Pixso-paragraph-2001_20,.Pixso-paragraph-2001_21,.Pixso-paragraph-2001_22 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_20 {
+  font-size: 34.200001px;
+  left: 633px;
+  top: 359px;
+}
+
+.Pixso-paragraph-2001_21 {
+  font-size: 34.200001px;
+  left: 633px;
+  top: 556px;
+}
+
+.Pixso-paragraph-2001_22 {
+  font-size: 96px;
+  left: 795px;
+  top: 160px;
+}
+
+.Pixso-paragraph-2001_23,.Pixso-paragraph-2001_41,.Pixso-paragraph-2001_64,.Pixso-paragraph-2001_85,.Pixso-paragraph-2001_101,.Pixso-paragraph-2001_24 {
+  font-family: "Styrene A LC-Bold";
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_23,.Pixso-paragraph-2001_41,.Pixso-paragraph-2001_64,.Pixso-paragraph-2001_85,.Pixso-paragraph-2001_101,.Pixso-paragraph-2001_114,.Pixso-paragraph-2001_235,.Pixso-paragraph-2001_243,.Pixso-paragraph-2001_270,.Pixso-paragraph-2001_304,.Pixso-paragraph-2001_323,.Pixso-paragraph-2001_338,.Pixso-paragraph-2001_360,.Pixso-paragraph-2001_383,.Pixso-paragraph-2001_390,.Pixso-paragraph-2001_420 {
+  font-size: 32.488548px;
+  left: 44px;
+  top: 42px;
+}
+
+.Pixso-paragraph-2001_23,.Pixso-paragraph-2001_41,.Pixso-paragraph-2001_64,.Pixso-paragraph-2001_85,.Pixso-paragraph-2001_101 {
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_24 {
+  font-size: 34.200424px;
+  text-align: center;
+  line-height: 112%;
+  text-decoration: underline;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  left: 50%;
+  top: 843px;
+  transform: translateX(calc(-50% + 0.5px));
+}
+
+.Pixso-rectangle-2001_25,.Pixso-rectangle-2001_46,.Pixso-rectangle-2001_73,.Pixso-rectangle-2001_87,.Pixso-rectangle-2001_103,.Pixso-rectangle-2001_116 {
+  height: 94px;
+  left: -121px;
+  top: 452px;
+}
+
+.Pixso-rectangle-2001_25,.Pixso-rectangle-2001_46,.Pixso-rectangle-2001_73,.Pixso-rectangle-2001_87,.Pixso-rectangle-2001_103,.Pixso-rectangle-2001_26,.Pixso-rectangle-2001_47,.Pixso-rectangle-2001_74,.Pixso-rectangle-2001_88,.Pixso-rectangle-2001_104 {
+  width: 321px;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-rectangle-2001_26,.Pixso-rectangle-2001_47,.Pixso-rectangle-2001_74,.Pixso-rectangle-2001_88,.Pixso-rectangle-2001_104,.Pixso-rectangle-2001_117 {
+  height: 53px;
+  left: 200px;
+  top: 376px;
+}
+
+.Pixso-rectangle-2001_27,.Pixso-rectangle-2001_48,.Pixso-rectangle-2001_75,.Pixso-rectangle-2001_89,.Pixso-rectangle-2001_105,.Pixso-rectangle-2001_118 {
+  width: 343px;
+  left: 134px;
+  top: 656px;
+}
+
+.Pixso-rectangle-2001_27,.Pixso-rectangle-2001_48,.Pixso-rectangle-2001_75,.Pixso-rectangle-2001_89,.Pixso-rectangle-2001_105 {
+  height: 125px;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-rectangle-2001_28,.Pixso-rectangle-2001_49,.Pixso-rectangle-2001_76,.Pixso-rectangle-2001_90,.Pixso-rectangle-2001_106,.Pixso-rectangle-2001_119 {
+  width: 462px;
+  height: 693px;
+  left: -9px;
+  top: 168px;
+  transform: rotate(-6.893943deg);
+  background-image: url(./image/4f1775b8b2d2101a04dad6a4f9152878aa32914e.webp);
+}
+
+.Pixso-rectangle-2001_28,.Pixso-rectangle-2001_49,.Pixso-rectangle-2001_76,.Pixso-rectangle-2001_90,.Pixso-rectangle-2001_106 {
+  position: absolute;
+  background-repeat: no-repeat;
+}
+
+.Pixso-frame-2001_29,.Pixso-frame-2001_52,.Pixso-frame-2001_77,.Pixso-frame-2001_93,.Pixso-frame-2001_109 {
+  width: 100%;
+  position: relative;
+  flex-shrink: 0;
+  background-color: rgba(254.573792, 10.612644, 1.381682, 1);
+}
+
+.Pixso-rectangle-2001_30,.Pixso-rectangle-2001_53,.Pixso-rectangle-2001_78,.Pixso-rectangle-2001_94,.Pixso-rectangle-2001_110 {
+  position: absolute;
+  top: -13.5px;
+  bottom: 13.5px;
+  margin-top: auto;
+  margin-bottom: auto;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_31,.Pixso-paragraph-2001_54,.Pixso-paragraph-2001_86,.Pixso-paragraph-2001_102,.Pixso-paragraph-2001_32,.Pixso-paragraph-2001_55,.Pixso-paragraph-2001_33,.Pixso-paragraph-2001_56,.Pixso-paragraph-2001_34,.Pixso-paragraph-2001_57,.Pixso-paragraph-2001_35,.Pixso-paragraph-2001_58 {
+  font-family: "Montserrat-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_31,.Pixso-paragraph-2001_54,.Pixso-paragraph-2001_86,.Pixso-paragraph-2001_102,.Pixso-paragraph-2001_115 {
+  top: 177px;
+  transform: translateX(calc(-50% + -0.5px));
+}
+
+.Pixso-paragraph-2001_31,.Pixso-paragraph-2001_54,.Pixso-paragraph-2001_86,.Pixso-paragraph-2001_102 {
+  font-size: 64px;
+  left: 50%;
+}
+
+.Pixso-paragraph-2001_32,.Pixso-paragraph-2001_55 {
+  font-size: 24px;
+  left: 633px;
+  top: 319px;
+}
+
+.Pixso-paragraph-2001_33,.Pixso-paragraph-2001_56 {
+  font-size: 24px;
+  left: 633px;
+  top: 453px;
+}
+
+.Pixso-paragraph-2001_34,.Pixso-paragraph-2001_57 {
+  font-size: 24px;
+  left: 633px;
+  top: 588px;
+}
+
+.Pixso-paragraph-2001_35,.Pixso-paragraph-2001_58 {
+  font-size: 24px;
+  left: 634px;
+  top: 723px;
+}
+
+.Pixso-rectangle-2001_36,.Pixso-rectangle-2001_59,.Pixso-rectangle-2001_37,.Pixso-rectangle-2001_60,.Pixso-rectangle-2001_38,.Pixso-rectangle-2001_61,.Pixso-rectangle-2001_39,.Pixso-rectangle-2001_62 {
+  width: 653px;
+  height: 80px;
+  position: absolute;
+  border-radius: 15px 15px 15px 15px;
+  background-color: rgba(217, 217, 217, 1);
+}
+
+.Pixso-rectangle-2001_36,.Pixso-rectangle-2001_59 {
+  top: 353px;
+}
+
+.Pixso-rectangle-2001_37,.Pixso-rectangle-2001_60,.Pixso-text-2001_112 {
+  left: 0.5px;
+  right: -0.5px;
+}
+
+.Pixso-rectangle-2001_37,.Pixso-rectangle-2001_60 {
+  top: 622px;
+}
+
+.Pixso-rectangle-2001_38,.Pixso-rectangle-2001_61 {
+  top: 757px;
+}
+
+.Pixso-rectangle-2001_39,.Pixso-rectangle-2001_62 {
+  top: 487px;
+}
+
+.Pixso-paragraph-2001_40,.Pixso-paragraph-2001_63 {
+  font-size: 13px;
+  font-family: "Montserrat-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(217, 217, 217, 1);
+  position: absolute;
+  left: 634px;
+  top: 842px;
+  white-space: pre;
+}
+
+.Pixso-vector-2001_42,.Pixso-vector-2001_43,.Pixso-vector-2001_44,.Pixso-vector-2001_45,.Pixso-vector-2001_51,.Pixso-vector-2001_65,.Pixso-vector-2001_66,.Pixso-vector-2001_69,.Pixso-vector-2001_70 {
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+.Pixso-vector-2001_42,.Pixso-vector-2001_43,.Pixso-vector-2001_65,.Pixso-vector-2001_66 {
+  width: 47px;
+  height: 47px;
+  left: 646px;
+}
+
+.Pixso-vector-2001_42 {
+  background-image: url(./image/Ellipse740.svg);
+  top: 503px;
+}
+
+.Pixso-vector-2001_43 {
+  background-image: url(./image/Ellipse750.svg);
+  top: 638px;
+}
+
+.Pixso-vector-2001_44,.Pixso-vector-2001_45,.Pixso-vector-2001_69,.Pixso-vector-2001_70 {
+  width: 27.318359375px;
+  height: 27.6142578125px;
+  left: 656px;
+}
+
+.Pixso-vector-2001_44 {
+  background-image: url(./image/Vector_2001_44.svg);
+  top: 513px;
+}
+
+.Pixso-vector-2001_45 {
+  background-image: url(./image/Vector_2001_45.svg);
+  top: 648px;
+}
+
+.Pixso-paragraph-2001_50 {
+  font-size: 38.037739px;
+  font-family: "Montserrat-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 1201px;
+  top: 944px;
+  white-space: pre;
+}
+
+.Pixso-vector-2001_51 {
+  width: 38.0380859375px;
+  height: 18.169921875px;
+  background-image: url(./image/Arrow79.svg);
+  left: 1334px;
+  top: 971px;
+}
+
+.Pixso-vector-2001_65 {
+  background-image: url(./image/Ellipse74.svg);
+  top: 503px;
+}
+
+.Pixso-vector-2001_66 {
+  background-image: url(./image/Ellipse75.svg);
+  top: 638px;
+}
+
+.Pixso-rectangle-2001_67,.Pixso-rectangle-2001_68 {
+  height: 51px;
+  position: absolute;
+  left: 708px;
+  border-radius: 15px 15px 15px 15px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-rectangle-2001_67 {
+  width: 210px;
+  top: 636px;
+}
+
+.Pixso-rectangle-2001_68 {
+  width: 240px;
+  top: 501px;
+}
+
+.Pixso-vector-2001_69 {
+  background-image: url(./image/Vector_2001_69.svg);
+  top: 513px;
+}
+
+.Pixso-vector-2001_70 {
+  background-image: url(./image/Vector_2001_70.svg);
+  top: 648px;
+}
+
+.Pixso-paragraph-2001_71,.Pixso-paragraph-2001_72,.Pixso-paragraph-2001_79,.Pixso-paragraph-2001_95,.Pixso-paragraph-2001_80,.Pixso-paragraph-2001_96,.Pixso-paragraph-2001_81,.Pixso-paragraph-2001_97 {
+  font-size: 24px;
+  font-family: "Montserrat-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_71 {
+  left: 728px;
+  top: 647px;
+}
+
+.Pixso-paragraph-2001_72 {
+  left: 728px;
+  top: 512px;
+}
+
+.Pixso-paragraph-2001_79,.Pixso-paragraph-2001_95 {
+  left: 633px;
+  top: 311px;
+}
+
+.Pixso-paragraph-2001_80,.Pixso-paragraph-2001_96 {
+  left: 633px;
+  top: 473px;
+}
+
+.Pixso-paragraph-2001_81,.Pixso-paragraph-2001_97 {
+  left: 633px;
+  top: 642px;
+}
+
+.Pixso-rectangle-2001_82,.Pixso-rectangle-2001_98 {
+  top: 345px;
+}
+
+.Pixso-rectangle-2001_83,.Pixso-rectangle-2001_99,.Pixso-paragraph-2001_344,.Pixso-paragraph-2001_366 {
+  top: 676px;
+}
+
+.Pixso-rectangle-2001_84,.Pixso-rectangle-2001_100 {
+  top: 507px;
+}
+
+.Pixso-paragraph-2001_91 {
+  font-size: 38.037739px;
+  font-family: "Montserrat-Bold";
+  text-align: right;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 1093px;
+  top: 944px;
+  white-space: pre;
+}
+
+.Pixso-vector-2001_92 {
+  width: 38.0380859375px;
+  height: 18.169921875px;
+  background-image: url(./image/Arrow78.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 1334.13208px;
+  top: 971px;
+}
+
+.Pixso-paragraph-2001_107 {
+  font-size: 38.037739px;
+  font-family: "Montserrat-Bold";
+  text-align: right;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 1194px;
+  top: 944px;
+  white-space: pre;
+}
+
+.Pixso-vector-2001_108 {
+  width: 38.03759765625px;
+  height: 18.169921875px;
+  background-image: url(./image/Arrow77.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 1334.13208px;
+  top: 971px;
+}
+
+.Pixso-paragraph-2001_111,.Pixso-text-2001_112 {
+  font-size: 24px;
+  font-family: "Montserrat-Bold";
+  text-align: center;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+}
+
+.Pixso-paragraph-2001_111 {
+  left: 50%;
+  top: 293px;
+  transform: translateX(calc(-50% + 0px));
+  white-space: pre;
+}
+
+.Pixso-text-2001_112 {
+  width: 705px;
+  top: 353px;
+}
+
+.Pixso-paragraph-2001_112_0,.Pixso-span-2001_112_0_1,.Pixso-paragraph-2001_112_1,.Pixso-span-2001_112_1_1,.Pixso-paragraph-2001_112_2,.Pixso-span-2001_112_2_1,.Pixso-paragraph-2001_112_3,.Pixso-span-2001_112_3_1 {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-paragraph-2001_112_0,.Pixso-paragraph-2001_112_1,.Pixso-paragraph-2001_112_2,.Pixso-paragraph-2001_112_3,.Pixso-paragraph-2001_113_0,.Pixso-paragraph-2001_113_1 {
+  line-height: 29.256001px;
+}
+
+.Pixso-span-2001_112_0_1,.Pixso-span-2001_112_1_1,.Pixso-span-2001_112_2_1,.Pixso-span-2001_112_3_1 {
+  text-decoration: none;
+}
+
+.Pixso-text-2001_113 {
+  font-size: 24px;
+  font-family: "Montserrat-Bold";
+  text-align: center;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  width: 705px;
+  position: absolute;
+  top: 781px;
+}
+
+.Pixso-paragraph-2001_113_0,.Pixso-span-2001_113_0_1,.Pixso-paragraph-2001_113_1,.Pixso-span-2001_113_1_1 {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-span-2001_113_0_1,.Pixso-span-2001_113_1_1 {
+  text-decoration: none;
+}
+
+.Pixso-paragraph-2001_113_2,.Pixso-paragraph-2001_113_3 {
+  line-height: 29.256001px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-span-2001_113_3_1 {
+  text-decoration: none;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-paragraph-2001_114,.Pixso-paragraph-2001_115 {
+  text-align: left;
+  text-decoration: none;
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_114 {
+  font-family: "Styrene A LC-Bold";
+  color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_115 {
+  font-size: 64px;
+  font-family: "Montserrat-Bold";
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  left: 50%;
+}
+
+.Pixso-rectangle-2001_116,.Pixso-rectangle-2001_117,.Pixso-rectangle-2001_118 {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-rectangle-2001_116,.Pixso-rectangle-2001_117 {
+  width: 321px;
+}
+
+.Pixso-rectangle-2001_118 {
+  height: 125px;
+}
+
+.Pixso-rectangle-2001_119 {
+  position: absolute;
+  background-repeat: no-repeat;
+}
+
+.Pixso-paragraph-2001_120 {
+  font-size: 38.037739px;
+  font-family: "Montserrat-Bold";
+  text-align: right;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 876px;
+  top: 944px;
+  white-space: pre;
+}
+
+.Pixso-vector-2001_121 {
+  width: 38.0380859375px;
+  height: 18.169921875px;
+  background-image: url(./image/Arrow76.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 1334.13208px;
+  top: 971px;
+}
+
+.Pixso-rectangle-2001_122,.Pixso-rectangle-2001_123,.Pixso-rectangle-2001_124,.Pixso-rectangle-2001_125 {
+  height: 207px;
+  position: absolute;
+  top: 521px;
+  border-radius: 17px 17px 17px 17px;
+  background-color: rgba(217, 217, 217, 1);
+}
+
+.Pixso-rectangle-2001_122 {
+  width: 148px;
+  left: 638px;
+}
+
+.Pixso-rectangle-2001_123 {
+  width: 149px;
+  left: 803px;
+}
+
+.Pixso-rectangle-2001_124 {
+  width: 149px;
+  left: 968px;
+}
+
+.Pixso-rectangle-2001_125 {
+  width: 148px;
+  left: 1134px;
+}
+
+.Pixso-frame-2001_126 {
+  width: 100%;
+  position: relative;
+  flex-shrink: 0;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-rectangle-2001_127 {
+  width: 438px;
+  height: 776px;
+  position: absolute;
+  left: 45px;
+  top: 243px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(248.85582, 4.411807, 4.411807, 1);
+}
+
+.Pixso-group-2001_128 {
+  width: 374px;
+  height: 70px;
+  position: absolute;
+  left: 77px;
+  top: 461px;
+}
+
+.Pixso-group-2001_129,.Pixso-group-2001_138,.Pixso-group-2001_158,.Pixso-group-2001_167 {
+  width: 374px;
+  height: 70px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+.Pixso-rectangle-2001_130,.Pixso-rectangle-2001_139,.Pixso-rectangle-2001_147,.Pixso-rectangle-2001_159,.Pixso-rectangle-2001_168 {
+  width: 374px;
+  height: 49px;
+  position: absolute;
+  left: 0px;
+  top: 9px;
+  border-radius: 10px 10px 10px 10px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-vector-2001_131,.Pixso-vector-2001_140,.Pixso-vector-2001_148,.Pixso-vector-2001_160,.Pixso-vector-2001_169 {
+  width: 72.857421875px;
+  left: 23px;
+}
+
+.Pixso-vector-2001_131 {
+  height: 70px;
+  background-image: url(./image/Group1243.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  top: 0px;
+}
+
+.Pixso-paragraph-2001_136,.Pixso-paragraph-2001_145,.Pixso-paragraph-2001_153,.Pixso-paragraph-2001_165,.Pixso-paragraph-2001_174 {
+  font-size: 24px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  line-height: 112%;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+  left: 119px;
+  top: 20px;
+  white-space: pre;
+}
+
+.Pixso-group-2001_137,.Pixso-vector-2001_140,.Pixso-group-2001_146,.Pixso-vector-2001_148,.Pixso-group-2001_157,.Pixso-vector-2001_160,.Pixso-group-2001_166,.Pixso-vector-2001_169 {
+  height: 70px;
+  position: absolute;
+}
+
+.Pixso-group-2001_137 {
+  width: 374px;
+  left: 77px;
+  top: 546px;
+}
+
+.Pixso-vector-2001_140 {
+  background-image: url(./image/Group1242.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  top: 0px;
+}
+
+.Pixso-group-2001_146 {
+  width: 374px;
+  left: 77px;
+  top: 631px;
+}
+
+.Pixso-vector-2001_148 {
+  background-image: url(./image/Group1241.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  top: 0px;
+}
+
+.Pixso-group-2001_154,.Pixso-rectangle-2001_155 {
+  width: 162px;
+  height: 33.778725px;
+  position: absolute;
+}
+
+.Pixso-group-2001_154 {
+  left: 560px;
+  top: 835px;
+}
+
+.Pixso-rectangle-2001_155 {
+  left: 0px;
+  top: 0px;
+  border-radius: 6.893617px 6.893617px 6.893617px 6.893617px;
+  background-color: rgba(217, 217, 217, 1);
+}
+
+.Pixso-paragraph-2001_156 {
+  font-size: 16.544682px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  line-height: 112%;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 10.340454px;
+  top: 7.582031px;
+  white-space: pre;
+}
+
+.Pixso-group-2001_157 {
+  width: 374px;
+  left: 77px;
+  top: 716px;
+}
+
+.Pixso-vector-2001_160 {
+  background-image: url(./image/Group1240.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  top: 0px;
+}
+
+.Pixso-group-2001_166 {
+  width: 374px;
+  left: 77px;
+  top: 801px;
+}
+
+.Pixso-vector-2001_169 {
+  background-image: url(./image/Group124.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  top: 0px;
+}
+
+.Pixso-group-2001_175 {
+  width: 253.902466px;
+  height: 144.00296px;
+  position: absolute;
+  left: 88px;
+  top: 281px;
+}
+
+.Pixso-group-2001_176,.Pixso-group-2001_177 {
+  width: 136.975616px;
+  height: 136.975616px;
+  position: absolute;
+}
+
+.Pixso-group-2001_176 {
+  left: 2.341463px;
+  top: 7.027313px;
+}
+
+.Pixso-group-2001_177,.Pixso-vector-2001_178 {
+  left: -0.000002px;
+  top: -0.000024px;
+}
+
+.Pixso-vector-2001_178 {
+  width: 136.9755859375px;
+  height: 136.9755859375px;
+  background-image: url(./image/Group1260.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+.Pixso-group-2001_180 {
+  width: 139.317078px;
+  height: 139.317078px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+.Pixso-rectangle-2001_182,.Pixso-rectangle-2001_227,.Pixso-rectangle-2001_233,.Pixso-rectangle-2001_254,.Pixso-rectangle-2001_409 {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20139.317%20139.317%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20width%3D%22139.317383%22%20height%3D%22139.317383%22%20fill%3D%22none%22%20customFrame%3D%22%23000000%22%20mask%3D%22url(%23mask_9)%22%3E%0A%09%3Cdefs%3E%0A%09%09%3Cfilter%20id%3D%22pixso_custom_mask_type_alpha%22%3E%0A%09%09%09%3CfeColorMatrix%20type%3D%22matrix%22%20values%3D%220%200%200%200%201%200%200%200%200%201%200%200%200%200%201%200%200%200%201%200%20%22%20%2F%3E%0A%09%09%3C%2Ffilter%3E%0A%09%3C%2Fdefs%3E%0A%09%3Cmask%20id%3D%22mask_9%22%20width%3D%22139.317078%22%20height%3D%22139.317078%22%20x%3D%220.000000%22%20y%3D%220.000000%22%20maskUnits%3D%22userSpaceOnUse%22%3E%0A%09%09%3Cg%20filter%3D%22url(%23pixso_custom_mask_type_alpha)%22%3E%0A%09%09%09%3Ccircle%20id%3D%22Ellipse%2076%22%20cx%3D%2269.6585388%22%20cy%3D%2269.6585388%22%20r%3D%2269.6585388%22%20fill%3D%22rgb(217%2C217%2C217)%22%20%2F%3E%0A%09%09%3C%2Fg%3E%0A%09%3C%2Fmask%3E%0A%0A%09%09%3Cg%20filter%3D%22url(%23pixso_custom_mask_type_alpha)%22%3E%0A%09%09%09%3Ccircle%20id%3D%22Ellipse%2076%22%20cx%3D%2269.6585388%22%20cy%3D%2269.6585388%22%20r%3D%2269.6585388%22%20fill%3D%22rgb(217%2C217%2C217)%22%20%2F%3E%0A%09%09%3C%2Fg%3E%0A%09%3C%2Fsvg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%20139.317%20139.317%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20width%3D%22139.317383%22%20height%3D%22139.317383%22%20fill%3D%22none%22%20customFrame%3D%22%23000000%22%20mask%3D%22url(%23mask_9)%22%3E%0A%09%3Cdefs%3E%0A%09%09%3Cfilter%20id%3D%22pixso_custom_mask_type_alpha%22%3E%0A%09%09%09%3CfeColorMatrix%20type%3D%22matrix%22%20values%3D%220%200%200%200%201%200%200%200%200%201%200%200%200%200%201%200%200%200%201%200%20%22%20%2F%3E%0A%09%09%3C%2Ffilter%3E%0A%09%3C%2Fdefs%3E%0A%09%3Cmask%20id%3D%22mask_9%22%20width%3D%22139.317078%22%20height%3D%22139.317078%22%20x%3D%220.000000%22%20y%3D%220.000000%22%20maskUnits%3D%22userSpaceOnUse%22%3E%0A%09%09%3Cg%20filter%3D%22url(%23pixso_custom_mask_type_alpha)%22%3E%0A%09%09%09%3Ccircle%20id%3D%22Ellipse%2076%22%20cx%3D%2269.6585388%22%20cy%3D%2269.6585388%22%20r%3D%2269.6585388%22%20fill%3D%22rgb(217%2C217%2C217)%22%20%2F%3E%0A%09%09%3C%2Fg%3E%0A%09%3C%2Fmask%3E%0A%0A%09%09%3Cg%20filter%3D%22url(%23pixso_custom_mask_type_alpha)%22%3E%0A%09%09%09%3Ccircle%20id%3D%22Ellipse%2076%22%20cx%3D%2269.6585388%22%20cy%3D%2269.6585388%22%20r%3D%2269.6585388%22%20fill%3D%22rgb(217%2C217%2C217)%22%20%2F%3E%0A%09%09%3C%2Fg%3E%0A%09%3C%2Fsvg%3E");
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+}
+
+.Pixso-rectangle-2001_182 {
+  width: 142.237457px;
+  height: 213.356186px;
+  position: absolute;
+  left: -2.872519px;
+  top: 3.448171px;
+  background-image: url(./image/5198b19e2b07b237c53e5d8a700d98293f168c36.webp);
+  background-repeat: no-repeat;
+  -webkit-mask-size: 139.317078px 139.317078px;
+  mask-size: 139.317078px 139.317078px;
+  -webkit-mask-position: 2.872519px -3.448171px;
+  mask-position: 2.872519px -3.448171px;
+}
+
+.Pixso-paragraph-2001_183 {
+  font-size: 37.463413px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 163.902435px;
+  top: 52.682922px;
+  white-space: pre;
+}
+
+.Pixso-group-2001_184 {
+  width: 176.142853px;
+  height: 38px;
+  position: absolute;
+  left: 77px;
+  top: 906.999512px;
+}
+
+.Pixso-group-2001_185,.Pixso-group-2001_186,.Pixso-group-2001_187 {
+  width: 35.672909px;
+  position: absolute;
+  left: 0px;
+}
+
+.Pixso-group-2001_185 {
+  height: 38px;
+  top: -0.000099px;
+}
+
+.Pixso-group-2001_186 {
+  height: 35.672909px;
+  top: 0.978904px;
+}
+
+.Pixso-group-2001_187 {
+  height: 35.672909px;
+  top: 0.00007px;
+}
+
+.Pixso-vector-2001_188 {
+  width: 35.6728515625px;
+  height: 35.6728515625px;
+  background-image: url(./image/Group126.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 0px;
+  top: 0.00007px;
+}
+
+.Pixso-paragraph-2001_190,.Pixso-paragraph-2001_191 {
+  text-align: left;
+  text-decoration: none;
+  color: rgba(217, 217, 217, 1);
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_190 {
+  font-size: 31.274878px;
+  font-family: "Montserrat-Bold";
+  left: 8.307391px;
+  top: -0.000099px;
+}
+
+.Pixso-paragraph-2001_191 {
+  font-size: 15.637439px;
+  font-family: "Styrene A LC-Bold";
+  left: 47.142857px;
+  top: 9.428716px;
+}
+
+.Pixso-group-2001_192 {
+  width: 182.642853px;
+  height: 25.655176px;
+  position: absolute;
+  left: 82px;
+  top: 964.000732px;
+}
+
+.Pixso-paragraph-2001_193 {
+  font-size: 15.637439px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(217, 217, 217, 1);
+  position: absolute;
+  left: 41.642857px;
+  top: 2.357183px;
+  white-space: pre;
+}
+
+.Pixso-vector-2001_194 {
+  width: 24.921875px;
+  height: 25.6552734375px;
+  background-image: url(./image/Vector_2001_194.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: -0.000001px;
+  top: 0.00004px;
+}
+
+.Pixso-group-2001_195 {
+  width: 346px;
+  height: 119px;
+  position: absolute;
+  left: 560px;
+  top: 445px;
+}
+
+.Pixso-paragraph-2001_196,.Pixso-text-2001_197 {
+  font-size: 32px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  position: absolute;
+  left: 0px;
+}
+
+.Pixso-paragraph-2001_196 {
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  top: 0px;
+  white-space: pre;
+}
+
+.Pixso-text-2001_197 {
+  line-height: 112%;
+  color: rgba(0, 0, 0, 1);
+  top: 47px;
+  white-space: nowrap;
+}
+
+.Pixso-paragraph-2001_197_0,.Pixso-span-2001_197_0_1,.Pixso-paragraph-2001_197_1,.Pixso-span-2001_197_1_1 {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-paragraph-2001_197_0,.Pixso-paragraph-2001_197_1 {
+  line-height: 42.048px;
+}
+
+.Pixso-span-2001_197_0_1,.Pixso-span-2001_197_1_1 {
+  text-decoration: none;
+}
+
+.Pixso-group-2001_198 {
+  width: 369px;
+  height: 83px;
+  position: absolute;
+  left: 560px;
+  top: 599px;
+}
+
+.Pixso-paragraph-2001_199,.Pixso-paragraph-2001_204,.Pixso-paragraph-2001_207,.Pixso-paragraph-2001_200,.Pixso-paragraph-2001_203,.Pixso-paragraph-2001_206,.Pixso-paragraph-2001_201,.Pixso-paragraph-2001_234,.Pixso-paragraph-2001_235 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_199,.Pixso-paragraph-2001_204,.Pixso-paragraph-2001_207 {
+  font-size: 32px;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  left: 0px;
+  top: 0px;
+}
+
+.Pixso-paragraph-2001_200,.Pixso-paragraph-2001_203,.Pixso-paragraph-2001_206 {
+  font-size: 32px;
+  line-height: 112%;
+  color: rgba(0, 0, 0, 1);
+  left: 0px;
+  top: 47px;
+}
+
+.Pixso-paragraph-2001_201 {
+  font-size: 43.851463px;
+  line-height: 112%;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  left: 50%;
+  top: 243px;
+  transform: translateX(calc(-50% + -255px));
+}
+
+.Pixso-group-2001_202,.Pixso-group-2001_205 {
+  height: 83px;
+  position: absolute;
+  left: 560px;
+}
+
+.Pixso-group-2001_202 {
+  width: 397px;
+  top: 327px;
+}
+
+.Pixso-group-2001_205 {
+  width: 321px;
+  top: 717px;
+}
+
+.Pixso-paragraph-2001_208,.Pixso-paragraph-2001_209,.Pixso-paragraph-2001_264,.Pixso-paragraph-2001_275,.Pixso-paragraph-2001_317,.Pixso-paragraph-2001_329,.Pixso-paragraph-2001_351,.Pixso-paragraph-2001_373,.Pixso-paragraph-2001_384,.Pixso-paragraph-2001_210,.Pixso-paragraph-2001_265,.Pixso-paragraph-2001_276,.Pixso-paragraph-2001_318,.Pixso-paragraph-2001_330,.Pixso-paragraph-2001_352,.Pixso-paragraph-2001_385,.Pixso-paragraph-2001_211,.Pixso-paragraph-2001_266,.Pixso-paragraph-2001_277,.Pixso-paragraph-2001_319,.Pixso-paragraph-2001_331,.Pixso-paragraph-2001_375,.Pixso-paragraph-2001_386,.Pixso-paragraph-2001_212,.Pixso-paragraph-2001_320,.Pixso-paragraph-2001_332,.Pixso-paragraph-2001_354,.Pixso-paragraph-2001_376,.Pixso-paragraph-2001_387,.Pixso-paragraph-2001_213,.Pixso-paragraph-2001_267,.Pixso-paragraph-2001_278,.Pixso-paragraph-2001_268,.Pixso-paragraph-2001_279,.Pixso-paragraph-2001_321,.Pixso-paragraph-2001_333,.Pixso-paragraph-2001_355,.Pixso-paragraph-2001_377,.Pixso-paragraph-2001_388 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  line-height: 112%;
+  text-decoration: none;
+  position: absolute;
+  left: 50%;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_208 {
+  font-size: 43.851463px;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  top: 243px;
+  transform: translateX(calc(-50% + 236.5px));
+}
+
+.Pixso-paragraph-2001_209,.Pixso-paragraph-2001_264,.Pixso-paragraph-2001_275,.Pixso-paragraph-2001_317,.Pixso-paragraph-2001_329,.Pixso-paragraph-2001_351,.Pixso-paragraph-2001_373,.Pixso-paragraph-2001_384,.Pixso-paragraph-2001_210,.Pixso-paragraph-2001_265,.Pixso-paragraph-2001_276,.Pixso-paragraph-2001_318,.Pixso-paragraph-2001_330,.Pixso-paragraph-2001_352,.Pixso-paragraph-2001_385,.Pixso-paragraph-2001_211,.Pixso-paragraph-2001_266,.Pixso-paragraph-2001_277,.Pixso-paragraph-2001_319,.Pixso-paragraph-2001_331,.Pixso-paragraph-2001_375,.Pixso-paragraph-2001_386,.Pixso-paragraph-2001_212,.Pixso-paragraph-2001_320,.Pixso-paragraph-2001_332,.Pixso-paragraph-2001_354,.Pixso-paragraph-2001_376,.Pixso-paragraph-2001_387,.Pixso-paragraph-2001_213,.Pixso-paragraph-2001_267,.Pixso-paragraph-2001_278,.Pixso-paragraph-2001_268,.Pixso-paragraph-2001_279,.Pixso-paragraph-2001_321,.Pixso-paragraph-2001_333,.Pixso-paragraph-2001_355,.Pixso-paragraph-2001_377,.Pixso-paragraph-2001_388,.Pixso-paragraph-2001_353,.Pixso-paragraph-2001_374,.Pixso-paragraph-2001_411,.Pixso-paragraph-2001_429,.Pixso-paragraph-2001_412,.Pixso-paragraph-2001_430,.Pixso-paragraph-2001_413,.Pixso-paragraph-2001_431,.Pixso-paragraph-2001_414,.Pixso-paragraph-2001_415,.Pixso-paragraph-2001_433,.Pixso-paragraph-2001_432 {
+  font-size: 32.673641px;
+  top: 108px;
+}
+
+.Pixso-paragraph-2001_209,.Pixso-paragraph-2001_264,.Pixso-paragraph-2001_275,.Pixso-paragraph-2001_317,.Pixso-paragraph-2001_329,.Pixso-paragraph-2001_351,.Pixso-paragraph-2001_373,.Pixso-paragraph-2001_384 {
+  color: rgba(217, 217, 217, 1);
+  transform: translateX(calc(-50% + -839px));
+}
+
+.Pixso-paragraph-2001_210,.Pixso-paragraph-2001_265,.Pixso-paragraph-2001_276,.Pixso-paragraph-2001_318,.Pixso-paragraph-2001_330,.Pixso-paragraph-2001_352,.Pixso-paragraph-2001_385 {
+  color: rgba(217, 217, 217, 1);
+  transform: translateX(calc(-50% + -387.5px));
+}
+
+.Pixso-paragraph-2001_211,.Pixso-paragraph-2001_266,.Pixso-paragraph-2001_277,.Pixso-paragraph-2001_319,.Pixso-paragraph-2001_331,.Pixso-paragraph-2001_375,.Pixso-paragraph-2001_386 {
+  color: rgba(217, 217, 217, 1);
+  transform: translateX(calc(-50% + 44.5px));
+}
+
+.Pixso-paragraph-2001_212,.Pixso-paragraph-2001_320,.Pixso-paragraph-2001_332,.Pixso-paragraph-2001_354,.Pixso-paragraph-2001_376,.Pixso-paragraph-2001_387 {
+  color: rgba(217, 217, 217, 1);
+  transform: translateX(calc(-50% + 418px));
+}
+
+.Pixso-paragraph-2001_213 {
+  color: rgba(255, 0, 0, 1);
+  transform: translateX(calc(-50% + 817.5px));
+}
+
+.Pixso-group-2001_214,.stroke-wrapper-2001_215,.stroke-wrapper-2001_219,.Pixso-group-2001_218 {
+  width: 840px;
+  height: 225px;
+}
+
+.Pixso-group-2001_214 {
+  position: absolute;
+  left: 1034px;
+  top: 316px;
+}
+
+.Pixso-rectangle-2001_215,.Pixso-rectangle-2001_219 {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 20px 20px 20px 20px;
+  z-index: 0;
+  background-color: rgba(248.85582, 4.411807, 4.411807, 1);
+}
+
+.stroke-wrapper-2001_215,.stroke-wrapper-2001_219,.stroke-wrapper-2001_282 {
+  position: absolute;
+  isolation: isolate;
+  left: 0px;
+  top: 0px;
+}
+
+.stroke-2001_215,.stroke-2001_219 {
+  position: absolute;
+  inset: 0px;
+  border-radius: 20px 20px 20px 20px;
+  border-width: 10px 10px 10px 10px;
+  border-color: rgba(248.85582, 4.411807, 4.411807, 1);
+}
+
+.Pixso-paragraph-2001_216,.Pixso-paragraph-2001_220,.Pixso-paragraph-2001_217,.Pixso-paragraph-2001_221 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 34px;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_216,.Pixso-paragraph-2001_220 {
+  font-size: 32px;
+  top: 15px;
+}
+
+.Pixso-paragraph-2001_217,.Pixso-paragraph-2001_221 {
+  font-size: 20px;
+  top: 73px;
+}
+
+.Pixso-group-2001_218 {
+  position: absolute;
+  left: 1034px;
+  top: 602px;
+}
+
+.Pixso-group-2001_222 {
+  width: 192.16452px;
+  height: 61.164524px;
+  position: absolute;
+  left: 800.08226px;
+  right: -800.08226px;
+  top: 751px;
+}
+
+.Pixso-group-2001_223 {
+  width: 61.164524px;
+  height: 61.164524px;
+  position: absolute;
+  left: 131px;
+  top: 0px;
+}
+
+.Pixso-vector-2001_224 {
+  width: 60.1474609375px;
+  height: 60.1474609375px;
+  background-image: url(./image/Ellipse772.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 0.438965px;
+  top: 0.878906px;
+}
+
+.Pixso-group-2001_225 {
+  width: 61.164524px;
+  height: 61.164524px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+.Pixso-rectangle-2001_227 {
+  width: 64.788292px;
+  height: 97.182442px;
+  position: absolute;
+  left: -1.780396px;
+  top: 0px;
+  background-image: url(./image/92ebb2f09dc2b4dd4b1f6eb7b1ee3973262d47c6.webp);
+  background-repeat: no-repeat;
+  -webkit-mask-size: 61.164524px 61.164524px;
+  mask-size: 61.164524px 61.164524px;
+  -webkit-mask-position: 1.780396px 0px;
+  mask-position: 1.780396px 0px;
+}
+
+.Pixso-paragraph-2001_228 {
+  font-size: 16.447601px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(217, 217, 217, 1);
+  position: absolute;
+  left: 0px;
+  top: 23.130859px;
+  white-space: pre;
+}
+
+.Pixso-group-2001_229 {
+  width: 227.496307px;
+  height: 61.496307px;
+  position: absolute;
+  left: 1629px;
+  top: 464px;
+}
+
+.Pixso-vector-2001_230 {
+  width: 60.4736328125px;
+  height: 60.4736328125px;
+  background-image: url(./image/Ellipse771.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 166.999985px;
+  top: 0.88306px;
+}
+
+.Pixso-group-2001_231 {
+  width: 61.496307px;
+  height: 61.496307px;
+  position: absolute;
+  left: 166px;
+  top: 0px;
+}
+
+.Pixso-rectangle-2001_233 {
+  width: 65.696899px;
+  height: 98.545357px;
+  position: absolute;
+  left: -4.414076px;
+  top: 0px;
+  background-image: url(./image/2c45ff5576d915fedabe44694f50fc63264dd76a.webp);
+  background-repeat: no-repeat;
+  -webkit-mask-size: 61.496307px 61.496307px;
+  mask-size: 61.496307px 61.496307px;
+  -webkit-mask-position: 4.414063px 0px;
+  mask-position: 4.414063px 0px;
+}
+
+.Pixso-paragraph-2001_234 {
+  font-size: 16.536821px;
+  color: rgba(217, 217, 217, 1);
+  left: 0px;
+  top: 23.253906px;
+}
+
+.Pixso-paragraph-2001_235 {
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+}
+
+.Pixso-group-2001_236,.Pixso-group-2001_239 {
+  width: 102.000015px;
+  height: 21px;
+  left: 1772px;
+}
+
+.Pixso-group-2001_236 {
+  position: absolute;
+  top: 839px;
+}
+
+.Pixso-paragraph-2001_237 {
+  font-size: 17.232309px;
+  font-family: "Montserrat-Bold";
+  text-align: right;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  white-space: pre;
+}
+
+.Pixso-vector-2001_238,.Pixso-vector-2001_241 {
+  width: 17.232421875px;
+  height: 8.23046875px;
+}
+
+.Pixso-vector-2001_238 {
+  background-image: url(./image/Arrow75.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 86.203735px;
+  top: 12.234375px;
+}
+
+.Pixso-group-2001_239 {
+  position: absolute;
+  top: 552.999023px;
+}
+
+.Pixso-paragraph-2001_240 {
+  font-size: 17.232309px;
+  font-family: "Montserrat-Bold";
+  text-align: right;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+  left: 0px;
+  top: 0.000039px;
+  white-space: pre;
+}
+
+.Pixso-vector-2001_241 {
+  background-image: url(./image/Arrow74.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 86.20372px;
+  top: 12.234812px;
+}
+
+.Pixso-frame-2001_242,.Pixso-frame-2001_269,.Pixso-frame-2001_303,.Pixso-frame-2001_322,.Pixso-frame-2001_334,.Pixso-frame-2001_356,.Pixso-frame-2001_378,.Pixso-frame-2001_389 {
+  width: 100%;
+  position: relative;
+  flex-shrink: 0;
+  background-color: rgba(248.85582, 4.411807, 4.411807, 1);
+}
+
+.Pixso-paragraph-2001_243,.Pixso-paragraph-2001_270,.Pixso-paragraph-2001_304,.Pixso-paragraph-2001_323,.Pixso-paragraph-2001_338,.Pixso-paragraph-2001_360,.Pixso-paragraph-2001_383,.Pixso-paragraph-2001_390,.Pixso-paragraph-2001_255 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-rectangle-2001_244,.Pixso-rectangle-2001_271,.Pixso-rectangle-2001_391 {
+  width: 1245px;
+  height: 85px;
+  position: absolute;
+  top: 941px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-group-2001_245,.Pixso-rectangle-2001_246 {
+  width: 1216px;
+  height: 125px;
+  position: absolute;
+}
+
+.Pixso-group-2001_245 {
+  left: 733px;
+  top: 537px;
+}
+
+.Pixso-rectangle-2001_246,.Pixso-rectangle-2001_298,.Pixso-rectangle-2001_393 {
+  left: 0px;
+  top: 0px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_247,.Pixso-paragraph-2001_248,.Pixso-paragraph-2001_272 {
+  font-size: 24px;
+  text-align: left;
+  text-decoration: none;
+  width: 1036px;
+  position: absolute;
+}
+
+.Pixso-paragraph-2001_247 {
+  font-family: "Styrene A LC-Bold";
+  color: rgba(0, 0, 0, 1);
+  left: 68px;
+  top: 29px;
+}
+
+.Pixso-paragraph-2001_248,.Pixso-paragraph-2001_272,.Pixso-paragraph-2001_395 {
+  left: 380px;
+  top: 969px;
+}
+
+.Pixso-paragraph-2001_248,.Pixso-paragraph-2001_272 {
+  font-family: "Montserrat-Bold";
+  font-feature-settings: "locl" 0;
+  color: rgba(217, 217, 217, 1);
+  white-space: pre;
+}
+
+.Pixso-vector-2001_249,.Pixso-vector-2001_273,.Pixso-vector-2001_404 {
+  left: 1528px;
+  top: 984px;
+}
+
+.Pixso-vector-2001_249 {
+  width: 38.0380859375px;
+  height: 18.169921875px;
+  background-image: url(./image/Arrow83.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+.Pixso-group-2001_250 {
+  width: 322.248047px;
+  height: 103.060707px;
+  position: absolute;
+  left: 0.12402350000002116px;
+  right: -0.12402350000002116px;
+  top: 183px;
+}
+
+.Pixso-vector-2001_251,.Pixso-vector-2001_406 {
+  width: 101.3466796875px;
+  height: 101.3466796875px;
+  left: 0.739746px;
+  top: 1.480469px;
+}
+
+.Pixso-vector-2001_251 {
+  background-image: url(./image/Ellipse770.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+.Pixso-group-2001_252 {
+  width: 103.060707px;
+  height: 103.060707px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+.Pixso-rectangle-2001_254,.Pixso-rectangle-2001_409 {
+  -webkit-mask-size: 103.060707px 103.060707px;
+  mask-size: 103.060707px 103.060707px;
+}
+
+.Pixso-rectangle-2001_254 {
+  width: 109px;
+  height: 164px;
+  position: absolute;
+  left: -3px;
+  top: 0px;
+  background-image: url(./image/92ebb2f09dc2b4dd4b1f6eb7b1ee3973262d47c6.webp);
+  background-repeat: no-repeat;
+  -webkit-mask-position: 3px 0px;
+  mask-position: 3px 0px;
+}
+
+.Pixso-paragraph-2001_255,.Pixso-paragraph-2001_410 {
+  font-size: 27.713802px;
+  left: 121.247803px;
+  top: 38.972656px;
+}
+
+.Pixso-group-2001_256 {
+  width: 1265px;
+  height: 270px;
+  position: absolute;
+  left: -30px;
+  top: 325px;
+}
+
+.Pixso-rectangle-2001_257 {
+  width: 1265px;
+  height: 178px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_258,.Pixso-paragraph-2001_262,.Pixso-paragraph-2001_398,.Pixso-text-2001_402 {
+  width: 901px;
+  left: 272px;
+}
+
+.Pixso-paragraph-2001_258 {
+  font-size: 24px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+  top: 45px;
+}
+
+.Pixso-rectangle-2001_259,.Pixso-rectangle-2001_263 {
+  width: 174px;
+  height: 261px;
+}
+
+.Pixso-rectangle-2001_259 {
+  position: absolute;
+  left: 54px;
+  top: 9px;
+  background-image: url(./image/92ebb2f09dc2b4dd4b1f6eb7b1ee3973262d47c6.webp);
+  background-repeat: no-repeat;
+}
+
+.Pixso-group-2001_260 {
+  width: 1265px;
+  height: 278px;
+  position: absolute;
+  left: -30px;
+  top: 691px;
+}
+
+.Pixso-rectangle-2001_261 {
+  width: 1265px;
+  height: 120px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_262 {
+  font-size: 24px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  font-feature-settings: "locl" 0;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+  top: 45px;
+  white-space: pre;
+}
+
+.Pixso-rectangle-2001_263 {
+  position: absolute;
+  left: 53px;
+  top: 17px;
+  background-image: url(./image/92ebb2f09dc2b4dd4b1f6eb7b1ee3973262d47c6.webp);
+  background-repeat: no-repeat;
+}
+
+.Pixso-paragraph-2001_267,.Pixso-paragraph-2001_278,.Pixso-paragraph-2001_353,.Pixso-paragraph-2001_374,.Pixso-paragraph-2001_414 {
+  -webkit-text-stroke: 2px transparent;
+  -webkit-background-clip: text;
+}
+
+.Pixso-paragraph-2001_267,.Pixso-paragraph-2001_278 {
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  transform: translateX(calc(-50% + 418px));
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_268,.Pixso-paragraph-2001_279,.Pixso-paragraph-2001_321,.Pixso-paragraph-2001_333,.Pixso-paragraph-2001_355,.Pixso-paragraph-2001_377,.Pixso-paragraph-2001_388 {
+  color: rgba(217, 217, 217, 1);
+  transform: translateX(calc(-50% + 817.5px));
+}
+
+.Pixso-vector-2001_273 {
+  width: 38.0380859375px;
+  height: 18.169921875px;
+  background-image: url(./image/Arrow82.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+.Pixso-paragraph-2001_274 {
+  font-size: 30.408436px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 337px;
+  top: 893px;
+  white-space: pre;
+}
+
+.Pixso-group-2001_280 {
+  width: 981.000061px;
+  height: 631px;
+  position: absolute;
+  left: -0.49996950000002016px;
+  right: 0.49996950000002016px;
+  top: 193px;
+}
+
+.Pixso-rectangle-2001_281,.stroke-wrapper-2001_282,.stroke-wrapper-2001_283,.Pixso-rectangle-2001_287 {
+  width: 227px;
+  height: 283px;
+}
+
+.Pixso-rectangle-2001_281 {
+  position: absolute;
+  left: 12px;
+  top: 19px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-rectangle-2001_282,.Pixso-rectangle-2001_283,.Pixso-rectangle-2001_284,.Pixso-rectangle-2001_285 {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  border-radius: 20px 20px 20px 20px;
+  z-index: 0;
+}
+
+.stroke-2001_282,.stroke-2001_283 {
+  position: absolute;
+  inset: 0px;
+  border-radius: 20px 20px 20px 20px;
+  border-width: 3px 3px 3px 3px;
+  border-color: rgba(255, 255, 255, 1);
+}
+
+.stroke-wrapper-2001_283 {
+  position: absolute;
+  isolation: isolate;
+  left: 0px;
+  top: 329px;
+}
+
+.stroke-wrapper-2001_284,.stroke-wrapper-2001_285 {
+  left: 256px;
+  width: 725px;
+  height: 232px;
+}
+
+.stroke-wrapper-2001_284 {
+  position: absolute;
+  isolation: isolate;
+  top: 28px;
+}
+
+.stroke-2001_284,.stroke-2001_285 {
+  position: absolute;
+  inset: -1.5px -1.5px -1.5px -1.5px;
+  border-radius: 20px 20px 20px 20px;
+  border-width: 3px 3px 3px 3px;
+  border-color: rgba(255, 255, 255, 1);
+}
+
+.stroke-wrapper-2001_285 {
+  position: absolute;
+  isolation: isolate;
+  top: 354px;
+}
+
+.Pixso-rectangle-2001_286,.Pixso-rectangle-2001_287 {
+  position: absolute;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-rectangle-2001_286 {
+  width: 689px;
+  height: 50px;
+  left: 275px;
+  top: 100px;
+}
+
+.Pixso-rectangle-2001_287 {
+  left: 12px;
+  top: 348px;
+}
+
+.Pixso-rectangle-2001_288 {
+  width: 178.344559px;
+  height: 267.516846px;
+  position: absolute;
+  left: 36px;
+  top: 27px;
+  background-image: url(./image/92ebb2f09dc2b4dd4b1f6eb7b1ee3973262d47c6.webp);
+  background-repeat: no-repeat;
+}
+
+.Pixso-paragraph-2001_289,.Pixso-paragraph-2001_290,.Pixso-paragraph-2001_291 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  position: absolute;
+}
+
+.Pixso-paragraph-2001_289,.Pixso-paragraph-2001_295 {
+  font-size: 45.27578px;
+  left: 275.082031px;
+}
+
+.Pixso-paragraph-2001_289 {
+  color: rgba(255, 255, 255, 1);
+  top: 30px;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_290 {
+  font-size: 30.902517px;
+  color: rgba(255, 255, 255, 1);
+  width: 627px;
+  left: 275px;
+  top: 162px;
+}
+
+.Pixso-paragraph-2001_291 {
+  font-size: 30.902517px;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  left: 291px;
+  top: 104px;
+  white-space: pre;
+}
+
+.Pixso-rectangle-2001_292 {
+  width: 181.288528px;
+  height: 271.93277px;
+  position: absolute;
+  left: 35px;
+  top: 354px;
+  background-image: url(./image/2c45ff5576d915fedabe44694f50fc63264dd76a.webp);
+  background-repeat: no-repeat;
+}
+
+.Pixso-paragraph-2001_293 {
+  font-size: 25.470232px;
+  font-family: "Montserrat-Bold";
+  text-align: right;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 829px;
+  top: 271px;
+  white-space: pre;
+}
+
+.Pixso-vector-2001_294,.Pixso-vector-2001_302 {
+  width: 25.470703125px;
+  height: 12.166015625px;
+}
+
+.Pixso-vector-2001_294 {
+  background-image: url(./image/Arrow73.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 957.652344px;
+  top: 289.080078px;
+}
+
+.Pixso-paragraph-2001_295,.Pixso-paragraph-2001_296 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+}
+
+.Pixso-paragraph-2001_295 {
+  top: 356px;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_296 {
+  font-size: 30.902517px;
+  width: 627px;
+  left: 275px;
+  top: 493px;
+}
+
+.Pixso-group-2001_297,.Pixso-rectangle-2001_298 {
+  width: 571px;
+  height: 50px;
+  position: absolute;
+}
+
+.Pixso-group-2001_297 {
+  left: 275px;
+  top: 426px;
+}
+
+.Pixso-paragraph-2001_299 {
+  font-size: 30.902517px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+  left: 16px;
+  top: 4px;
+  white-space: pre;
+}
+
+.Pixso-group-2001_300 {
+  width: 152.000061px;
+  height: 31px;
+  position: absolute;
+  left: 829px;
+  top: 600px;
+}
+
+.Pixso-paragraph-2001_301 {
+  font-size: 25.470232px;
+  font-family: "Montserrat-Bold";
+  text-align: right;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  white-space: pre;
+}
+
+.Pixso-vector-2001_302 {
+  background-image: url(./image/Arrow90.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 128.652344px;
+  top: 18.080078px;
+}
+
+.Pixso-paragraph-2001_305 {
+  font-size: 64px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 50%;
+  top: 282px;
+  transform: translateX(calc(-50% + 19px));
+  white-space: pre;
+}
+
+.Pixso-rectangle-2001_306,.Pixso-rectangle-2001_307,.Pixso-rectangle-2001_308 {
+  width: 1443px;
+  height: 110px;
+  position: absolute;
+  left: 239px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-rectangle-2001_306 {
+  top: 397px;
+}
+
+.Pixso-rectangle-2001_307 {
+  top: 517px;
+}
+
+.Pixso-rectangle-2001_308 {
+  top: 637px;
+}
+
+.Pixso-paragraph-2001_309,.Pixso-paragraph-2001_310,.Pixso-paragraph-2001_311 {
+  font-size: 36px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  font-feature-settings: "locl" 0;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  width: 1348px;
+  position: absolute;
+  left: 299px;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_309 {
+  top: 431px;
+}
+
+.Pixso-paragraph-2001_310 {
+  top: 551px;
+}
+
+.Pixso-paragraph-2001_311 {
+  top: 671px;
+}
+
+.Pixso-paragraph-2001_312 {
+  font-size: 38.037739px;
+  font-family: "Styrene A LC-Bold";
+  text-align: right;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 773px;
+  top: 778px;
+  white-space: pre;
+}
+
+.Pixso-vector-2001_313,.Pixso-vector-2001_314,.Pixso-vector-2001_315,.Pixso-vector-2001_316 {
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+.Pixso-vector-2001_313 {
+  width: 38.037109375px;
+  height: 18.169921875px;
+  background-image: url(./image/Arrow72.svg);
+  left: 1647px;
+  top: 805px;
+}
+
+.Pixso-vector-2001_314,.Pixso-vector-2001_315,.Pixso-vector-2001_316 {
+  width: 18.162109375px;
+  height: 18.65185546875px;
+  left: 1632px;
+}
+
+.Pixso-vector-2001_314 {
+  background-image: url(./image/Arrow81.svg);
+  top: 447px;
+}
+
+.Pixso-vector-2001_315 {
+  background-image: url(./image/Arrow9.svg);
+  top: 567px;
+}
+
+.Pixso-vector-2001_316 {
+  background-image: url(./image/Arrow10.svg);
+  top: 687px;
+}
+
+.Pixso-paragraph-2001_324 {
+  font-size: 64px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 241px;
+  top: 210px;
+  white-space: pre;
+}
+
+.Pixso-rectangle-2001_325 {
+  width: 1443px;
+  height: 633px;
+  position: absolute;
+  top: 319px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_326,.Pixso-paragraph-2001_327,.Pixso-paragraph-2001_342,.Pixso-paragraph-2001_343,.Pixso-paragraph-2001_344,.Pixso-paragraph-2001_345,.Pixso-paragraph-2001_346,.Pixso-paragraph-2001_347,.Pixso-paragraph-2001_348,.Pixso-paragraph-2001_349,.Pixso-paragraph-2001_364,.Pixso-paragraph-2001_365,.Pixso-paragraph-2001_366,.Pixso-paragraph-2001_367,.Pixso-paragraph-2001_368,.Pixso-paragraph-2001_369,.Pixso-paragraph-2001_370,.Pixso-paragraph-2001_371 {
+  font-family: "Styrene A LC-Bold";
+  text-decoration: none;
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_326 {
+  font-size: 37.135803px;
+  text-align: left;
+  color: rgba(217, 217, 217, 1);
+  left: 276px;
+  top: 348px;
+}
+
+.Pixso-paragraph-2001_327 {
+  font-size: 38.037739px;
+  text-align: right;
+  color: rgba(255, 255, 255, 1);
+  left: 1389px;
+  top: 979px;
+}
+
+.Pixso-vector-2001_328 {
+  width: 38.037109375px;
+  height: 18.169921875px;
+  background-image: url(./image/Arrow80.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 1635px;
+  top: 1006px;
+}
+
+.Pixso-rectangle-2001_335 {
+  width: 261.111908px;
+  height: 391.667877px;
+  position: absolute;
+  left: 1683px;
+  top: 494px;
+  transform: rotate(-169.3636deg);
+  background-image: url(./image/39fad868cac5f77c29057b4ae185567217940c43.webp);
+  background-repeat: no-repeat;
+}
+
+.Pixso-paragraph-2001_336,.Pixso-paragraph-2001_358,.Pixso-paragraph-2001_337,.Pixso-paragraph-2001_359 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  left: 121px;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_336,.Pixso-paragraph-2001_358 {
+  font-size: 96px;
+  top: 164px;
+}
+
+.Pixso-paragraph-2001_337,.Pixso-paragraph-2001_359 {
+  font-size: 40px;
+  top: 281px;
+}
+
+.Pixso-rectangle-2001_339,.Pixso-rectangle-2001_340,.Pixso-rectangle-2001_341 {
+  width: 1659px;
+  position: absolute;
+  left: 114px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-rectangle-2001_339,.Pixso-rectangle-2001_361 {
+  height: 274px;
+  top: 367px;
+}
+
+.Pixso-rectangle-2001_340,.Pixso-rectangle-2001_362 {
+  height: 153px;
+  top: 653px;
+}
+
+.Pixso-rectangle-2001_341,.Pixso-rectangle-2001_363 {
+  height: 153px;
+  top: 818px;
+}
+
+.Pixso-paragraph-2001_342 {
+  font-size: 48px;
+  text-align: left;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  left: 138px;
+  top: 397px;
+}
+
+.Pixso-paragraph-2001_343 {
+  font-size: 16px;
+  text-align: left;
+  color: rgba(217, 217, 217, 1);
+  left: 1045px;
+  top: 397px;
+}
+
+.Pixso-paragraph-2001_344,.Pixso-paragraph-2001_345,.Pixso-paragraph-2001_346,.Pixso-paragraph-2001_347,.Pixso-paragraph-2001_348 {
+  font-size: 32px;
+  text-align: left;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  left: 138px;
+}
+
+.Pixso-paragraph-2001_345,.Pixso-paragraph-2001_367 {
+  top: 841px;
+}
+
+.Pixso-paragraph-2001_346,.Pixso-paragraph-2001_368 {
+  top: 467px;
+}
+
+.Pixso-paragraph-2001_347,.Pixso-paragraph-2001_369 {
+  top: 725px;
+}
+
+.Pixso-paragraph-2001_348,.Pixso-paragraph-2001_370 {
+  top: 890px;
+}
+
+.Pixso-paragraph-2001_349 {
+  font-size: 38.037739px;
+  text-align: right;
+  color: rgba(255, 255, 255, 1);
+  left: 1097px;
+  top: 977px;
+}
+
+.Pixso-vector-2001_350,.Pixso-vector-2001_372 {
+  left: 1738px;
+  top: 1004px;
+}
+
+.Pixso-vector-2001_350 {
+  width: 38.037109375px;
+  height: 18.169921875px;
+  background-image: url(./image/Arrow71.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+.Pixso-paragraph-2001_353 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  line-height: 112%;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+  left: 50%;
+  transform: translateX(calc(-50% + 44.5px));
+  white-space: pre;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-rectangle-2001_357 {
+  width: 272.128021px;
+  height: 408.192047px;
+  position: absolute;
+  left: 1664px;
+  top: 449px;
+  transform: rotate(-169.594517deg);
+  background-image: url(./image/cf1438d33b6d981719307f642b36c0fc0f2d89a0.webp);
+  background-repeat: no-repeat;
+}
+
+.Pixso-rectangle-2001_361,.Pixso-rectangle-2001_362,.Pixso-rectangle-2001_363 {
+  width: 1659px;
+  position: absolute;
+  left: 118px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_364 {
+  font-size: 48px;
+  text-align: left;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  left: 142px;
+  top: 397px;
+}
+
+.Pixso-paragraph-2001_365 {
+  font-size: 16px;
+  text-align: left;
+  color: rgba(217, 217, 217, 1);
+  left: 661px;
+  top: 397px;
+}
+
+.Pixso-paragraph-2001_366,.Pixso-paragraph-2001_367,.Pixso-paragraph-2001_368,.Pixso-paragraph-2001_369,.Pixso-paragraph-2001_370 {
+  font-size: 32px;
+  text-align: left;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  left: 142px;
+}
+
+.Pixso-paragraph-2001_371 {
+  font-size: 38.037739px;
+  text-align: right;
+  color: rgba(255, 255, 255, 1);
+  left: 1072px;
+  top: 977px;
+}
+
+.Pixso-vector-2001_372 {
+  width: 38.037109375px;
+  height: 18.169921875px;
+  background-image: url(./image/Arrow70.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+.Pixso-paragraph-2001_374,.Pixso-rectangle-2001_379,.Pixso-rectangle-2001_380 {
+  position: absolute;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_374 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  line-height: 112%;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  left: 50%;
+  transform: translateX(calc(-50% + -387.5px));
+  white-space: pre;
+}
+
+.Pixso-rectangle-2001_379,.Pixso-rectangle-2001_380 {
+  width: 1059px;
+  height: 368px;
+  left: 96px;
+}
+
+.Pixso-rectangle-2001_379 {
+  top: 218px;
+  border-radius: 20px 20px 20px 20px;
+}
+
+.Pixso-rectangle-2001_380 {
+  top: 642px;
+  border-radius: 20px 20px 20px 20px;
+}
+
+.Pixso-paragraph-2001_381,.Pixso-paragraph-2001_382 {
+  font-family: "Montserrat-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  white-space: pre;
+  position: absolute;
+}
+
+.Pixso-paragraph-2001_381 {
+  font-size: 15px;
+  left: 163px;
+  top: 280px;
+}
+
+.Pixso-paragraph-2001_382 {
+  font-size: 13px;
+  left: 151px;
+  top: 669px;
+}
+
+.Pixso-group-2001_392,.Pixso-rectangle-2001_393 {
+  width: 1216px;
+  height: 118px;
+  position: absolute;
+}
+
+.Pixso-group-2001_392 {
+  left: 733px;
+  top: 579px;
+}
+
+.Pixso-text-2001_394 {
+  font-size: 24px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(0, 0, 0, 1);
+  width: 1036px;
+  position: absolute;
+  left: 68px;
+  top: 26px;
+}
+
+.Pixso-paragraph-2001_394_0,.Pixso-span-2001_394_0_1,.Pixso-paragraph-2001_394_1,.Pixso-span-2001_394_1_1 {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-paragraph-2001_394_0,.Pixso-paragraph-2001_394_1 {
+  line-height: 32px;
+}
+
+.Pixso-span-2001_394_0_1,.Pixso-span-2001_394_1_1 {
+  text-decoration: none;
+}
+
+.Pixso-paragraph-2001_395 {
+  font-size: 24px;
+  font-family: "Montserrat-Bold";
+  text-align: left;
+  font-feature-settings: "locl" 0;
+  text-decoration: none;
+  color: rgba(217, 217, 217, 1);
+  width: 1036px;
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-group-2001_396 {
+  width: 1265px;
+  height: 273px;
+  position: absolute;
+  left: -30px;
+  top: 365px;
+}
+
+.Pixso-rectangle-2001_397 {
+  width: 1265px;
+  height: 178px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_398 {
+  font-size: 24px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+  top: 45px;
+}
+
+.Pixso-rectangle-2001_399 {
+  width: 176px;
+  height: 264px;
+  position: absolute;
+  left: 53px;
+  top: 9px;
+  background-image: url(./image/2c45ff5576d915fedabe44694f50fc63264dd76a.webp);
+  background-repeat: no-repeat;
+}
+
+.Pixso-group-2001_400 {
+  width: 1265px;
+  height: 264px;
+  position: absolute;
+  left: -30px;
+  top: 720px;
+}
+
+.Pixso-rectangle-2001_401 {
+  width: 1265px;
+  height: 136px;
+  position: absolute;
+  left: 0px;
+  top: 16px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-text-2001_402 {
+  font-size: 24px;
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  position: absolute;
+  top: 31px;
+}
+
+.Pixso-paragraph-2001_402_0 {
+  line-height: 32px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-span-2001_402_0_1 {
+  text-decoration: none;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-paragraph-2001_402_1,.Pixso-paragraph-2001_402_2 {
+  line-height: 32px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-span-2001_402_2_1 {
+  text-decoration: none;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.Pixso-rectangle-2001_403 {
+  width: 176px;
+  height: 264px;
+  position: absolute;
+  left: 53px;
+  top: 0px;
+  background-image: url(./image/2c45ff5576d915fedabe44694f50fc63264dd76a.webp);
+  background-repeat: no-repeat;
+}
+
+.Pixso-vector-2001_404 {
+  width: 38.0380859375px;
+  height: 18.169921875px;
+  background-image: url(./image/Arrow8.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+.Pixso-group-2001_405 {
+  width: 381.248047px;
+  height: 103.060707px;
+  position: absolute;
+  left: 769px;
+  top: 183px;
+}
+
+.Pixso-vector-2001_406 {
+  background-image: url(./image/Ellipse77.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+}
+
+.Pixso-group-2001_407 {
+  width: 103.060707px;
+  height: 103.060707px;
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
+
+.Pixso-rectangle-2001_409 {
+  width: 110.100418px;
+  height: 165.150635px;
+  position: absolute;
+  left: -7.397565px;
+  top: 0px;
+  background-image: url(./image/2c45ff5576d915fedabe44694f50fc63264dd76a.webp);
+  background-repeat: no-repeat;
+  -webkit-mask-position: 7.397565px 0px;
+  mask-position: 7.397565px 0px;
+}
+
+.Pixso-paragraph-2001_410,.Pixso-paragraph-2001_411,.Pixso-paragraph-2001_429,.Pixso-paragraph-2001_412,.Pixso-paragraph-2001_430,.Pixso-paragraph-2001_413,.Pixso-paragraph-2001_431,.Pixso-paragraph-2001_414,.Pixso-paragraph-2001_415,.Pixso-paragraph-2001_433 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_410 {
+  color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_411,.Pixso-paragraph-2001_429 {
+  line-height: 112%;
+  color: rgba(217, 217, 217, 1);
+  left: 50%;
+  transform: translateX(calc(-50% + -839px));
+}
+
+.Pixso-paragraph-2001_412,.Pixso-paragraph-2001_430 {
+  line-height: 112%;
+  color: rgba(217, 217, 217, 1);
+  left: 50%;
+  transform: translateX(calc(-50% + -387.5px));
+}
+
+.Pixso-paragraph-2001_413,.Pixso-paragraph-2001_431 {
+  line-height: 112%;
+  color: rgba(217, 217, 217, 1);
+  left: 50%;
+  transform: translateX(calc(-50% + 44.5px));
+}
+
+.Pixso-paragraph-2001_414 {
+  line-height: 112%;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  left: 50%;
+  transform: translateX(calc(-50% + 418px));
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_415,.Pixso-paragraph-2001_433 {
+  line-height: 112%;
+  color: rgba(217, 217, 217, 1);
+  left: 50%;
+  transform: translateX(calc(-50% + 817.5px));
+}
+
+.Pixso-frame-2001_416 {
+  width: 100%;
+  position: relative;
+  flex-shrink: 0;
+  background-color: rgba(248.85582, 4.411807, 4.411807, 1);
+}
+
+.Pixso-group-2001_417 {
+  width: 1464px;
+  height: 180px;
+  position: absolute;
+  left: 131px;
+  top: 203px;
+}
+
+.Pixso-paragraph-2001_418,.Pixso-paragraph-2001_419,.Pixso-paragraph-2001_420 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  color: rgba(255, 255, 255, 1);
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_418 {
+  font-size: 96px;
+  left: 0px;
+  top: 0px;
+}
+
+.Pixso-paragraph-2001_419 {
+  font-size: 48px;
+  left: 0px;
+  top: 117px;
+}
+
+.Pixso-group-2001_421,.Pixso-rectangle-2001_422,.Pixso-rectangle-2001_426,.Pixso-group-2001_425 {
+  width: 1658px;
+  height: 233px;
+}
+
+.Pixso-group-2001_421 {
+  position: absolute;
+  left: 131px;
+  top: 696px;
+}
+
+.Pixso-rectangle-2001_422,.Pixso-rectangle-2001_426 {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  border-radius: 20px 20px 20px 20px;
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.Pixso-paragraph-2001_423,.Pixso-paragraph-2001_424,.Pixso-paragraph-2001_428 {
+  font-family: "Styrene A LC-Bold";
+  text-align: left;
+  text-decoration: none;
+  position: absolute;
+  left: 25px;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_423 {
+  font-size: 38.037739px;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  top: 17px;
+}
+
+.Pixso-paragraph-2001_424,.Pixso-paragraph-2001_428 {
+  font-size: 26.41399px;
+  font-feature-settings: "locl" 0;
+  color: rgba(217, 217, 217, 1);
+  width: 1586px;
+  top: 82px;
+}
+
+.Pixso-group-2001_425 {
+  position: absolute;
+  left: 131px;
+  top: 423px;
+}
+
+.Pixso-paragraph-2001_427,.Pixso-paragraph-2001_432,.Pixso-paragraph-2001_434 {
+  font-family: "Styrene A LC-Bold";
+  text-decoration: none;
+  position: absolute;
+  white-space: pre;
+}
+
+.Pixso-paragraph-2001_427 {
+  font-size: 38.037739px;
+  text-align: left;
+  font-feature-settings: "locl" 0;
+  color: rgba(248.85582, 4.411807, 4.411807, 1);
+  width: 614px;
+  left: 25px;
+  top: 17px;
+}
+
+.Pixso-paragraph-2001_432 {
+  text-align: left;
+  line-height: 112%;
+  color: rgba(217, 217, 217, 1);
+  left: 50%;
+  transform: translateX(calc(-50% + 418px));
+}
+
+.Pixso-paragraph-2001_434 {
+  font-size: 38.037739px;
+  text-align: right;
+  color: rgba(255, 255, 255, 1);
+  left: 1508px;
+  top: 947px;
+}
+
+.Pixso-vector-2001_435 {
+  width: 38.037109375px;
+  height: 18.169921875px;
+  background-image: url(./image/Arrow7.svg);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  position: absolute;
+  left: 1754px;
+  top: 974px;
+}
+
+
+  </style>
+
+  <style id="preview-style">
+    :root { --preview-bar-h: 58px; --preview-zoom: 1; --preview-offset: 0px; }
+    html, body { width: 100%; height: 100%; }
+    body.preview { padding-top: var(--preview-bar-h); }
+    body.preview .scroll-container { height: calc(100% - var(--preview-bar-h)); }
+    body.preview .Pixso-canvas-0_1 { height: auto; }
+    body.preview .Pixso-canvas-0_1 > div[id^="2001_"] { display: none; }
+    body.preview .Pixso-canvas-0_1 > div#2001_3 { display: block; }
+    body.preview .Pixso-canvas-0_1 > div.is-active { display: block; }
+    body.preview.fit .scroll-container {
+      overflow: hidden;
+      background: #f2f2f2;
+    }
+    body.preview.fit .Pixso-canvas-0_1 > div[id^="2001_"] {
+      transform: translateX(var(--preview-offset)) scale(var(--preview-zoom));
+      transform-origin: top left;
+      box-shadow: 0 10px 32px rgba(0, 0, 0, .12);
+    }
+    .preview-bar {
+      position: fixed; top: 0; left: 0; right: 0; height: var(--preview-bar-h);
+      z-index: 10000; display: flex; align-items: center; gap: 14px;
+      padding: 0 18px; background: #fff; color: #191919;
+      border-bottom: 1px solid rgba(25,25,25,.12);
+      box-shadow: 0 4px 18px rgba(25,25,25,.08);
+      font-family: "Montserrat-Bold", "Styrene A LC-Bold", Arial, sans-serif;
+      font-size: 13px; line-height: 1;
+    }
+    .preview-brand { display: flex; align-items: center; gap: 9px; font-weight: 700; white-space: nowrap; }
+    .preview-brand-mark {
+      width: 28px; height: 28px; border-radius: 8px; background: #ef3124; color: #fff;
+      display: grid; place-items: center; font-size: 15px; font-weight: 800;
+    }
+    .preview-brand small { color: #777; font-weight: 500; }
+    .preview-controls { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+    .preview-controls select {
+      min-width: 220px; max-width: 360px; height: 34px; border: 1px solid #d9d9d9;
+      border-radius: 9px; padding: 0 10px; background: #fff; color: #191919;
+      font: inherit; font-weight: 600;
+    }
+    .preview-btn {
+      height: 34px; min-width: 34px; padding: 0 10px; border: 1px solid #d9d9d9;
+      border-radius: 9px; background: #fff; color: #191919; cursor: pointer;
+      font: inherit; font-weight: 600;
+    }
+    .preview-btn:hover { border-color: #ef3124; color: #ef3124; }
+    .preview-btn.is-on { background: #ef3124; border-color: #ef3124; color: #fff; }
+    .preview-count { color: #777; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .preview-note { color: #777; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .preview-app-link { color: #ef3124; font-weight: 700; text-decoration: none; white-space: nowrap; }
+    .preview-app-link:hover { text-decoration: underline; }
+    [data-preview-target]:hover,
+    [data-preview-action]:hover {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+    }
+    [data-preview-action]:focus-visible {
+      outline: 3px solid #191919;
+      outline-offset: 4px;
+      border-radius: 4px;
+    }
+    .preview-field {
+      position: absolute;
+      z-index: 3;
+      margin: 0;
+      border: 0;
+      outline: none;
+      background: transparent;
+      color: #f90404;
+      font-family: "Montserrat-Bold", "Montserrat", Arial, sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      line-height: normal;
+      box-sizing: border-box;
+      border-radius: 15px;
+      padding: 0;
+    }
+    .preview-field::placeholder {
+      color: #9b9b9b;
+      opacity: 1;
+    }
+    .preview-field:focus {
+      box-shadow: inset 0 0 0 2px #f90404;
+    }
+    .preview-field--textarea {
+      resize: none;
+      overflow: auto;
+    }
+    .preview-field--select {
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+    .preview-field--select.is-empty {
+      color: #9b9b9b;
+    }
+    .preview-field--select option {
+      color: #191919;
+      background: #fff;
+      font-family: "Montserrat", Arial, sans-serif;
+      font-weight: 600;
+    }
+    .preview-login-submit {
+      position: absolute;
+      z-index: 4;
+      border: 0;
+      border-radius: 15px;
+      background: #f90404;
+      color: #fff;
+      font: 700 24px/1 "Montserrat-Bold", "Styrene A LC-Bold", Arial, sans-serif;
+      text-align: center;
+      cursor: pointer;
+      padding: 0;
+      box-shadow: 0 8px 20px rgba(249, 4, 4, .18);
+    }
+    .preview-login-submit:hover {
+      background: #d80d00;
+    }
+    .preview-login-submit:focus-visible {
+      outline: 3px solid #191919;
+      outline-offset: 3px;
+    }
+    .preview-icon-button {
+      position: absolute;
+      z-index: 6;
+      border: 0;
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+      padding: 0;
+    }
+    .preview-icon-button:hover {
+      background: rgba(239, 49, 36, .12);
+    }
+    .preview-cta {
+      position: absolute;
+      z-index: 4;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      font: 38px/1 "Montserrat-Bold", Arial, sans-serif;
+      text-align: left;
+      cursor: pointer;
+      padding: 0;
+    }
+    .preview-cta:hover {
+      text-decoration: underline;
+      text-underline-offset: 6px;
+    }
+    .preview-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 52px;
+      z-index: 10002;
+      max-width: min(680px, calc(100vw - 28px));
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: #191919;
+      color: #fff;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, .24);
+      font: 600 14px/1.35 "Montserrat", Arial, sans-serif;
+      text-align: center;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 12px);
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    .preview-toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+    .preview-toast.is-error {
+      background: #b00000;
+    }
+    .preview-hint {
+      position: fixed; right: 14px; bottom: 12px; z-index: 10000;
+      padding: 7px 10px; border-radius: 8px; background: rgba(25,25,25,.72);
+      color: #fff; font: 12px/1.25 "Montserrat", Arial, sans-serif;
+      pointer-events: none;
+    }
+    @media (max-width: 900px) {
+      .preview-note { display: none; }
+      .preview-controls select { min-width: 0; width: 190px; }
+      .preview-bar { gap: 8px; padding: 0 10px; }
+    }
+    @media (max-width: 620px) {
+      :root { --preview-bar-h: 96px; }
+      .preview-bar { flex-wrap: wrap; align-content: center; padding: 8px 10px; gap: 6px; }
+      .preview-brand { width: 100%; }
+      .preview-controls { width: 100%; }
+      .preview-controls select { flex: 1; }
+      .preview-app-link { display: none; }
+    }
+  </style>
+</head>
+<body class="preview">
+
+<div class="preview-bar" role="navigation" aria-label="Навигация по макету">
+  <div class="preview-brand"><span class="preview-brand-mark">А</span> Альфа-Бизнес <small>· preview</small></div>
+  <div class="preview-controls">
+    <button class="preview-btn" type="button" id="preview-prev" aria-label="Предыдущий экран">←</button>
+    <select id="preview-screen" aria-label="Выбрать экран"></select>
+    <button class="preview-btn" type="button" id="preview-next" aria-label="Следующий экран">→</button>
+    <span class="preview-count" id="preview-count"></span>
+    <button class="preview-btn is-on" type="button" id="preview-fit" title="Вписать макет в ширину окна">Вписать</button>
+    <span class="preview-note">интерактивный макет · данные локально</span>
+  </div>
+  <a class="preview-app-link" href="/app">Рабочее приложение →</a>
+</div>
+<div class="preview-hint">Поля и кнопки работают локально · ← → — экраны</div>
+
+<div class="scroll-container">
+  <div id="0_1" class="Pixso-canvas-0_1">
+    <div id="2001_3" class="Pixso-frame-2001_3">
+      <div id="2001_4" class="Pixso-rectangle-2001_4"></div>
+      <div id="2001_5" class="Pixso-rectangle-2001_5"></div>
+      <div id="2001_6" class="Pixso-rectangle-2001_6"></div>
+      <p id="2001_7" class="Pixso-paragraph-2001_7">Альфа-Бизнес</p>
+      <div id="2001_8" class="stroke-wrapper-2001_8">
+        <div class="Pixso-rectangle-2001_8"></div>
+        <div class="stroke-2001_8"></div>
+      </div>
+      <div id="2001_9" class="Pixso-text-2001_9">
+        <p id="2001_9_0" class="Pixso-paragraph-2001_9_0">
+<span id="2001_9_0_1" class="Pixso-span-2001_9_0_1">В фокусе: </span><span id="2001_9_0_2" class="Pixso-span-2001_9_0_2">ваш бизнес</span></p>
+      </div>
+      <div id="2001_10" class="Pixso-text-2001_10">
+        <p id="2001_10_0" class="Pixso-paragraph-2001_10_0">
+<span id="2001_10_0_1" class="Pixso-span-2001_10_0_1">Персональная аналитика, помогающая понять,</span></p>
+        <p id="2001_10_1" class="Pixso-paragraph-2001_10_1">
+<span id="2001_10_1_1" class="Pixso-span-2001_10_1_1">как изменения рынка влияют на вашу компанию</span></p>
+      </div>
+      <div id="2001_11" class="Pixso-text-2001_11">
+        <p id="2001_11_0" class="Pixso-paragraph-2001_11_0">
+<span id="2001_11_0_1" class="Pixso-span-2001_11_0_1">Еще не с нами? </span><span id="2001_11_0_2" class="Pixso-span-2001_11_0_2">Зарегистрируйтесь</span><span id="2001_11_0_3" class="Pixso-span-2001_11_0_3">, </span></p>
+        <p id="2001_11_1" class="Pixso-paragraph-2001_11_1">
+<span id="2001_11_1_1" class="Pixso-span-2001_11_1_1">чтобы вывести свой бизнес на новый уровень</span></p>
+      </div>
+      <div id="2001_12" class="Pixso-symbol-2001_12">
+        <div id="2001_13" class="Pixso-rectangle-2001_13"></div>
+        <p id="2001_14" class="Pixso-paragraph-2001_14">Войти</p>
+      </div>
+      <div id="2001_15" class="Pixso-rectangle-2001_15"></div>
+    </div>
+    <div id="2001_16" class="Pixso-frame-2001_16">
+      <div id="2001_17" class="Pixso-rectangle-2001_17"></div>
+      <div id="2001_18" class="Pixso-rectangle-2001_18"></div>
+      <div id="2001_19" class="Pixso-rectangle-2001_19"></div>
+      <p id="2001_20" class="Pixso-paragraph-2001_20">логин</p>
+      <p id="2001_21" class="Pixso-paragraph-2001_21">пароль</p>
+      <p id="2001_22" class="Pixso-paragraph-2001_22">Войти</p>
+      <p id="2001_23" class="Pixso-paragraph-2001_23">Альфа-Бизнес</p>
+      <p id="2001_24" class="Pixso-paragraph-2001_24">Зарегистрироваться</p>
+      <div id="2001_25" class="Pixso-rectangle-2001_25"></div>
+      <div id="2001_26" class="Pixso-rectangle-2001_26"></div>
+      <div id="2001_27" class="Pixso-rectangle-2001_27"></div>
+      <div id="2001_28" class="Pixso-rectangle-2001_28"></div>
+    </div>
+    <div id="2001_29" class="Pixso-frame-2001_29">
+      <div id="2001_30" class="Pixso-rectangle-2001_30"></div>
+      <p id="2001_31" class="Pixso-paragraph-2001_31">Регистрация</p>
+      <p id="2001_32" class="Pixso-paragraph-2001_32">Название юридического лица</p>
+      <p id="2001_33" class="Pixso-paragraph-2001_33">Сфера деятельности</p>
+      <p id="2001_34" class="Pixso-paragraph-2001_34">Регион</p>
+      <p id="2001_35" class="Pixso-paragraph-2001_35">Масштаб</p>
+      <div id="2001_36" class="Pixso-rectangle-2001_36"></div>
+      <div id="2001_37" class="Pixso-rectangle-2001_37"></div>
+      <div id="2001_38" class="Pixso-rectangle-2001_38"></div>
+      <div id="2001_39" class="Pixso-rectangle-2001_39"></div>
+      <p id="2001_40" class="Pixso-paragraph-2001_40">Выручка компании (рублей в год)</p>
+      <p id="2001_41" class="Pixso-paragraph-2001_41">Альфа-Бизнес</p>
+      <div id="2001_42" class="Pixso-vector-2001_42"></div>
+      <div id="2001_43" class="Pixso-vector-2001_43"></div>
+      <div id="2001_44" class="Pixso-vector-2001_44"></div>
+      <div id="2001_45" class="Pixso-vector-2001_45"></div>
+      <div id="2001_46" class="Pixso-rectangle-2001_46"></div>
+      <div id="2001_47" class="Pixso-rectangle-2001_47"></div>
+      <div id="2001_48" class="Pixso-rectangle-2001_48"></div>
+      <div id="2001_49" class="Pixso-rectangle-2001_49"></div>
+      <p id="2001_50" class="Pixso-paragraph-2001_50">Далее</p>
+      <div id="2001_51" class="Pixso-vector-2001_51"></div>
+    </div>
+    <div id="2001_52" class="Pixso-frame-2001_52">
+      <div id="2001_53" class="Pixso-rectangle-2001_53"></div>
+      <p id="2001_54" class="Pixso-paragraph-2001_54">Регистрация</p>
+      <p id="2001_55" class="Pixso-paragraph-2001_55">Название юридического лица</p>
+      <p id="2001_56" class="Pixso-paragraph-2001_56">Сфера деятельности</p>
+      <p id="2001_57" class="Pixso-paragraph-2001_57">Регион</p>
+      <p id="2001_58" class="Pixso-paragraph-2001_58">Масштаб</p>
+      <div id="2001_59" class="Pixso-rectangle-2001_59"></div>
+      <div id="2001_60" class="Pixso-rectangle-2001_60"></div>
+      <div id="2001_61" class="Pixso-rectangle-2001_61"></div>
+      <div id="2001_62" class="Pixso-rectangle-2001_62"></div>
+      <p id="2001_63" class="Pixso-paragraph-2001_63">Выручка компании (рублей в год)</p>
+      <p id="2001_64" class="Pixso-paragraph-2001_64">Альфа-Бизнес</p>
+      <div id="2001_65" class="Pixso-vector-2001_65"></div>
+      <div id="2001_66" class="Pixso-vector-2001_66"></div>
+      <div id="2001_67" class="Pixso-rectangle-2001_67"></div>
+      <div id="2001_68" class="Pixso-rectangle-2001_68"></div>
+      <div id="2001_69" class="Pixso-vector-2001_69"></div>
+      <div id="2001_70" class="Pixso-vector-2001_70"></div>
+      <p id="2001_71" class="Pixso-paragraph-2001_71">Москва и МО</p>
+      <p id="2001_72" class="Pixso-paragraph-2001_72">IT и технологии</p>
+      <div id="2001_73" class="Pixso-rectangle-2001_73"></div>
+      <div id="2001_74" class="Pixso-rectangle-2001_74"></div>
+      <div id="2001_75" class="Pixso-rectangle-2001_75"></div>
+      <div id="2001_76" class="Pixso-rectangle-2001_76"></div>
+    </div>
+    <div id="2001_77" class="Pixso-frame-2001_77">
+      <div id="2001_78" class="Pixso-rectangle-2001_78"></div>
+      <p id="2001_79" class="Pixso-paragraph-2001_79">Логин</p>
+      <p id="2001_80" class="Pixso-paragraph-2001_80">Пароль</p>
+      <p id="2001_81" class="Pixso-paragraph-2001_81">Повторение пароля</p>
+      <div id="2001_82" class="Pixso-rectangle-2001_82"></div>
+      <div id="2001_83" class="Pixso-rectangle-2001_83"></div>
+      <div id="2001_84" class="Pixso-rectangle-2001_84"></div>
+      <p id="2001_85" class="Pixso-paragraph-2001_85">Альфа-Бизнес</p>
+      <p id="2001_86" class="Pixso-paragraph-2001_86">Регистрация</p>
+      <div id="2001_87" class="Pixso-rectangle-2001_87"></div>
+      <div id="2001_88" class="Pixso-rectangle-2001_88"></div>
+      <div id="2001_89" class="Pixso-rectangle-2001_89"></div>
+      <div id="2001_90" class="Pixso-rectangle-2001_90"></div>
+      <p id="2001_91" class="Pixso-paragraph-2001_91">Завершить</p>
+      <div id="2001_92" class="Pixso-vector-2001_92"></div>
+    </div>
+    <div id="2001_93" class="Pixso-frame-2001_93">
+      <div id="2001_94" class="Pixso-rectangle-2001_94"></div>
+      <p id="2001_95" class="Pixso-paragraph-2001_95">ФИО</p>
+      <p id="2001_96" class="Pixso-paragraph-2001_96">Адрес электронной почты</p>
+      <p id="2001_97" class="Pixso-paragraph-2001_97">Номер телефона</p>
+      <div id="2001_98" class="Pixso-rectangle-2001_98"></div>
+      <div id="2001_99" class="Pixso-rectangle-2001_99"></div>
+      <div id="2001_100" class="Pixso-rectangle-2001_100"></div>
+      <p id="2001_101" class="Pixso-paragraph-2001_101">Альфа-Бизнес</p>
+      <p id="2001_102" class="Pixso-paragraph-2001_102">Регистрация</p>
+      <div id="2001_103" class="Pixso-rectangle-2001_103"></div>
+      <div id="2001_104" class="Pixso-rectangle-2001_104"></div>
+      <div id="2001_105" class="Pixso-rectangle-2001_105"></div>
+      <div id="2001_106" class="Pixso-rectangle-2001_106"></div>
+      <p id="2001_107" class="Pixso-paragraph-2001_107">Далее</p>
+      <div id="2001_108" class="Pixso-vector-2001_108"></div>
+    </div>
+    <div id="2001_109" class="Pixso-frame-2001_109">
+      <div id="2001_110" class="Pixso-rectangle-2001_110"></div>
+      <p id="2001_111" class="Pixso-paragraph-2001_111">Поздравляем, вы успешно зарегистрированы!</p>
+      <div id="2001_112" class="Pixso-text-2001_112">
+        <p id="2001_112_0" class="Pixso-paragraph-2001_112_0">
+<span id="2001_112_0_1" class="Pixso-span-2001_112_0_1">Мы уже отправили письмо-подтверждение </span></p>
+        <p id="2001_112_1" class="Pixso-paragraph-2001_112_1">
+<span id="2001_112_1_1" class="Pixso-span-2001_112_1_1">на ваш адрес электронной почты, указанный </span></p>
+        <p id="2001_112_2" class="Pixso-paragraph-2001_112_2">
+<span id="2001_112_2_1" class="Pixso-span-2001_112_2_1">при регистрации. Пожалуйста, введите код </span></p>
+        <p id="2001_112_3" class="Pixso-paragraph-2001_112_3">
+<span id="2001_112_3_1" class="Pixso-span-2001_112_3_1">из письма, чтобы активировать учетную запись.</span></p>
+      </div>
+      <div id="2001_113" class="Pixso-text-2001_113">
+        <p id="2001_113_0" class="Pixso-paragraph-2001_113_0">
+<span id="2001_113_0_1" class="Pixso-span-2001_113_0_1">А еще, пока мы занимались вопросами регистрации, </span></p>
+        <p id="2001_113_1" class="Pixso-paragraph-2001_113_1">
+<span id="2001_113_1_1" class="Pixso-span-2001_113_1_1">для вашего бизнеса уже готова аналитика!</span></p>
+        <p id="2001_113_2" class="Pixso-paragraph-2001_113_2">&nbsp;</p>
+        <p id="2001_113_3" class="Pixso-paragraph-2001_113_3">
+<span id="2001_113_3_1" class="Pixso-span-2001_113_3_1">Ознакомимся?</span></p>
+      </div>
+      <p id="2001_114" class="Pixso-paragraph-2001_114">Альфа-Бизнес</p>
+      <p id="2001_115" class="Pixso-paragraph-2001_115">Регистрация</p>
+      <div id="2001_116" class="Pixso-rectangle-2001_116"></div>
+      <div id="2001_117" class="Pixso-rectangle-2001_117"></div>
+      <div id="2001_118" class="Pixso-rectangle-2001_118"></div>
+      <div id="2001_119" class="Pixso-rectangle-2001_119"></div>
+      <p id="2001_120" class="Pixso-paragraph-2001_120">Перейти к аналитике</p>
+      <div id="2001_121" class="Pixso-vector-2001_121"></div>
+      <div id="2001_122" class="Pixso-rectangle-2001_122"></div>
+      <div id="2001_123" class="Pixso-rectangle-2001_123"></div>
+      <div id="2001_124" class="Pixso-rectangle-2001_124"></div>
+      <div id="2001_125" class="Pixso-rectangle-2001_125"></div>
+    </div>
+    <div id="2001_126" class="Pixso-frame-2001_126">
+      <div id="2001_127" class="Pixso-rectangle-2001_127"></div>
+      <div id="2001_128" class="Pixso-group-2001_128">
+        <div id="2001_129" class="Pixso-group-2001_129">
+          <div id="2001_130" class="Pixso-rectangle-2001_130"></div>
+          <div id="2001_131" class="Pixso-vector-2001_131"></div>
+          <p id="2001_136" class="Pixso-paragraph-2001_136">Альфа Агент</p>
+        </div>
+      </div>
+      <div id="2001_137" class="Pixso-group-2001_137">
+        <div id="2001_138" class="Pixso-group-2001_138">
+          <div id="2001_139" class="Pixso-rectangle-2001_139"></div>
+          <div id="2001_140" class="Pixso-vector-2001_140"></div>
+          <p id="2001_145" class="Pixso-paragraph-2001_145">Новостной Агент</p>
+        </div>
+      </div>
+      <div id="2001_146" class="Pixso-group-2001_146">
+        <div id="2001_147" class="Pixso-rectangle-2001_147"></div>
+        <div id="2001_148" class="Pixso-vector-2001_148"></div>
+        <p id="2001_153" class="Pixso-paragraph-2001_153">Трассировка</p>
+      </div>
+      <div id="2001_154" class="Pixso-group-2001_154">
+        <div id="2001_155" class="Pixso-rectangle-2001_155"></div>
+        <p id="2001_156" class="Pixso-paragraph-2001_156">Редактировать</p>
+      </div>
+      <div id="2001_157" class="Pixso-group-2001_157">
+        <div id="2001_158" class="Pixso-group-2001_158">
+          <div id="2001_159" class="Pixso-rectangle-2001_159"></div>
+          <div id="2001_160" class="Pixso-vector-2001_160"></div>
+          <p id="2001_165" class="Pixso-paragraph-2001_165">Риски</p>
+        </div>
+      </div>
+      <div id="2001_166" class="Pixso-group-2001_166">
+        <div id="2001_167" class="Pixso-group-2001_167">
+          <div id="2001_168" class="Pixso-rectangle-2001_168"></div>
+          <div id="2001_169" class="Pixso-vector-2001_169"></div>
+          <p id="2001_174" class="Pixso-paragraph-2001_174">Возможности</p>
+        </div>
+      </div>
+      <div id="2001_175" class="Pixso-group-2001_175">
+        <div id="2001_176" class="Pixso-group-2001_176">
+          <div id="2001_177" class="Pixso-group-2001_177">
+            <div id="2001_178" class="Pixso-vector-2001_178"></div>
+          </div>
+        </div>
+        <div id="2001_180" class="Pixso-group-2001_180">
+          <div id="2001_182" class="Pixso-rectangle-2001_182"></div>
+        </div>
+        <p id="2001_183" class="Pixso-paragraph-2001_183">Имя</p>
+      </div>
+      <div id="2001_184" class="Pixso-group-2001_184">
+        <div id="2001_185" class="Pixso-group-2001_185">
+          <div id="2001_186" class="Pixso-group-2001_186">
+            <div id="2001_187" class="Pixso-group-2001_187">
+              <div id="2001_188" class="Pixso-vector-2001_188"></div>
+            </div>
+          </div>
+          <p id="2001_190" class="Pixso-paragraph-2001_190">?</p>
+        </div>
+        <p id="2001_191" class="Pixso-paragraph-2001_191">Задать вопрос</p>
+      </div>
+      <div id="2001_192" class="Pixso-group-2001_192">
+        <p id="2001_193" class="Pixso-paragraph-2001_193">Оставить отзыв</p>
+        <div id="2001_194" class="Pixso-vector-2001_194"></div>
+      </div>
+      <div id="2001_195" class="Pixso-group-2001_195">
+        <p id="2001_196" class="Pixso-paragraph-2001_196">Отрасль</p>
+        <div id="2001_197" class="Pixso-text-2001_197">
+          <p id="2001_197_0" class="Pixso-paragraph-2001_197_0">
+<span id="2001_197_0_1" class="Pixso-span-2001_197_0_1">Строительство</span></p>
+          <p id="2001_197_1" class="Pixso-paragraph-2001_197_1">
+<span id="2001_197_1_1" class="Pixso-span-2001_197_1_1">воздушных замков</span></p>
+        </div>
+      </div>
+      <div id="2001_198" class="Pixso-group-2001_198">
+        <p id="2001_199" class="Pixso-paragraph-2001_199">Регион</p>
+        <p id="2001_200" class="Pixso-paragraph-2001_200">Московская область</p>
+      </div>
+      <p id="2001_201" class="Pixso-paragraph-2001_201">Ваш бизнес</p>
+      <div id="2001_202" class="Pixso-group-2001_202">
+        <p id="2001_203" class="Pixso-paragraph-2001_203">ООО “Дедлайн вчера”</p>
+        <p id="2001_204" class="Pixso-paragraph-2001_204">Юридическое лицо</p>
+      </div>
+      <div id="2001_205" class="Pixso-group-2001_205">
+        <p id="2001_206" class="Pixso-paragraph-2001_206">500 руб/год</p>
+        <p id="2001_207" class="Pixso-paragraph-2001_207">Масштаб бизнеса</p>
+      </div>
+      <p id="2001_208" class="Pixso-paragraph-2001_208">Ваши агенты</p>
+      <p id="2001_209" class="Pixso-paragraph-2001_209">Главная</p>
+      <p id="2001_210" class="Pixso-paragraph-2001_210">Возможности</p>
+      <p id="2001_211" class="Pixso-paragraph-2001_211">Риски</p>
+      <p id="2001_212" class="Pixso-paragraph-2001_212">Агенты</p>
+      <p id="2001_213" class="Pixso-paragraph-2001_213">Профиль</p>
+      <div id="2001_214" class="Pixso-group-2001_214">
+        <div id="2001_215" class="stroke-wrapper-2001_215">
+          <div class="Pixso-rectangle-2001_215"></div>
+          <div class="stroke-2001_215"></div>
+        </div>
+        <p id="2001_216" class="Pixso-paragraph-2001_216">Заголовок новости</p>
+        <p id="2001_217" class="Pixso-paragraph-2001_217">текст новости</p>
+      </div>
+      <div id="2001_218" class="Pixso-group-2001_218">
+        <div id="2001_219" class="stroke-wrapper-2001_219">
+          <div class="Pixso-rectangle-2001_219"></div>
+          <div class="stroke-2001_219"></div>
+        </div>
+        <p id="2001_220" class="Pixso-paragraph-2001_220">Заголовок аналитической сводки</p>
+        <p id="2001_221" class="Pixso-paragraph-2001_221">текст новости</p>
+      </div>
+      <div id="2001_222" class="Pixso-group-2001_222">
+        <div id="2001_223" class="Pixso-group-2001_223">
+          <div id="2001_224" class="Pixso-vector-2001_224"></div>
+          <div id="2001_225" class="Pixso-group-2001_225">
+            <div id="2001_227" class="Pixso-rectangle-2001_227"></div>
+          </div>
+        </div>
+        <p id="2001_228" class="Pixso-paragraph-2001_228">Альфа-агент</p>
+      </div>
+      <div id="2001_229" class="Pixso-group-2001_229">
+        <div id="2001_230" class="Pixso-vector-2001_230"></div>
+        <div id="2001_231" class="Pixso-group-2001_231">
+          <div id="2001_233" class="Pixso-rectangle-2001_233"></div>
+        </div>
+        <p id="2001_234" class="Pixso-paragraph-2001_234">Новостной агент</p>
+      </div>
+      <p id="2001_235" class="Pixso-paragraph-2001_235">Альфа-Бизнес</p>
+      <div id="2001_236" class="Pixso-group-2001_236">
+        <p id="2001_237" class="Pixso-paragraph-2001_237">Перейти</p>
+        <div id="2001_238" class="Pixso-vector-2001_238"></div>
+      </div>
+      <div id="2001_239" class="Pixso-group-2001_239">
+        <p id="2001_240" class="Pixso-paragraph-2001_240">Перейти</p>
+        <div id="2001_241" class="Pixso-vector-2001_241"></div>
+      </div>
+    </div>
+    <div id="2001_242" class="Pixso-frame-2001_242">
+      <p id="2001_243" class="Pixso-paragraph-2001_243">Альфа-Бизнес</p>
+      <div id="2001_244" class="Pixso-rectangle-2001_244"></div>
+      <div id="2001_245" class="Pixso-group-2001_245">
+        <div id="2001_246" class="Pixso-rectangle-2001_246"></div>
+        <p id="2001_247" class="Pixso-paragraph-2001_247">В аналитической сводке о ставке по кредиту были упомянуты. ... а как это повлияет на рынок через 20 лет?</p>
+      </div>
+      <p id="2001_248" class="Pixso-paragraph-2001_248">Введите сообщение</p>
+      <div id="2001_249" class="Pixso-vector-2001_249"></div>
+      <div id="2001_250" class="Pixso-group-2001_250">
+        <div id="2001_251" class="Pixso-vector-2001_251"></div>
+        <div id="2001_252" class="Pixso-group-2001_252">
+          <div id="2001_254" class="Pixso-rectangle-2001_254"></div>
+        </div>
+        <p id="2001_255" class="Pixso-paragraph-2001_255">Альфа-агент</p>
+      </div>
+      <div id="2001_256" class="Pixso-group-2001_256">
+        <div id="2001_257" class="Pixso-rectangle-2001_257"></div>
+        <p id="2001_258" class="Pixso-paragraph-2001_258">Здравствуйте, я Альфа-агент. Моя цель - пояснить аналитические сводки Альфа-Банка. Вы можете задать любой интересующий вас вопрос. </p>
+        <div id="2001_259" class="Pixso-rectangle-2001_259"></div>
+      </div>
+      <div id="2001_260" class="Pixso-group-2001_260">
+        <div id="2001_261" class="Pixso-rectangle-2001_261"></div>
+        <p id="2001_262" class="Pixso-paragraph-2001_262">Вот какой прогноз мне удалось составить на ближайшие 20 лет...</p>
+        <div id="2001_263" class="Pixso-rectangle-2001_263"></div>
+      </div>
+      <p id="2001_264" class="Pixso-paragraph-2001_264">Главная</p>
+      <p id="2001_265" class="Pixso-paragraph-2001_265">Возможности</p>
+      <p id="2001_266" class="Pixso-paragraph-2001_266">Риски</p>
+      <p id="2001_267" class="Pixso-paragraph-2001_267">Агенты</p>
+      <p id="2001_268" class="Pixso-paragraph-2001_268">Профиль</p>
+    </div>
+    <div id="2001_269" class="Pixso-frame-2001_269">
+      <p id="2001_270" class="Pixso-paragraph-2001_270">Альфа-Бизнес</p>
+      <div id="2001_271" class="Pixso-rectangle-2001_271"></div>
+      <p id="2001_272" class="Pixso-paragraph-2001_272">Введите сообщение</p>
+      <div id="2001_273" class="Pixso-vector-2001_273"></div>
+      <p id="2001_274" class="Pixso-paragraph-2001_274">Задайте вопрос, а мы подберем агента:</p>
+      <p id="2001_275" class="Pixso-paragraph-2001_275">Главная</p>
+      <p id="2001_276" class="Pixso-paragraph-2001_276">Возможности</p>
+      <p id="2001_277" class="Pixso-paragraph-2001_277">Риски</p>
+      <p id="2001_278" class="Pixso-paragraph-2001_278">Агенты</p>
+      <p id="2001_279" class="Pixso-paragraph-2001_279">Профиль</p>
+      <div id="2001_280" class="Pixso-group-2001_280">
+        <div id="2001_281" class="Pixso-rectangle-2001_281"></div>
+        <div id="2001_282" class="stroke-wrapper-2001_282">
+          <div class="Pixso-rectangle-2001_282"></div>
+          <div class="stroke-2001_282"></div>
+        </div>
+        <div id="2001_283" class="stroke-wrapper-2001_283">
+          <div class="Pixso-rectangle-2001_283"></div>
+          <div class="stroke-2001_283"></div>
+        </div>
+        <div id="2001_284" class="stroke-wrapper-2001_284">
+          <div class="Pixso-rectangle-2001_284"></div>
+          <div class="stroke-2001_284"></div>
+        </div>
+        <div id="2001_285" class="stroke-wrapper-2001_285">
+          <div class="Pixso-rectangle-2001_285"></div>
+          <div class="stroke-2001_285"></div>
+        </div>
+        <div id="2001_286" class="Pixso-rectangle-2001_286"></div>
+        <div id="2001_287" class="Pixso-rectangle-2001_287"></div>
+        <div id="2001_288" class="Pixso-rectangle-2001_288"></div>
+        <p id="2001_289" class="Pixso-paragraph-2001_289">Альфа-агент</p>
+        <p id="2001_290" class="Pixso-paragraph-2001_290">Моя цель - пояснить аналитические сводки Альфа-Банка</p>
+        <p id="2001_291" class="Pixso-paragraph-2001_291">Составляет сводки: понятно и быстро</p>
+        <div id="2001_292" class="Pixso-rectangle-2001_292"></div>
+        <p id="2001_293" class="Pixso-paragraph-2001_293">Перейти</p>
+        <div id="2001_294" class="Pixso-vector-2001_294"></div>
+        <p id="2001_295" class="Pixso-paragraph-2001_295">Новостной агент</p>
+        <p id="2001_296" class="Pixso-paragraph-2001_296">Моя цель - пояснить внешние новости от различных источников</p>
+        <div id="2001_297" class="Pixso-group-2001_297">
+          <div id="2001_298" class="Pixso-rectangle-2001_298"></div>
+          <p id="2001_299" class="Pixso-paragraph-2001_299">Разбирается в новостях за вас</p>
+        </div>
+        <div id="2001_300" class="Pixso-group-2001_300">
+          <p id="2001_301" class="Pixso-paragraph-2001_301">Перейти</p>
+          <div id="2001_302" class="Pixso-vector-2001_302"></div>
+        </div>
+      </div>
+    </div>
+    <div id="2001_303" class="Pixso-frame-2001_303">
+      <p id="2001_304" class="Pixso-paragraph-2001_304">Альфа-Бизнес</p>
+      <p id="2001_305" class="Pixso-paragraph-2001_305">Часто задаваемые вопросы</p>
+      <div id="2001_306" class="Pixso-rectangle-2001_306"></div>
+      <div id="2001_307" class="Pixso-rectangle-2001_307"></div>
+      <div id="2001_308" class="Pixso-rectangle-2001_308"></div>
+      <p id="2001_309" class="Pixso-paragraph-2001_309">Как сменить пароль в аккаунте?</p>
+      <p id="2001_310" class="Pixso-paragraph-2001_310">Как пользоваться Новостным агентом?</p>
+      <p id="2001_311" class="Pixso-paragraph-2001_311">To be or not to be...</p>
+      <p id="2001_312" class="Pixso-paragraph-2001_312">Не нашли нужный ответ? Напишите нам</p>
+      <div id="2001_313" class="Pixso-vector-2001_313"></div>
+      <div id="2001_314" class="Pixso-vector-2001_314"></div>
+      <div id="2001_315" class="Pixso-vector-2001_315"></div>
+      <div id="2001_316" class="Pixso-vector-2001_316"></div>
+      <p id="2001_317" class="Pixso-paragraph-2001_317">Главная</p>
+      <p id="2001_318" class="Pixso-paragraph-2001_318">Возможности</p>
+      <p id="2001_319" class="Pixso-paragraph-2001_319">Риски</p>
+      <p id="2001_320" class="Pixso-paragraph-2001_320">Агенты</p>
+      <p id="2001_321" class="Pixso-paragraph-2001_321">Профиль</p>
+    </div>
+    <div id="2001_322" class="Pixso-frame-2001_322">
+      <p id="2001_323" class="Pixso-paragraph-2001_323">Альфа-Бизнес</p>
+      <p id="2001_324" class="Pixso-paragraph-2001_324">Задать вопрос:</p>
+      <div id="2001_325" class="Pixso-rectangle-2001_325"></div>
+      <p id="2001_326" class="Pixso-paragraph-2001_326">Введите ваш вопрос</p>
+      <p id="2001_327" class="Pixso-paragraph-2001_327">Отправить</p>
+      <div id="2001_328" class="Pixso-vector-2001_328"></div>
+      <p id="2001_329" class="Pixso-paragraph-2001_329">Главная</p>
+      <p id="2001_330" class="Pixso-paragraph-2001_330">Возможности</p>
+      <p id="2001_331" class="Pixso-paragraph-2001_331">Риски</p>
+      <p id="2001_332" class="Pixso-paragraph-2001_332">Агенты</p>
+      <p id="2001_333" class="Pixso-paragraph-2001_333">Профиль</p>
+    </div>
+    <div id="2001_334" class="Pixso-frame-2001_334">
+      <div id="2001_335" class="Pixso-rectangle-2001_335"></div>
+      <p id="2001_336" class="Pixso-paragraph-2001_336">Риски</p>
+      <p id="2001_337" class="Pixso-paragraph-2001_337">Спрогнозируем будущее и сделаем его лучше</p>
+      <p id="2001_338" class="Pixso-paragraph-2001_338">Альфа-Бизнес</p>
+      <div id="2001_339" class="Pixso-rectangle-2001_339"></div>
+      <div id="2001_340" class="Pixso-rectangle-2001_340"></div>
+      <div id="2001_341" class="Pixso-rectangle-2001_341"></div>
+      <p id="2001_342" class="Pixso-paragraph-2001_342">Заголовок аналитической сводки</p>
+      <p id="2001_343" class="Pixso-paragraph-2001_343">ссылка на источник</p>
+      <p id="2001_344" class="Pixso-paragraph-2001_344">Как коснется бизнеса?</p>
+      <p id="2001_345" class="Pixso-paragraph-2001_345">Что можно предпринять?</p>
+      <p id="2001_346" class="Pixso-paragraph-2001_346">содержание новости</p>
+      <p id="2001_347" class="Pixso-paragraph-2001_347">текст</p>
+      <p id="2001_348" class="Pixso-paragraph-2001_348">текст</p>
+      <p id="2001_349" class="Pixso-paragraph-2001_349">Перейти к следующей сводке</p>
+      <div id="2001_350" class="Pixso-vector-2001_350"></div>
+      <p id="2001_351" class="Pixso-paragraph-2001_351">Главная</p>
+      <p id="2001_352" class="Pixso-paragraph-2001_352">Возможности</p>
+      <p id="2001_353" class="Pixso-paragraph-2001_353">Риски</p>
+      <p id="2001_354" class="Pixso-paragraph-2001_354">Агенты</p>
+      <p id="2001_355" class="Pixso-paragraph-2001_355">Профиль</p>
+    </div>
+    <div id="2001_356" class="Pixso-frame-2001_356">
+      <div id="2001_357" class="Pixso-rectangle-2001_357"></div>
+      <p id="2001_358" class="Pixso-paragraph-2001_358">Возможности</p>
+      <p id="2001_359" class="Pixso-paragraph-2001_359">Увидим перспективы и превратим их в успех</p>
+      <p id="2001_360" class="Pixso-paragraph-2001_360">Альфа-Бизнес</p>
+      <div id="2001_361" class="Pixso-rectangle-2001_361"></div>
+      <div id="2001_362" class="Pixso-rectangle-2001_362"></div>
+      <div id="2001_363" class="Pixso-rectangle-2001_363"></div>
+      <p id="2001_364" class="Pixso-paragraph-2001_364">Заголовок новости</p>
+      <p id="2001_365" class="Pixso-paragraph-2001_365">ссылка на источник</p>
+      <p id="2001_366" class="Pixso-paragraph-2001_366">Как коснется бизнеса?</p>
+      <p id="2001_367" class="Pixso-paragraph-2001_367">Что можно предпринять?</p>
+      <p id="2001_368" class="Pixso-paragraph-2001_368">содержание новости</p>
+      <p id="2001_369" class="Pixso-paragraph-2001_369">текст</p>
+      <p id="2001_370" class="Pixso-paragraph-2001_370">текст</p>
+      <p id="2001_371" class="Pixso-paragraph-2001_371">Перейти к следующей новости</p>
+      <div id="2001_372" class="Pixso-vector-2001_372"></div>
+      <p id="2001_373" class="Pixso-paragraph-2001_373">Главная</p>
+      <p id="2001_374" class="Pixso-paragraph-2001_374">Возможности</p>
+      <p id="2001_375" class="Pixso-paragraph-2001_375">Риски</p>
+      <p id="2001_376" class="Pixso-paragraph-2001_376">Агенты</p>
+      <p id="2001_377" class="Pixso-paragraph-2001_377">Профиль</p>
+    </div>
+    <div id="2001_378" class="Pixso-frame-2001_378">
+      <div id="2001_379" class="Pixso-rectangle-2001_379"></div>
+      <div id="2001_380" class="Pixso-rectangle-2001_380"></div>
+      <p id="2001_381" class="Pixso-paragraph-2001_381">{<br>  &quot;client_id&quot;: &quot;U_80&quot;,<br>  &quot;source&quot;: &quot;df_Uid_data_hack.csv (реальные данные)&quot;,<br>  &quot;raw_fields_used&quot;: [<br>    &quot;SYNTHETIC_U&quot;,<br>    &quot;MAINOKVED_CODE&quot;,<br>    &quot;MAINOKVED_NAME&quot;,<br>    &quot;REVENUE_COMPANY&quot;,<br>    &quot;AMOUNT_WORKERS_FNS_GRADATION&quot;,<br>    &quot;CL_TYPE&quot;,<br>    &quot;REGION&quot;,<br>    &quot;CITY&quot;,<br>    &quot;... ещё 4 элементов&quot;<br>  ]<br>}</p>
+      <p id="2001_382" class="Pixso-paragraph-2001_382">{<br>  &quot;industry&quot;: &quot;Обработка металлов и нанесение покрытий на металлы&quot;,<br>  &quot;business_scale&quot;: &quot;Средний бизнес (выручка 1-15 млрд ₽)&quot;,<br>  &quot;products&quot;: [<br>    &quot;Лизинговые продукты&quot;<br>  ],<br>  &quot;region&quot;: &quot;Свердловская область&quot;,<br>  &quot;has_fts&quot;: false,<br>  &quot;fts_country&quot;: &quot;&quot;,<br>  &quot;risk_factors&quot;: [],<br>  &quot;relevance_criteria&quot;: [<br>    &quot;Регулирование&quot;,<br>    &quot;Производственные новости&quot;,<br>    &quot;Лизинговый рынок&quot;,<br>    &quot;Сырьевые рынки&quot;,<br>    &quot;Налоговые изменения&quot;,<br>    &quot;Промышленность&quot;,<br>    &quot;Макроэкономика&quot;<br>  ]<br>}</p>
+      <p id="2001_383" class="Pixso-paragraph-2001_383">Альфа-Бизнес</p>
+      <p id="2001_384" class="Pixso-paragraph-2001_384">Главная</p>
+      <p id="2001_385" class="Pixso-paragraph-2001_385">Возможности</p>
+      <p id="2001_386" class="Pixso-paragraph-2001_386">Риски</p>
+      <p id="2001_387" class="Pixso-paragraph-2001_387">Агенты</p>
+      <p id="2001_388" class="Pixso-paragraph-2001_388">Профиль</p>
+    </div>
+    <div id="2001_389" class="Pixso-frame-2001_389">
+      <p id="2001_390" class="Pixso-paragraph-2001_390">Альфа-Бизнес</p>
+      <div id="2001_391" class="Pixso-rectangle-2001_391"></div>
+      <div id="2001_392" class="Pixso-group-2001_392">
+        <div id="2001_393" class="Pixso-rectangle-2001_393"></div>
+        <div id="2001_394" class="Pixso-text-2001_394">
+          <p id="2001_394_0" class="Pixso-paragraph-2001_394_0">
+<span id="2001_394_0_1" class="Pixso-span-2001_394_0_1">В новости ... было указано, что процентная ставка по кредиту ...</span></p>
+          <p id="2001_394_1" class="Pixso-paragraph-2001_394_1">
+<span id="2001_394_1_1" class="Pixso-span-2001_394_1_1">Что такое...?</span></p>
+        </div>
+      </div>
+      <p id="2001_395" class="Pixso-paragraph-2001_395">Введите сообщение</p>
+      <div id="2001_396" class="Pixso-group-2001_396">
+        <div id="2001_397" class="Pixso-rectangle-2001_397"></div>
+        <p id="2001_398" class="Pixso-paragraph-2001_398">Здравствуйте, я новостной агент. Моя цель - пояснить внешние новости от различных источников. Вы можете задать любой интересующий вас вопрос. </p>
+        <div id="2001_399" class="Pixso-rectangle-2001_399"></div>
+      </div>
+      <div id="2001_400" class="Pixso-group-2001_400">
+        <div id="2001_401" class="Pixso-rectangle-2001_401"></div>
+        <div id="2001_402" class="Pixso-text-2001_402">
+          <p id="2001_402_0" class="Pixso-paragraph-2001_402_0">
+<span id="2001_402_0_1" class="Pixso-span-2001_402_0_1">... это</span></p>
+          <p id="2001_402_1" class="Pixso-paragraph-2001_402_1">&nbsp;</p>
+          <p id="2001_402_2" class="Pixso-paragraph-2001_402_2">
+<span id="2001_402_2_1" class="Pixso-span-2001_402_2_1">Оно может повлиять на ....</span></p>
+        </div>
+        <div id="2001_403" class="Pixso-rectangle-2001_403"></div>
+      </div>
+      <div id="2001_404" class="Pixso-vector-2001_404"></div>
+      <div id="2001_405" class="Pixso-group-2001_405">
+        <div id="2001_406" class="Pixso-vector-2001_406"></div>
+        <div id="2001_407" class="Pixso-group-2001_407">
+          <div id="2001_409" class="Pixso-rectangle-2001_409"></div>
+        </div>
+        <p id="2001_410" class="Pixso-paragraph-2001_410">Новостной агент</p>
+      </div>
+      <p id="2001_411" class="Pixso-paragraph-2001_411">Главная</p>
+      <p id="2001_412" class="Pixso-paragraph-2001_412">Возможности</p>
+      <p id="2001_413" class="Pixso-paragraph-2001_413">Риски</p>
+      <p id="2001_414" class="Pixso-paragraph-2001_414">Агенты</p>
+      <p id="2001_415" class="Pixso-paragraph-2001_415">Профиль</p>
+    </div>
+    <div id="2001_416" class="Pixso-frame-2001_416">
+      <div id="2001_417" class="Pixso-group-2001_417">
+        <p id="2001_418" class="Pixso-paragraph-2001_418">Вы можете оставить отзыв</p>
+        <p id="2001_419" class="Pixso-paragraph-2001_419">Это поможет улучшить качество наших услуг</p>
+      </div>
+      <p id="2001_420" class="Pixso-paragraph-2001_420">Альфа-Бизнес</p>
+      <div id="2001_421" class="Pixso-group-2001_421">
+        <div id="2001_422" class="Pixso-rectangle-2001_422"></div>
+        <p id="2001_423" class="Pixso-paragraph-2001_423">Что вам не нравится в сервисе?</p>
+        <p id="2001_424" class="Pixso-paragraph-2001_424">Опишите, с какими трудностями вы столкнулись. Какие неудобства вызвал сервис? Что можно улучшить?</p>
+      </div>
+      <div id="2001_425" class="Pixso-group-2001_425">
+        <div id="2001_426" class="Pixso-rectangle-2001_426"></div>
+        <p id="2001_427" class="Pixso-paragraph-2001_427">Что вам нравится в сервисе?</p>
+        <p id="2001_428" class="Pixso-paragraph-2001_428">Опишите, какие преимущества вы видите в сервисе. Что для вас стало особенно важным? </p>
+      </div>
+      <p id="2001_429" class="Pixso-paragraph-2001_429">Главная</p>
+      <p id="2001_430" class="Pixso-paragraph-2001_430">Возможности</p>
+      <p id="2001_431" class="Pixso-paragraph-2001_431">Риски</p>
+      <p id="2001_432" class="Pixso-paragraph-2001_432">Агенты</p>
+      <p id="2001_433" class="Pixso-paragraph-2001_433">Профиль</p>
+      <p id="2001_434" class="Pixso-paragraph-2001_434">Отправить</p>
+      <div id="2001_435" class="Pixso-vector-2001_435"></div>
+    </div>
+  </div>
+</div>
+
+
+
+
+  <script src="js/preview.js"></script>
+</body>
+</html>

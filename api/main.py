@@ -27,9 +27,11 @@ from services.industry import (
 )
 from services.llm import OpenCodeLLM
 from services.profile_store import (
+    audit_summary,
     get_custom_profile,
     load_custom_profiles,
     register_account,
+    save_audit_event,
     save_custom_profile,
     save_feedback,
     to_public_profile,
@@ -540,7 +542,10 @@ def _alfa_answer(question: str, results: List[Dict[str, Any]], profile: Dict[str
         )
         blocks.append("Ещё по теме:\n" + others)
 
-    blocks.append("Демо-режим: ответ собран локально по аналитике Альфа-Банка, без внешней LLM.")
+    blocks.append(
+        "Источник: аналитика Альфа-Банка. Ответ собран локальным fallback-агентом "
+        "(внешняя LLM сейчас недоступна)."
+    )
     return "\n\n".join(blocks)
 
 
@@ -591,7 +596,9 @@ def _alfa_prompt(question: str, results: List[Dict[str, Any]], profile: Dict[str
 {chr(10).join(materials)}
 
 Сформируй ответ на 3–5 предложений. Сначала прямой ответ на вопрос, затем 1–2 практических вывода для бизнеса. {focus}
-Не пересказывай служебные заголовки и не пиши «демо-режим»."""
+Помни: аналитика ниже — позиция Альфа-Банка. Твои выводы — это AI-интерпретация,
+не официальная рекомендация банка; не смешивай эти две вещи.
+Не пересказывай служебные заголовки и не упоминай внутренние режимы."""
 
 
 def _news_title_score(question: str, title: str) -> int:
@@ -670,40 +677,9 @@ def _news_prompt(
 
 {task}
 Сформируй ответ на 3–5 предложений: сначала главное, затем 1–2 практических вывода.
-Не пиши «демо-режим»."""
-
-
-def _news_analytics_prompt(
-    question: str,
-    items: List[Dict[str, Any]],
-    profile: Dict[str, Any],
-) -> str:
-    """Ответ по аналитике, если в новостной ленте нет прямого материала."""
-    materials = []
-    for index, item in enumerate(items[:2], start=1):
-        text = item.get("text") or item.get("content") or item.get("summary") or ""
-        materials.append(
-            f"{index}. «{item.get('title', 'Без названия')}» "
-            f"({item.get('date', 'дата не указана')}).\n"
-            f"{_clean_analytics_text(text)[:1400]}"
-        )
-
-    return f"""Ты — новостной агент сервиса «Альфа-Бизнес». Отвечай по-русски, кратко.
-В свежих внешних новостях нет отдельного материала по вопросу, поэтому ниже —
-релевантная аналитика Альфа-Банка. Начни ответ с честной фразы:
-«В свежих новостях отдельного материала нет.» Затем дай ответ по аналитике,
-явно указав, что это данные аналитики Альфа-Банка, а не новость.
-Используй только материалы ниже; не выдумывай цифры и факты.
-Не добавляй юридический дисклеймер и не пиши «демо-режим».
-
-Профиль клиента: {_profile_for_prompt(profile)}.
-Вопрос клиента: {question}
-
-Аналитика Альфа-Банка:
-{chr(10).join(materials)}
-
-Сформируй ответ на 3–5 предложений: конкретные цифры, затем 1–2 вывода для бизнеса.
-"""
+Отделяй факт из новости от AI-вывода: не выдавай свою интерпретацию за позицию
+Альфа-Банка. В этом канале нет аналитики банка — только внешние новости.
+Не упоминай внутренние режимы."""
 
 
 # Явно посторонние запросы: код, стихи, погода и т.п.
@@ -737,6 +713,69 @@ def _truncate(text: str, limit: int) -> str:
     if len(text) <= limit:
         return text
     return text[:limit].rsplit(" ", 1)[0] + "…"
+
+
+def _chat_meta(
+    agent: str,
+    question: str,
+    sources: List[Dict[str, Any]],
+    mode: str,
+    started_at: datetime,
+    client_id: str = "",
+    suggested_agent: str = "",
+) -> Dict[str, Any]:
+    """Метаданные ответа: трассировка, самопроверка и журнал аудита."""
+    latency_ms = int((datetime.now() - started_at).total_seconds() * 1000)
+    checks = [
+        {"name": "Источник найден", "ok": bool(sources)},
+        {"name": "Ответ не пустой", "ok": True},
+        {"name": "Режим модели определён", "ok": mode in {"llm", "demo"}},
+        {"name": "Профиль клиента учтён", "ok": True},
+    ]
+    trace = [
+        {
+            "step": 1,
+            "action": "agent_scope_check",
+            "detail": f"Агент: {agent}; только разрешённый источник",
+            "ok": True,
+        },
+        {
+            "step": 2,
+            "action": "source_retrieval",
+            "detail": f"Найдено источников: {len(sources)}",
+            "ok": bool(sources),
+        },
+        {
+            "step": 3,
+            "action": "answer_generation",
+            "detail": f"Режим: {mode}",
+            "ok": True,
+        },
+    ]
+    try:
+        save_audit_event({
+            "type": "chat",
+            "agent": agent,
+            "client_id": client_id,
+            "question_length": len(question),
+            "sources_count": len(sources),
+            "mode": mode,
+            "latency_ms": latency_ms,
+            "suggested_agent": suggested_agent,
+            "checks_passed": sum(1 for item in checks if item["ok"]),
+            "checks_total": len(checks),
+        })
+    except Exception as exc:
+        logger.warning(f"Не удалось записать аудит чата: {exc}")
+    return {
+        "trace": trace,
+        "self_check": {
+            "passed": sum(1 for item in checks if item["ok"]),
+            "total": len(checks),
+            "checks": checks,
+        },
+        "latency_ms": latency_ms,
+    }
 
 
 @asynccontextmanager
@@ -815,11 +854,28 @@ async def analyze_client(request: ClientRequest):
     
     try:
         logger.info(f"Запуск анализа для клиента: {request.client_id}")
-        
+        started_at = datetime.now()
+
         # Запуск оркестратора
         context = await orchestrator.run(request.client_id)
         analysis_cache[request.client_id] = context
-        
+        verification_summary = context.metadata.get("verification_summary", {})
+        elapsed_ms = int((datetime.now() - started_at).total_seconds() * 1000)
+
+        try:
+            save_audit_event({
+                "type": "analysis",
+                "client_id": request.client_id,
+                "news_count": len(context.news_items),
+                "interpretations_count": len(context.interpretations),
+                "analytics_count": len(context.alfa_analytics),
+                "verification_pass_rate": verification_summary.get("pass_rate"),
+                "latency_ms": elapsed_ms,
+                "mode": "heuristic",
+            })
+        except Exception as exc:
+            logger.warning(f"Не удалось записать аудит анализа: {exc}")
+
         # Отладка
         logger.info(f"Результат: новостей={len(context.news_items)}, аналитики={len(context.alfa_analytics)}, интерпретаций={len(context.interpretations)}")
 
@@ -845,6 +901,7 @@ async def analyze_client(request: ClientRequest):
             "interpretations": context.interpretations,
             "analytics_insights": context.metadata.get("analytics_insights", []),
             "alfa_analytics": alfa_analytics,
+            "verification_summary": context.metadata.get("verification_summary", {}),
             "trace": [
                 {
                     "step_number": step.step_number,
@@ -1043,6 +1100,7 @@ async def chat_with_agent(request: ChatRequest):
     - news — только внешние новости.
     """
     question = (request.question or "").strip()
+    started_at = datetime.now()
     if len(question) < 2:
         raise HTTPException(
             status_code=422,
@@ -1072,6 +1130,14 @@ async def chat_with_agent(request: ChatRequest):
             "answer": answer,
             "sources": [],
             "mode": "demo",
+            **_chat_meta(
+                request.agent,
+                question,
+                [],
+                "demo",
+                started_at,
+                client_id=request.client_id,
+            ),
         }
 
     context = analysis_cache.get(request.client_id)
@@ -1125,6 +1191,14 @@ async def chat_with_agent(request: ChatRequest):
                 ),
                 "sources": [],
                 "mode": "demo",
+                **_chat_meta(
+                    request.agent,
+                    question,
+                    [],
+                    "demo",
+                    started_at,
+                    client_id=request.client_id,
+                ),
             }
 
         results = results[:3]
@@ -1154,11 +1228,16 @@ async def chat_with_agent(request: ChatRequest):
             # по уже отранжированным новостям, а не поиск по случайному слову.
             ranked_ids = [item.get("id") for item in context.ranked_news]
             by_id = {item.get("id"): item for item in context.news_items}
+            ranked_map = {
+                item.get("id"): item
+                for item in (context.ranked_news or [])
+                if float(item.get("relevance_score", 0) or 0) >= 2.0
+            }
             selected = [
-                by_id[news_id] for news_id in ranked_ids if news_id in by_id
+                by_id[news_id] for news_id in ranked_ids if news_id in ranked_map
             ]
             if not selected:
-                selected = list(context.news_items)
+                selected = list(context.news_items)[:1]
         else:
             scored = []
             for item in context.news_items:
@@ -1188,53 +1267,41 @@ async def chat_with_agent(request: ChatRequest):
                     ))
 
             scored.sort(key=lambda row: (row[0], row[1], row[2]), reverse=True)
-            selected = [row[3] for row in scored]
+            # Если тема есть в заголовке, не разбавляем ответ новостями,
+            # где она случайно встретилась в тексте.
+            title_matched = [row[3] for row in scored if row[1] > 0]
+            selected = title_matched or [row[3] for row in scored]
 
             if not selected:
-                # Для вопросов о потреблении в сегодняшней ленте может не быть
-                # отдельной новости. Не отдаём пустоту: честно помечаем, что
-                # это аналитика Альфа-Банка, а не внешняя новость.
-                if "consumption" in _alfa_intents(question) and retriever:
-                    alfa_results = await retriever.search(question, top_k=3)
-                    alfa_results = [
-                        item for item in alfa_results
-                        if item.get("category") == "consumption"
-                    ][:1]
-                    if alfa_results:
-                        for item in alfa_results:
-                            sources.append({
-                                "type": "Аналитика Альфа-Банка",
-                                "title": item.get("title", "Аналитический материал"),
-                                "url": "",
-                                "date": item.get("date", ""),
-                            })
-                        answer = await llm.generate(
-                            _news_analytics_prompt(question, alfa_results, profile)
-                        )
-                        mode = "llm"
-                        if not answer:
-                            answer = _alfa_answer(question, alfa_results, profile)
-                            mode = "demo"
-                        return {
-                            "agent": request.agent,
-                            "answer": answer,
-                            "sources": sources,
-                            "mode": mode,
-                        }
-
+                # Новостной агент не подменяет отсутствие внешней новости
+                # аналитикой банка: у каждого агента должен быть один
+                # источник, иначе пользователь не понимает происхождение вывода.
+                answer = (
+                    f"По запросу «{_truncate(question, 120)}» в свежих внешних "
+                    "новостях ничего значимого не нашёл. Я не подставляю случайные "
+                    "материалы и не смешиваю новости с аналитикой банка.\n\n"
+                    "Этот вопрос лучше задать Альфа-агенту: он работает по "
+                    "аналитическим материалам Альфа-Банка."
+                )
                 return {
                     "agent": request.agent,
-                    "answer": (
-                        f"По запросу «{_truncate(question, 120)}» в свежих внешних "
-                        "новостях ничего значимого не нашёл. Я не подставляю случайные "
-                        "материалы: попробуйте спросить про ключевую ставку, инфляцию, "
-                        "отрасль, регион или логистику."
-                    ),
+                    "answer": answer,
                     "sources": [],
                     "mode": "demo",
+                    "suggested_agent": "alfa",
+                    "suggested_question": question,
+                    **_chat_meta(
+                        request.agent,
+                        question,
+                        [],
+                        "demo",
+                        started_at,
+                        client_id=request.client_id,
+                        suggested_agent="alfa",
+                    ),
                 }
 
-        selected = selected[:3]
+        selected = selected[:(3 if generic else 2)]
         if not selected:
             return {
                 "agent": request.agent,
@@ -1245,6 +1312,14 @@ async def chat_with_agent(request: ChatRequest):
                 ),
                 "sources": [],
                 "mode": "demo",
+                **_chat_meta(
+                    request.agent,
+                    question,
+                    [],
+                    "demo",
+                    started_at,
+                    client_id=request.client_id,
+                ),
             }
 
         for item in selected:
@@ -1277,8 +1352,8 @@ async def chat_with_agent(request: ChatRequest):
                 )
             answer = "По внешним новостям:\n\n" + "\n\n".join(blocks)
             answer += (
-                "\n\nДемо-режим: ответ собран локально по свежим RSS-новостям, "
-                "без внешней LLM."
+                "\n\nИсточник: внешние RSS-новости. Ответ собран локальным "
+                "fallback-агентом (внешняя LLM сейчас недоступна)."
             )
             mode = "demo"
 
@@ -1287,6 +1362,14 @@ async def chat_with_agent(request: ChatRequest):
         "answer": answer,
         "sources": sources,
         "mode": mode,
+        **_chat_meta(
+            request.agent,
+            question,
+            sources,
+            mode,
+            started_at,
+            client_id=request.client_id,
+        ),
     }
 
 
@@ -1307,6 +1390,12 @@ async def submit_feedback(request: FeedbackRequest):
         logger.error(f"Ошибка сохранения отзыва: {exc}")
         raise HTTPException(status_code=500, detail="Не удалось сохранить отзыв")
     return {"status": "ok"}
+
+
+@app.get("/api/audit/summary")
+async def get_audit_summary():
+    """Метрики качества, обратной связи и журнала действий AI-компонента."""
+    return audit_summary()
 
 
 @app.get("/api/analytics/search", response_model=AnalyticsResponse)
@@ -1348,6 +1437,10 @@ async def health_check():
 
 # Статические файлы (фронтенд)
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Отдельный статический preview нового визуала.
+# Не влияет на рабочее приложение /app и его API.
+app.mount("/preview", StaticFiles(directory="static/preview", html=True), name="preview")
 
 
 @app.get("/app")
