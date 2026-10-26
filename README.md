@@ -267,7 +267,7 @@ curl -s http://localhost:8000/api/audit/summary
 
 - интерпретации карточек считаются локально, без вызова LLM;
 - в чат уходят только 2–3 отобранных фрагмента, а не весь корпус;
-- `max_tokens=900`, ответы короткие;
+- `max_tokens=2200`: запас под reasoning-токены модели, ответы короткие;
 - анализ кешируется на время сессии;
 - при недоступности API включается локальный демо-режим с явной пометкой.
 
@@ -425,7 +425,7 @@ cp .env.example .env
 
 По умолчанию используются:
 
-- base URL: `https://challenge.up.railway.app/v1`;
+- base URL: `https://api.alfahack-gateway26.ru/v1` — альтернативный шлюз для российских хостингов;
 - модель: `deepseek/deepseek-v4.1-flash`;
 - доступные альтернативы: `z-ai/glm-5.3-flash`, `qwen/qwen3.6-35b-a3b`,
   `qwen/qwen3-vl-30b-a3b-instruct`, `google/gemma-4-26b-a4b-it`,
@@ -438,9 +438,10 @@ cp .env.example .env
 не возвращается в ответах.
 
 Если организаторы выдали другой base URL, укажите его в `LLM_BASE_URL` в
-`.env`; значение по умолчанию — `https://challenge.up.railway.app/v1`. На момент
-сдачи этот адрес может быть недоступен: проверяйте `llm_status` в `/api/health`,
-а демо-режим остаётся рабочим без ключа.
+`.env`. Основной адрес — `https://challenge.up.railway.app/v1`; для российских
+хостингов организаторы рекомендовали альтернативный
+`https://api.alfahack-gateway26.ru/v1`. Проверяйте `llm_status` в `/api/health`;
+если API недоступен, демо-режим остаётся рабочим без ключа.
 
 ---
 
@@ -592,7 +593,7 @@ solution/
 
 - GitVerse: <https://gitverse.ru/MisterKindly/alfa-news-analytics>
 - Ветка: `main`
-- Версия: `1.1.1`, тег `v1.1.1`; commit hash указан в описании релиза/тега.
+- Версия: `1.1.2`, тег `v1.1.2`; commit hash указан в описании релиза/тега.
 - Клонирование:
 
 ```bash

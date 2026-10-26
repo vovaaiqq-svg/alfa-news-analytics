@@ -4,7 +4,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - LLM_BASE_URL=${LLM_BASE_URL:-https://challenge.up.railway.app/v1}
+      - LLM_BASE_URL=${LLM_BASE_URL:-https://api.alfahack-gateway26.ru/v1}
       - LLM_MODEL=${LLM_MODEL:-deepseek/deepseek-v4.1-flash}
       - LLM_API_KEY=${LLM_API_KEY:-}
       - PYTHONUNBUFFERED=1

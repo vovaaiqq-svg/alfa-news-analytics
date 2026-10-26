@@ -22,7 +22,7 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_BASE_URL = "https://challenge.up.railway.app/v1"
+DEFAULT_BASE_URL = "https://api.alfahack-gateway26.ru/v1"
 DEFAULT_MODEL = "deepseek/deepseek-v4.1-flash"
 
 # Модели, разрешённые условиями хакатона.
@@ -110,7 +110,7 @@ class LLMClient:
         self,
         prompt: str,
         timeout: float = 90.0,
-        max_tokens: int = 900,
+        max_tokens: int = 2200,
         temperature: float = 0.2,
     ) -> Optional[str]:
         """Возвращает текст ответа модели или None, если API недоступна."""
